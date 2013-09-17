@@ -1,0 +1,9 @@
+[color]
+    ui = true
+[alias]
+    st = status
+    br = branch
+    co = checkout
+[user]
+    name = KazuyaMiyagi
+    email = umi.kukki@gmail.com
