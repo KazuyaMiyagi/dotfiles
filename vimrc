@@ -2,9 +2,6 @@ set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
 set fileformats=unix,dos
-set tabstop=4
-set shiftwidth=4
-set expandtab
 
 set number
 set title
@@ -19,7 +16,7 @@ match WhitespaceEOL /\s\+$/
 
 "colorschem on
 
-command! Trim :%s/\s\+$//e
+command! Trim :%s/\s\+$//
 
 " Search
 set ignorecase
@@ -55,8 +52,6 @@ imap <c-n> <Down>
 imap <c-p> <Up>
 imap <c-f> <Right>
 
-set nocompatible               " Be iMproved
-
 if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
@@ -91,8 +86,8 @@ let g:syntastic_auto_jump = 0
 let g:syntastic_auto_loc_list = 2
 let g:syntastic_loc_list_height = 5
 let g:syntastic_mode_map = { 'mode': 'active',
-                          \ 'active_filetypes': ['php'],
-                          \ 'passive_filetypes': [] }
+                          \ 'active_filetypes': ['ruby'],
+                          \ 'passive_filetypes': ['php'] }
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
