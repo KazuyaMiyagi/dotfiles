@@ -3,6 +3,9 @@ set fileencoding=utf-8
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
 set fileformats=unix,dos
 
+set mouse=n
+set ttymouse=xterm2
+
 set number
 set title
 set showcmd
@@ -86,8 +89,8 @@ let g:syntastic_auto_jump = 0
 let g:syntastic_auto_loc_list = 2
 let g:syntastic_loc_list_height = 5
 let g:syntastic_mode_map = { 'mode': 'active',
-                          \ 'active_filetypes': ['ruby'],
-                          \ 'passive_filetypes': ['php'] }
+                          \ 'active_filetypes': ['ruby', 'php'],
+                          \ 'passive_filetypes': [] }
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
