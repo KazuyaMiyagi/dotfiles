@@ -17,7 +17,9 @@ syntax on
 highlight WhitespaceEOL ctermbg=red guibg=red
 match WhitespaceEOL /\s\+$/
 
-"colorschem on
+set ambiwidth=double
+set list
+set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
 
 command! Trim :%s/\s\+$//
 
@@ -48,7 +50,6 @@ set nowrap
 
 " datetime
 inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
-
 
 imap <c-b> <Left>
 imap <c-n> <Down>
@@ -94,6 +95,7 @@ let g:syntastic_mode_map = { 'mode': 'active',
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
+NeoBundle 'vim-jp/vimdoc-ja'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -102,6 +104,7 @@ NeoBundle 'Shougo/Vimshell'
 NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neocomplcache-rsense'
 NeoBundle 'taichouchou2/vim-endwise.git'
+NeoBundle 'junegunn/vim-emoji'
 
 "TweetVimとその依存関係のプラグイン
 NeoBundle 'basyura/TweetVim'
