@@ -7,6 +7,7 @@ set mouse=n
 set ttymouse=xterm2
 
 set number
+set relativenumber
 set title
 set showcmd
 
@@ -22,6 +23,7 @@ set list
 set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
 
 command! Trim :%s/\s\+$//
+command! ReloadVimrc source $MYVIMRC
 
 " Search
 set ignorecase
@@ -51,10 +53,10 @@ set nowrap
 " datetime
 inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
 
-imap <c-b> <Left>
-imap <c-n> <Down>
-imap <c-p> <Up>
-imap <c-f> <Right>
+"imap <c-b> <Left>
+"imap <c-n> <Down>
+"imap <c-p> <Up>
+"imap <c-f> <Right>
 
 if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim/
@@ -95,15 +97,22 @@ let g:syntastic_mode_map = { 'mode': 'active',
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
+NeoBundle 'mhinz/vim-startify'
+"NeoBundle 'mhinz/vim-signify'
+NeoBundle 'airblade/vim-gitgutter'
+NeoBundle 'kien/ctrlp.vim'
+NeoBundle 'thinca/vim-scouter'
 NeoBundle 'vim-jp/vimdoc-ja'
 NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'Lokaltog/vim-easymotion'
+"NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 NeoBundle 'Shougo/Vimfiler'
 NeoBundle 'Shougo/Vimshell'
 NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neocomplcache-rsense'
-NeoBundle 'taichouchou2/vim-endwise.git'
+"NeoBundle 'Shougo/neocomplete'
+NeoBundle 'Shougo/neosnippet'
+NeoBundle 'taichouchou2/vim-endwise'
 NeoBundle 'junegunn/vim-emoji'
 
 "TweetVimとその依存関係のプラグイン
