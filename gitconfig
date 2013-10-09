@@ -4,6 +4,7 @@
     st = status
     br = branch
     co = checkout
+    df = diff --ignore-all-space
 [user]
-    name = KazuyaMiyagi
+    name  = KazuyaMiyagi
     email = umi.kukki@gmail.com
