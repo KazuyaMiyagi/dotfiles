@@ -7,7 +7,7 @@ set mouse=n
 set ttymouse=xterm2
 
 set number
-set relativenumber
+"set relativenumber
 set title
 set showcmd
 
@@ -20,7 +20,7 @@ match WhitespaceEOL /\s\+$/
 
 set ambiwidth=double
 set list
-set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
+set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚",conceal:⇿,nbsp:⧈
 
 command! Trim :%s/\s\+$//
 command! ReloadVimrc source $MYVIMRC

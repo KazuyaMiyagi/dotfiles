@@ -1,3 +1,5 @@
+[core]
+    autoCRLF = false
 [color]
     ui = true
 [alias]
