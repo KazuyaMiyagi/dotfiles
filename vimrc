@@ -2,28 +2,17 @@ set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
 set fileformats=unix,dos
-
 set mouse=n
 set ttymouse=xterm2
-
+set nowrap
 set number
 "set relativenumber
 set title
 set showcmd
 
-" color
-syntax on
-
-" 行末の半角スペースハイライト
-highlight WhitespaceEOL ctermbg=red guibg=red
-match WhitespaceEOL /\s\+$/
-
 set ambiwidth=double
 set list
-set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚",conceal:⇿,nbsp:⧈
-
-command! Trim :%s/\s\+$//
-command! ReloadVimrc source $MYVIMRC
+set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
 
 " Search
 set ignorecase
@@ -44,19 +33,29 @@ set expandtab
 set smarttab
 set shiftround
 
-"set autoindent
-autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
-autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
-
-set nowrap
-
 " datetime
 inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
 
-"imap <c-b> <Left>
-"imap <c-n> <Down>
-"imap <c-p> <Up>
-"imap <c-f> <Right>
+autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
+autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
+
+command! Trim :%s/\s\+$//
+command! ReloadVimrc source $MYVIMRC
+command! Bgdark set background=dark
+command! Bglight set background=light
+
+" color
+syntax on
+colorscheme default
+set background=light
+
+" 行末の半角スペースハイライト
+highlight WhitespaceEOL ctermbg=red guibg=red
+match WhitespaceEOL /\s\+$/
+
+if has('multi_byte_ime') || has('xim')
+  highlight CursorIM guibg=Purple guifg=NONE
+endif
 
 if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim/
@@ -97,23 +96,35 @@ let g:syntastic_mode_map = { 'mode': 'active',
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
 let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
-NeoBundle 'mhinz/vim-startify'
-"NeoBundle 'mhinz/vim-signify'
 NeoBundle 'airblade/vim-gitgutter'
-NeoBundle 'kien/ctrlp.vim'
 NeoBundle 'thinca/vim-scouter'
 NeoBundle 'vim-jp/vimdoc-ja'
 NeoBundle 'tpope/vim-fugitive'
-"NeoBundle 'Lokaltog/vim-easymotion'
 NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
+NeoBundle 'taichouchou2/vim-endwise'
+NeoBundle 'junegunn/vim-emoji'
+"NeoBundle 'Lokaltog/vim-easymotion'
+"NeoBundle 'mhinz/vim-startify'
+"NeoBundle 'mhinz/vim-signify'
+
+" ShougoWare
 NeoBundle 'Shougo/Vimfiler'
 NeoBundle 'Shougo/Vimshell'
 NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neocomplcache-rsense'
-"NeoBundle 'Shougo/neocomplete'
 NeoBundle 'Shougo/neosnippet'
-NeoBundle 'taichouchou2/vim-endwise'
-NeoBundle 'junegunn/vim-emoji'
+"NeoBundle 'Shougo/neocomplete'
+
+" colorscheme
+"NeoBundle 'nanotech/jellybeans.vim'
+"NeoBundle 'w0ng/vim-hybrid'
+"NeoBundle 'vim-scripts/twilight'
+"NeoBundle 'jonathanfilip/vim-lucius'
+"NeoBundle 'jpo/vim-railscasts-theme'
+"NeoBundle 'altercation/vim-colors-solarized'
+"NeoBundle 'vim-scripts/Wombat'
+"NeoBundle 'vim-scripts/rdark'
+NeoBundle 'tomasr/molokai'
 
 "TweetVimとその依存関係のプラグイン
 NeoBundle 'basyura/TweetVim'
@@ -127,11 +138,11 @@ NeoBundle 'Shougo/unite.vim'
 " vim-scripts repos
 NeoBundle 'L9'
 NeoBundle 'rails.vim'
+
 " Non github repos
 NeoBundle 'git://git.wincent.com/command-t.git'
-" Non git repos
 
-" ...
+" Non git repos
 
 filetype plugin indent on     " Required!
 "
