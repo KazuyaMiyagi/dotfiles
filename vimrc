@@ -12,7 +12,7 @@ set showcmd
 
 set ambiwidth=double
 set list
-set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
+set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚",conceal:⇿,nbsp:⧈
 
 " Search
 set ignorecase
