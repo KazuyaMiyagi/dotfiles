@@ -1,5 +1,6 @@
-set encoding=utf-8
-set fileencoding=utf-8
+"set encoding=utf-8
+"set fileencoding=utf-8
+"set fileformat=unix
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
 set fileformats=unix,dos
 set mouse=n
@@ -39,6 +40,13 @@ inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
 autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
 autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
 
+function! EnvFunction()
+    set encoding
+    set fileencoding
+    set fileformat
+endfunction
+
+command! Env :call EnvFunction()
 command! Trim :%s/\s\+$//
 command! ReloadVimrc source $MYVIMRC
 command! Bgdark set background=dark
@@ -108,6 +116,8 @@ NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 NeoBundle 'taichouchou2/vim-endwise'
 NeoBundle 'junegunn/vim-emoji'
+NeoBundle 'ujihisa/unite-colorscheme'
+NeoBundle 'ujihisa/unite-font'
 "NeoBundle 'Lokaltog/vim-easymotion'
 "NeoBundle 'mhinz/vim-startify'
 "NeoBundle 'mhinz/vim-signify'
