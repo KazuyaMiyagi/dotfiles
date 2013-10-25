@@ -13,7 +13,7 @@ set showcmd
 
 set ambiwidth=double
 set list
-set listchars=eol:⏎,tab:^-,extends:\|,precedes:\|
+set listchars=eol:⏎,tab:^-,extends:>,precedes:<
 "set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚",conceal:⇿,nbsp:⧈
 
 " Search
