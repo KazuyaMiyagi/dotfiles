@@ -1,20 +1,18 @@
-"set encoding=utf-8
+set encoding=utf-8
 "set fileencoding=utf-8
 "set fileformat=unix
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
 set fileformats=unix,dos
-set mouse=n
+set mouse=a
 set ttymouse=xterm2
 set nowrap
 set number
-"set relativenumber
+set relativenumber
 set title
 set showcmd
 
-set ambiwidth=double
 set list
-set listchars=eol:⏎,tab:^-,extends:>,precedes:<
-"set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚",conceal:⇿,nbsp:⧈
+set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<,conceal:@,nbsp:@
 
 " Search
 set ignorecase
@@ -45,6 +43,9 @@ function! EnvFunction()
     set encoding
     set fileencoding
     set fileformat
+    set guifont
+    set guifontwide
+    set ambiwidth
 endfunction
 
 command! Env :call EnvFunction()

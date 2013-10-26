@@ -1,7 +1,29 @@
-command! ReloadVimrc source $MYGVIMRC
+if has('win32')
+    set guifont=Ricty:h14:cSHIFTJIS,Inconsolata:h14:cANSI,Consolas:h14:cANSI
+    set guifontwide=MS_Gothic:h14:cSHIFTJIS,MS_Mincho:h14:cSHIFTJIS
+elseif has('mac')
+    set guifont=Ricty\ Regular:h16,Osaka-Mono:h16,Inconsolata:h16
+    set guifontwide=Hiragino\ Maru\ Gothic\ Pro\ w4:h16,Osaka:h16
+else
+    set guifont=Ricty\ Regular:h16,Inconsolata:h16
+    set guifontwide=Hiragino\ Maru\ Gothic\ Pro\ w4:h16,Osaka:h16
+endif
+" iI|!1| ほげさn感じsfjsdlfkjsdfsldjfsふぁあかさたな浜やら和音
+" ○○●◎➤➤➤➤➤➤➤➤➤➤➤☛☛☛☛☛☛☛☛☛
+" oO0qQcCdD
+"set ambiwidth=double
+command! ReloadGVimrc source $MYGVIMRC
 colorscheme molokai
+set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
+command! ReloadGVimrc source $MYGVIMRC
 set background=dark
-set guifont=Ricty\ 14
+set visualbell t_vb=
 set lines=50
 set columns=100
 set guioptions-=T
+set guioptions-=R
+set guioptions-=r
+set guioptions-=L
+set guioptions-=l
+set guioptions-=b
+set showtabline=2
