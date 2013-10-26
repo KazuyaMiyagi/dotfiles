@@ -3,6 +3,8 @@ set encoding=utf-8
 "set fileformat=unix
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
 set fileformats=unix,dos
+set swapfile
+set nobackup
 set mouse=a
 set ttymouse=xterm2
 set nowrap
