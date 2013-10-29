@@ -1,4 +1,4 @@
-set encoding=utf-8
+"set encoding=utf-8
 "set fileencoding=utf-8
 "set fileformat=unix
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
@@ -146,6 +146,8 @@ NeoBundle 'Shougo/neosnippet'
 "NeoBundle 'vim-scripts/Wombat'
 "NeoBundle 'vim-scripts/rdark'
 NeoBundle 'tomasr/molokai'
+colorscheme molokai
+set background=dark
 
 "TweetVimとその依存関係のプラグイン
 NeoBundle 'basyura/TweetVim'

@@ -12,11 +12,8 @@ endif
 " iI|!1| ほげさn感じsfjsdlfkjsdfsldjfsふぁあかさたな浜やら和音
 " ○○●◎➤➤➤➤➤➤➤➤➤➤➤☛☛☛☛☛☛☛☛☛
 " oO0qQcCdD
+"set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
 command! ReloadGVimrc source $MYGVIMRC
-colorscheme molokai
-set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
-command! ReloadGVimrc source $MYGVIMRC
-set background=dark
 set visualbell t_vb=
 set lines=50
 set columns=100
