@@ -9,13 +9,13 @@ set mouse=a
 set ttymouse=xterm2
 set nowrap
 set number
-set relativenumber
+"set relativenumber
 set title
 set showcmd
 set backspace=indent,eol,start
 
 set list
-set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<,conceal:@,nbsp:@
+set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
 
 " Search
 set ignorecase
