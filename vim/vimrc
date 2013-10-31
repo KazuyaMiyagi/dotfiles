@@ -103,7 +103,7 @@ filetype plugin indent on     " Required!
 " Installation check.
 NeoBundleCheck
 
-"set encoding=utf-8
+set encoding=utf-8
 "set fileencoding=utf-8
 "set fileformat=unix
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
@@ -164,7 +164,11 @@ command! Bglight set background=light
 
 " color
 syntax on
-colorscheme molokai
+if has('win32') && !has('gui_running')
+    colorscheme default
+else
+    colorscheme molokai
+endif
 set background=dark
 
 " 行末の半角スペースハイライト
