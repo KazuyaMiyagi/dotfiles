@@ -1,11 +1,6 @@
-if has('win32')
-    :let $VIMFILE_DIR = 'vimfiles'
-else
-    :let $VIMFILE_DIR = '.vim'
-endif
-if has('vim_starting')
+"if has('vim_starting')
   set runtimepath+=~/$VIMFILE_DIR/bundle/neobundle.vim/
-endif
+"endif
 
 call neobundle#rc(expand('~/.vim/bundle/'))
 
@@ -102,75 +97,3 @@ filetype plugin indent on     " Required!
 
 " Installation check.
 NeoBundleCheck
-
-"set encoding=utf-8
-"set fileencoding=utf-8
-"set fileformat=unix
-set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
-set fileformats=unix,dos
-set swapfile
-set nobackup
-set mouse=a
-set ttymouse=xterm2
-set nowrap
-set number
-"set relativenumber
-set title
-set showcmd
-set backspace=indent,eol,start
-
-set list
-set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
-
-" Search
-set ignorecase
-set smartcase
-set wrapscan
-set hlsearch
-
-" Edit
-set autoindent
-set showmatch
-set smartindent
-set cindent
-
-" Tab
-set tabstop=4
-set shiftwidth=4
-set expandtab
-set smarttab
-set shiftround
-
-" datetime
-inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
-
-autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
-autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
-
-function! EnvFunction()
-    set encoding
-    set fileencoding
-    set fileformat
-    set guifont
-    set guifontwide
-    set ambiwidth
-endfunction
-
-command! Env :call EnvFunction()
-command! Trim :%s/\s\+$//
-command! ReloadVimrc source $MYVIMRC
-command! Bgdark set background=dark
-command! Bglight set background=light
-
-" color
-syntax on
-colorscheme molokai
-set background=dark
-
-" 行末の半角スペースハイライト
-highlight WhitespaceEOL ctermbg=red guibg=red
-match WhitespaceEOL /\s\+$/
-
-if has('multi_byte_ime') || has('xim')
-  highlight CursorIM guibg=Purple guifg=NONE
-endif
