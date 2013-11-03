@@ -52,6 +52,7 @@ NeoBundle 'junegunn/vim-emoji'
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'ujihisa/unite-font'
 NeoBundle 'supermomonga/vimshell-pure.vim'
+NeoBundle 'koron/nyancat-vim'
 "NeoBundle 'Lokaltog/vim-easymotion'
 "NeoBundle 'mhinz/vim-startify'
 "NeoBundle 'mhinz/vim-signify'
@@ -103,7 +104,11 @@ filetype plugin indent on     " Required!
 " Installation check.
 NeoBundleCheck
 
-set encoding=utf-8
+if has('win32') && !has('gui_running')
+    set encoding=cp932
+else
+    set encoding=utf-8
+endif
 "set fileencoding=utf-8
 "set fileformat=unix
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
@@ -154,6 +159,7 @@ function! EnvFunction()
     set guifont
     set guifontwide
     set ambiwidth
+    colorscheme
 endfunction
 
 command! Env :call EnvFunction()

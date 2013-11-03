@@ -1,3 +1,4 @@
+source $MYVIMRC
 if has('win32')
     "set guifont=Ricty:h14:cSHIFTJIS,Inconsolata:h14:cANSI,Consolas:h14:cANSI
     set guifont=Inconsolata:h14:cANSI,Consolas:h14:cANSI
@@ -15,12 +16,13 @@ endif
 "set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
 command! ReloadGVimrc source $MYGVIMRC
 set visualbell t_vb=
-set lines=50
-set columns=100
+set lines=30
+set columns=80
 set guioptions-=T
 set guioptions-=R
 set guioptions-=r
 set guioptions-=L
 set guioptions-=l
 set guioptions-=b
+set guioptions-=m
 set showtabline=2
