@@ -152,8 +152,6 @@ set expandtab
 set smarttab
 set shiftround
 
-set colorcolumn=80
-
 " datetime
 inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
 

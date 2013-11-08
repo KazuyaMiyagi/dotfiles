@@ -1,8 +1,8 @@
 source $MYVIMRC
 if has('win32')
-    "set guifont=Ricty:h14:cSHIFTJIS,Inconsolata:h14:cANSI,Consolas:h14:cANSI
-    set guifont=Inconsolata:h14:cANSI,Consolas:h14:cANSI
-    set guifontwide=Migu_1M:h14:cSHIFTJIS,MS_Gothic:h14:cSHIFTJIS,MS_Mincho:h14:cSHIFTJIS
+    "set guifont=Ricty:h11:cSHIFTJIS,Inconsolata:h11:cANSI,Consolas:h11:cANSI
+    set guifont=Inconsolata:h11:cANSI,Consolas:h11:cANSI
+    set guifontwide=Migu_1M:h11:cSHIFTJIS,MS_Gothic:h11:cSHIFTJIS,MS_Mincho:h11:cSHIFTJIS
 elseif has('mac')
     set guifont=Ricty\ Regular:h16,Osaka-Mono:h16,Inconsolata:h16
     set guifontwide=Migu\ 1M:h16,Hiragino\ Maru\ Gothic\ Pro:w4:h16,Osaka:h16
@@ -17,7 +17,8 @@ endif
 command! ReloadGVimrc source $MYGVIMRC
 set visualbell t_vb=
 set lines=30
-set columns=80
+set columns=130
+set colorcolumn=80,120
 set guioptions-=T
 set guioptions-=R
 set guioptions-=r
