@@ -53,6 +53,7 @@ NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'ujihisa/unite-font'
 NeoBundle 'supermomonga/vimshell-pure.vim'
 NeoBundle 'koron/nyancat-vim'
+NeoBundle 'osyo-manga/vim-over'
 NeoBundle 'nathanaelkane/vim-indent-guides'
     let s:hooks = neobundle#get_hooks("vim-indent-guides")
     function! s:hooks.on_source(bundle)
