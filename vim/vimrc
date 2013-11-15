@@ -130,6 +130,7 @@ set number
 set title
 set showcmd
 set backspace=indent,eol,start
+set clipboard=unnamed
 
 set list
 set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
