@@ -26,4 +26,6 @@ set guioptions-=L
 set guioptions-=l
 set guioptions-=b
 set guioptions-=m
+" guiのタブを使わない、D&D で入替えができないため
+set guioptions-=e
 set showtabline=2
