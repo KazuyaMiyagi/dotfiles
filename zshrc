@@ -1,1 +1,1 @@
-export PROMPT="%F{cyan}${USER}%f on %F{cyan}${HOST}%f $PROMPT"
+export PROMPT="%F{cyan}${USER}%f at %F{cyan}${HOST}%f $PROMPT"
