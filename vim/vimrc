@@ -98,7 +98,7 @@ NeoBundle 'L9'
 NeoBundle 'rails.vim'
 
 " Non github repos
-NeoBundle 'git://git.wincent.com/command-t.git'
+"NeoBundle 'git://git.wincent.com/command-t.git'
 
 " Non git repos
 
