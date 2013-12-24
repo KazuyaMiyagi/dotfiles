@@ -6,8 +6,8 @@ elseif has('mac')
     set guifont=Osaka-Mono:h16,Inconsolata:h16
     set guifontwide=Migu\ 1M:h16,Hiragino\ Maru\ Gothic\ Pro:w4:h16,Osaka:h16
 else
-    set guifont=Inconsolata\ 12,Monospace\ 12
-    set guifontwide=Migu\ 1M,TakaoPGothic
+    set guifont=Ubuntu\ Mono\ 12
+    set guifontwide=TakaoGothic
 endif
 " iI|!1| ほげさn感じsfjsdlfkjsdfsldjfsふぁあかさたな浜やら和音
 " ○○●◎➤➤➤➤➤➤➤➤➤➤➤☛☛☛☛☛☛☛☛☛
