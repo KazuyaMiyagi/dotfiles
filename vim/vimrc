@@ -43,6 +43,7 @@ NeoBundle 'scrooloose/syntastic'
     let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
 NeoBundle 'codegram/vim-codereview'
+NeoBundle 'junkblocker/patchreview-vim'
 NeoBundle 'mhinz/vim-signify'
 NeoBundle 'kannokanno/previm'
 NeoBundle 'thinca/vim-scouter'
