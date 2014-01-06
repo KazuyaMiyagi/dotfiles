@@ -42,9 +42,9 @@ NeoBundle 'scrooloose/syntastic'
     let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
     let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
-NeoBundle 'codegram/vim-codereview'
-NeoBundle 'junkblocker/patchreview-vim'
+NeoBundle 'codegram/vim-codereview', {'depends' : 'junkblocker/patchreview-vim' }
 NeoBundle 'mhinz/vim-signify'
+"NeoBundle 'mhinz/vim-startify'
 NeoBundle 'kannokanno/previm'
 NeoBundle 'thinca/vim-scouter'
 NeoBundle 'vim-jp/vimdoc-ja'
@@ -63,9 +63,17 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
     let g:indent_guides_guide_size = 1
     IndentGuidesEnable
     endfunction
+
+NeoBundle 'basyura/TweetVim', {'depends' :
+    \ [ 'mattn/webapi-vim',
+    \   'basyura/twibill.vim',
+    \   'tyru/open-browser.vim',
+    \   'h1mesuke/unite-outline',
+    \   'basyura/bitly.vim',
+    \   'Shougo/unite.vim'
+    \ ]}
+
 "NeoBundle 'Lokaltog/vim-easymotion'
-"NeoBundle 'mhinz/vim-startify'
-"NeoBundle 'mhinz/vim-signify'
 
 " ShougoWare
 NeoBundle 'Shougo/Vimfiler'
@@ -76,24 +84,17 @@ NeoBundle 'Shougo/neosnippet'
 "NeoBundle 'Shougo/neocomplete'
 
 " colorscheme
-"NeoBundle 'nanotech/jellybeans.vim'
-"NeoBundle 'w0ng/vim-hybrid'
-"NeoBundle 'vim-scripts/twilight'
-"NeoBundle 'jonathanfilip/vim-lucius'
-"NeoBundle 'jpo/vim-railscasts-theme'
-"NeoBundle 'altercation/vim-colors-solarized'
-"NeoBundle 'vim-scripts/Wombat'
-"NeoBundle 'vim-scripts/rdark'
+NeoBundle 'nanotech/jellybeans.vim'
+NeoBundle 'w0ng/vim-hybrid'
+NeoBundle 'vim-scripts/twilight'
+NeoBundle 'jonathanfilip/vim-lucius'
+NeoBundle 'jpo/vim-railscasts-theme'
+NeoBundle 'altercation/vim-colors-solarized'
+NeoBundle 'vim-scripts/Wombat'
+NeoBundle 'vim-scripts/rdark'
 NeoBundle 'tomasr/molokai'
-
-"TweetVimとその依存関係のプラグイン
-NeoBundle 'basyura/TweetVim'
-NeoBundle 'mattn/webapi-vim'
-NeoBundle 'basyura/twibill.vim'
-NeoBundle 'tyru/open-browser.vim'
-NeoBundle 'h1mesuke/unite-outline'
-NeoBundle 'basyura/bitly.vim'
-NeoBundle 'Shougo/unite.vim'
+NeoBundle 'cocopon/iceberg.vim'
+NeoBundle 'NERV-ous'
 
 " vim-scripts repos
 NeoBundle 'L9'
@@ -113,6 +114,8 @@ filetype plugin indent on     " Required!
 
 " Installation check.
 NeoBundleCheck
+
+" -----------------------------------------------------------------------------
 
 if has('win32') && !has('gui_running')
     set encoding=cp932
@@ -184,7 +187,7 @@ syntax on
 if has('win32') && !has('gui_running')
     colorscheme default
 else
-    colorscheme molokai
+    colorscheme nerv-ous
 endif
 set background=dark
 
