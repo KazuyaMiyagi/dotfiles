@@ -131,7 +131,7 @@ set nobackup
 set mouse=a
 set ttymouse=xterm2
 set nowrap
-set number
+set nonumber
 "set relativenumber
 set title
 set showcmd
