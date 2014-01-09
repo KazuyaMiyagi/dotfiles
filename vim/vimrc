@@ -64,8 +64,8 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
         IndentGuidesEnable
     endfunction
 NeoBundle 'itchyny/calendar.vim'
-    let g:calendar_google_calendar = 1
-    let g:calendar_google_task = 1
+    "let g:calendar_google_calendar = 1
+    "let g:calendar_google_task = 1
 
 NeoBundle 'basyura/TweetVim', {'depends' :
     \ [ 'mattn/webapi-vim',
@@ -187,12 +187,12 @@ command! Bglight set background=light
 
 " color
 syntax on
+set background=dark
 if has('win32') && !has('gui_running')
     colorscheme default
 else
-    colorscheme nerv-ous
+    colorscheme hybrid
 endif
-set background=dark
 
 " 行末の半角スペースハイライト
 highlight WhitespaceEOL ctermbg=red guibg=red
