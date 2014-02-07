@@ -43,6 +43,7 @@ NeoBundle 'scrooloose/syntastic'
     let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
 NeoBundle 'codegram/vim-codereview', {'depends' : 'junkblocker/patchreview-vim' }
+NeoBundle 'mtsmfm/unite-turnip'
 NeoBundle 'mhinz/vim-signify'
 "NeoBundle 'mhinz/vim-startify'
 NeoBundle 'kannokanno/previm'
@@ -141,7 +142,7 @@ set showcmd
 set backspace=indent,eol,start
 set clipboard=unnamed
 
-set list
+set nolist
 set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
 
 " Search
