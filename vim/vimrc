@@ -85,6 +85,7 @@ NeoBundle 'Shougo/Vimshell'
 NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neocomplcache-rsense'
 NeoBundle 'Shougo/neosnippet'
+NeoBundle 'Shougo/neosnippet-snippets'
 "NeoBundle 'Shougo/neocomplete'
 
 " colorscheme
