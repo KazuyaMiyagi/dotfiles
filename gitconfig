@@ -3,11 +3,12 @@
 [color]
     ui = true
 [alias]
-    st = status
+    st = status --short
     br = branch
     co = checkout
-    df = diff --ignore-all-space
+    df = diff --ignore-all-space --color-words
     mg = merge --no-ff
+    lg = log --graph --decorate --oneline
 [user]
     name  = KazuyaMiyagi
     email =
