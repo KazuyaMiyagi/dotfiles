@@ -62,7 +62,6 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
     let s:hooks = neobundle#get_hooks("vim-indent-guides")
     function! s:hooks.on_source(bundle)
         let g:indent_guides_guide_size = 1
-        IndentGuidesEnable
     endfunction
 NeoBundle 'itchyny/calendar.vim'
     "let g:calendar_google_calendar = 1
