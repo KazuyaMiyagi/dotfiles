@@ -36,18 +36,25 @@ NeoBundle 'scrooloose/syntastic'
     let g:syntastic_auto_jump = 0
     let g:syntastic_auto_loc_list = 2
     let g:syntastic_loc_list_height = 5
-    let g:syntastic_mode_map = { 'mode': 'active',
-                            \ 'active_filetypes': ['ruby', 'php'],
-                            \ 'passive_filetypes': [] }
+    let g:syntastic_mode_map = {
+        \ 'mode': 'active',
+        \ 'active_filetypes': ['ruby', 'php'],
+        \ 'passive_filetypes': []
+        \ }
     let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
     let g:syntastic_php_phpcs_post_args = '--standard=psr2'
 
-NeoBundle 'codegram/vim-codereview', {'depends' : 'junkblocker/patchreview-vim' }
 NeoBundle 'glidenote/memolist.vim'
     if isdirectory(expand('~/Dropbox'))
         let g:memolist_path = '~/Dropbox/Memo'
     endif
     let g:memolist_vimfiler = 1
+
+NeoBundle 'codegram/vim-codereview', {'depends' :
+    \ 'junkblocker/patchreview-vim'
+    \ }
+
+NeoBundle 'Markology'
 NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'mtsmfm/unite-turnip'
 NeoBundle 'mhinz/vim-signify'
@@ -69,6 +76,7 @@ NeoBundle 'nathanaelkane/vim-indent-guides'
     function! s:hooks.on_source(bundle)
         let g:indent_guides_guide_size = 1
     endfunction
+
 NeoBundle 'itchyny/calendar.vim'
     "let g:calendar_google_calendar = 1
     "let g:calendar_google_task = 1
