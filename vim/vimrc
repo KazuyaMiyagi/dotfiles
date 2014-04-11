@@ -55,6 +55,8 @@ NeoBundle 'codegram/vim-codereview', {'depends' :
     \ }
 
 NeoBundle 'Markology'
+NeoBundle 'mattn/gist-vim'
+NeoBundle 'yuratomo/w3m.vim'
 NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'mtsmfm/unite-turnip'
 NeoBundle 'mhinz/vim-signify'
