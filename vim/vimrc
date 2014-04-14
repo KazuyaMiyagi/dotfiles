@@ -218,3 +218,8 @@ match WhitespaceEOL /\s\+$/
 if has('multi_byte_ime') || has('xim')
   highlight CursorIM guibg=Purple guifg=NONE
 endif
+
+
+" Hack #104: Visual mode で選択したテキストを検索する
+" http://vim-users.jp/2009/11/hack104/
+vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v,'\/'),"\n",'\\n','g')<CR><CR>
