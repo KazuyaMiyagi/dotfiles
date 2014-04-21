@@ -3,7 +3,7 @@
 [color]
     ui = true
 [alias]
-    st = status --short
+    st = status --short --branch
     br = branch
     co = checkout
     df = diff --ignore-all-space --color-words
