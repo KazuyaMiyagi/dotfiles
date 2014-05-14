@@ -54,7 +54,7 @@ NeoBundle 'codegram/vim-codereview', {'depends' :
     \ 'junkblocker/patchreview-vim'
     \ }
 
-NeoBundle 'Markology'
+"NeoBundle 'Markology'
 NeoBundle 'mattn/gist-vim'
 NeoBundle 'yuratomo/w3m.vim'
 NeoBundle 'tsukkee/unite-tag'
