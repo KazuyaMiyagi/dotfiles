@@ -146,7 +146,6 @@ endif
 "set fileformat=unix
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
 set fileformats=unix,dos
-set swapfile
 set nobackup
 set mouse=a
 set ttymouse=xterm2
@@ -185,6 +184,13 @@ inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
 
 autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
 autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
+
+autocmd BufNewFile,BufRead *
+            \ if expand('%:~') =~ '^\~/Dropbox' |
+            \     set noswapfile |
+            \ else |
+            \     set swapfile|
+            \ endif
 
 function! EnvFunction()
     set encoding
