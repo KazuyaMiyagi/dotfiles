@@ -13,3 +13,5 @@
 [user]
     name  = KazuyaMiyagi
     email =
+[ghq]
+    root = ~/src
