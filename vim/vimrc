@@ -155,7 +155,12 @@ set nonumber
 set title
 set showcmd
 set backspace=indent,eol,start
-set clipboard=unnamed
+
+if has('mac')
+    set clipboard=unnamed
+else
+    set clipboard=unnamedplus
+endif
 
 set nolist
 set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
