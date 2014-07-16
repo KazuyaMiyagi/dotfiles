@@ -156,7 +156,7 @@ set title
 set showcmd
 set backspace=indent,eol,start
 
-if has('mac')
+if has('mac') || has('win32')
     set clipboard=unnamed
 else
     set clipboard=unnamedplus
