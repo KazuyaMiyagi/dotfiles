@@ -11,7 +11,7 @@
     mg = merge --no-ff
     lg = log --graph --decorate --oneline
 [user]
-    name  = KazuyaMiyagi
+    name  = Kazuya MIYAGI
     email =
 [ghq]
     root = ~/src
