@@ -3,8 +3,7 @@ if has('win32')
     set guifont=Inconsolata:h11:cANSI,Consolas:h11:cANSI
     set guifontwide=Migu_1M:h11:cSHIFTJIS,MS_Gothic:h11:cSHIFTJIS,MS_Mincho:h11:cSHIFTJIS
 elseif has('mac')
-    set guifont=Osaka-Mono:h16,Inconsolata:h16
-    set guifontwide=Migu\ 1M:h16,Hiragino\ Maru\ Gothic\ Pro:w4:h16,Osaka:h16
+    set guifont=Osaka-Mono:h16
 else
     set guifont=Ricty\ 12,Inconsolata\ 12,Ubuntu\ Mono\ 12
     set guifontwide=Ricty\ 12,Migu\ 1M\ 12,TakaoGothic\ 12
