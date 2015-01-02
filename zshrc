@@ -4,3 +4,4 @@ p() { peco | while read LINE; do $@ $LINE; done }
 
 alias j='ghq list -p | p cd'
 alias bd=boot2docker
+alias be='bundle exec'
