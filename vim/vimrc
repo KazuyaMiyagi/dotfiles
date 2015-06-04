@@ -58,12 +58,16 @@ NeoBundle 'codegram/vim-codereview', {'depends' :
 "NeoBundle 'Markology'
 NeoBundle 'mattn/gist-vim'
 NeoBundle 'joonty/vdebug'
+let g:vdebug_options= {
+\  'port' : 9010
+\}
 "NeoBundle 'yuratomo/w3m.vim'
 NeoBundle 'tsukkee/unite-tag'
 NeoBundle 'mtsmfm/unite-turnip'
 NeoBundle 'mhinz/vim-signify'
 "NeoBundle 'mhinz/vim-startify'
 NeoBundle 'kannokanno/previm'
+NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'thinca/vim-scouter'
 NeoBundle 'vim-jp/vimdoc-ja'
 NeoBundle 'tpope/vim-fugitive'
