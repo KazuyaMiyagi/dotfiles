@@ -69,7 +69,7 @@ NeoBundle 'mhinz/vim-signify'
 NeoBundle 'kannokanno/previm'
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'thinca/vim-scouter'
-NeoBundle 'vim-jp/vimdoc-ja'
+"NeoBundle 'vim-jp/vimdoc-ja'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 NeoBundle 'taichouchou2/vim-endwise'
