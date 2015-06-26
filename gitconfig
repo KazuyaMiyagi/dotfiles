@@ -10,6 +10,7 @@
     df = diff --ignore-all-space --color-words
     mg = merge --no-ff
     lg = log --graph --decorate --oneline
+    gr = grep -H --line-number --ignore-case
 [user]
     name  = Kazuya MIYAGI
     email =
