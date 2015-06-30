@@ -74,6 +74,7 @@ NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 NeoBundle 'taichouchou2/vim-endwise'
 NeoBundle 'junegunn/vim-emoji'
+NeoBundle 'derekwyatt/vim-scala'
 NeoBundle 'ujihisa/unite-colorscheme'
 NeoBundle 'ujihisa/unite-font'
 NeoBundle 'supermomonga/vimshell-pure.vim'
