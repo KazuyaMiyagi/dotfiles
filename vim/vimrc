@@ -1,31 +1,20 @@
 if has('win32')
-    let $VIMFILE_DIR = 'vimfiles'
+    let $VIMFILE_DIR = '~/vimfiles'
 else
-    let $VIMFILE_DIR = '.vim'
+    let $VIMFILE_DIR = '~/.vim'
 endif
+
+let $PLUG_DIR = $VIMFILE_DIR/pluged
+
 if has('vim_starting')
-  set runtimepath+=~/$VIMFILE_DIR/bundle/neobundle.vim/
+    call plug#begin($PLUG_DIR)
 endif
 
-call neobundle#rc(expand('~/$VIMFILE_DIR/bundle/'))
-
-" Let NeoBundle manage NeoBundle
-NeoBundleFetch 'Shougo/neobundle.vim'
-
-" Recommended to install
-" After install, turn shell ~/.vim/bundle/vimproc, (n,g)make -f your_machines_makefile
-NeoBundle 'Shougo/vimproc'
-
-" My Bundles here:
-"
-" Note: You don't set neobundle setting in .gvimrc!
-" Original repos on github
-
-NeoBundle 'itchyny/lightline.vim'
+Plug 'itchyny/lightline.vim'
     set laststatus=2
     set t_Co=256
 
-NeoBundle 'scrooloose/syntastic'
+Plug 'scrooloose/syntastic'
     let g:syntastic_always_populate_loc_list = 1
     let g:syntastic_php_checkers = ['phpcs']
     let g:syntastic_check_on_open = 1
@@ -45,52 +34,48 @@ NeoBundle 'scrooloose/syntastic'
     let g:syntastic_php_phpcs_post_args = '--standard=psr2'
     let g:syntastic_ruby_checkers = ['rubocop']
 
-NeoBundle 'glidenote/memolist.vim'
+Plug 'glidenote/memolist.vim'
     if isdirectory(expand('~/Dropbox'))
         let g:memolist_path = '~/Dropbox/Memo'
     endif
     let g:memolist_vimfiler = 1
 
-NeoBundle 'codegram/vim-codereview', {'depends' :
+Plug 'codegram/vim-codereview', {'depends' :
     \ 'junkblocker/patchreview-vim'
     \ }
 
-"NeoBundle 'Markology'
-NeoBundle 'mattn/gist-vim'
-NeoBundle 'joonty/vdebug'
+"Plug 'Markology'
+Plug 'mattn/gist-vim'
+Plug 'joonty/vdebug'
 let g:vdebug_options= {
 \  'port' : 9010
 \}
-"NeoBundle 'yuratomo/w3m.vim'
-NeoBundle 'tsukkee/unite-tag'
-NeoBundle 'mtsmfm/unite-turnip'
-NeoBundle 'mhinz/vim-signify'
-"NeoBundle 'mhinz/vim-startify'
-NeoBundle 'kannokanno/previm'
-NeoBundle 'tyru/open-browser.vim'
-NeoBundle 'thinca/vim-scouter'
-"NeoBundle 'vim-jp/vimdoc-ja'
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'rstacruz/sparkup', {'rtp': 'vim/'}
-NeoBundle 'taichouchou2/vim-endwise'
-NeoBundle 'junegunn/vim-emoji'
-NeoBundle 'derekwyatt/vim-scala'
-NeoBundle 'ujihisa/unite-colorscheme'
-NeoBundle 'ujihisa/unite-font'
-NeoBundle 'supermomonga/vimshell-pure.vim'
-NeoBundle 'koron/nyancat-vim'
-NeoBundle 'osyo-manga/vim-over'
-NeoBundle 'nathanaelkane/vim-indent-guides'
-    let s:hooks = neobundle#get_hooks("vim-indent-guides")
-    function! s:hooks.on_source(bundle)
-        let g:indent_guides_guide_size = 1
-    endfunction
+"Plug 'yuratomo/w3m.vim'
+Plug 'tsukkee/unite-tag'
+Plug 'mtsmfm/unite-turnip'
+Plug 'mhinz/vim-signify'
+"Plug 'mhinz/vim-startify'
+Plug 'kannokanno/previm'
+Plug 'tyru/open-browser.vim'
+Plug 'thinca/vim-scouter'
+"Plug 'vim-jp/vimdoc-ja'
+Plug 'tpope/vim-fugitive'
+Plug 'rstacruz/sparkup', {'rtp': 'vim/'}
+Plug 'taichouchou2/vim-endwise'
+Plug 'junegunn/vim-emoji'
+Plug 'derekwyatt/vim-scala'
+Plug 'ujihisa/unite-colorscheme'
+Plug 'ujihisa/unite-font'
+Plug 'supermomonga/vimshell-pure.vim'
+Plug 'koron/nyancat-vim'
+Plug 'osyo-manga/vim-over'
+Plug 'nathanaelkane/vim-indent-guides'
 
-NeoBundle 'itchyny/calendar.vim'
+Plug 'itchyny/calendar.vim'
     "let g:calendar_google_calendar = 1
     "let g:calendar_google_task = 1
 
-NeoBundle 'basyura/TweetVim', {'depends' :
+Plug 'basyura/TweetVim', {'depends' :
     \ [ 'mattn/webapi-vim',
     \   'basyura/twibill.vim',
     \   'tyru/open-browser.vim',
@@ -99,50 +84,40 @@ NeoBundle 'basyura/TweetVim', {'depends' :
     \   'Shougo/unite.vim'
     \ ]}
 
-"NeoBundle 'Lokaltog/vim-easymotion'
+"Plug 'Lokaltog/vim-easymotion'
 
 " ShougoWare
-NeoBundle 'Shougo/Vimfiler'
-NeoBundle 'Shougo/Vimshell'
-NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/neocomplcache-rsense'
-NeoBundle 'Shougo/neosnippet'
-NeoBundle 'Shougo/neosnippet-snippets'
-"NeoBundle 'Shougo/neocomplete'
+Plug 'Shougo/Vimfiler'
+Plug 'Shougo/Vimshell'
+Plug 'Shougo/neocomplcache'
+Plug 'Shougo/neocomplcache-rsense'
+Plug 'Shougo/neosnippet'
+Plug 'Shougo/neosnippet-snippets'
+"Plug 'Shougo/neocomplete'
 
 " colorscheme
-NeoBundle 'nanotech/jellybeans.vim'
-NeoBundle 'w0ng/vim-hybrid'
-NeoBundle 'vim-scripts/twilight'
-NeoBundle 'jonathanfilip/vim-lucius'
-NeoBundle 'jpo/vim-railscasts-theme'
-NeoBundle 'altercation/vim-colors-solarized'
-NeoBundle 'vim-scripts/Wombat'
-NeoBundle 'vim-scripts/rdark'
-NeoBundle 'tomasr/molokai'
-NeoBundle 'cocopon/iceberg.vim'
-NeoBundle 'NERV-ous'
+Plug 'nanotech/jellybeans.vim'
+Plug 'w0ng/vim-hybrid'
+Plug 'vim-scripts/twilight'
+Plug 'jonathanfilip/vim-lucius'
+Plug 'jpo/vim-railscasts-theme'
+Plug 'altercation/vim-colors-solarized'
+Plug 'vim-scripts/Wombat'
+Plug 'vim-scripts/rdark'
+Plug 'tomasr/molokai'
+Plug 'cocopon/iceberg.vim'
+Plug 'NERV-ous'
 
 " vim-scripts repos
-NeoBundle 'L9'
-NeoBundle 'rails.vim'
+Plug 'L9'
+Plug 'rails.vim'
 
 " Non github repos
-"NeoBundle 'git://git.wincent.com/command-t.git'
+"Plug 'git://git.wincent.com/command-t.git'
 
-" Non git repos
+call plug#end()
 
 filetype plugin indent on     " Required!
-"
-" Brief help
-" :NeoBundleList          - list configured bundles
-" :NeoBundleInstall(!)    - install(update) bundles
-" :NeoBundleClean(!)      - confirm(or auto-approve) removal of unused bundles
-
-" Installation check.
-NeoBundleCheck
-
-" -----------------------------------------------------------------------------
 
 if has('win32') && !has('gui_running')
     set encoding=cp932
