@@ -1,14 +1,10 @@
 if has('win32')
-    let $VIMFILE_DIR = '~/vimfiles'
+    let $PLUG_DIR = '~/vimfiles/plugged'
 else
-    let $VIMFILE_DIR = '~/.vim'
+    let $PLUG_DIR = '~/.vim/plugged'
 endif
 
-let $PLUG_DIR = $VIMFILE_DIR/pluged
-
-if has('vim_starting')
-    call plug#begin($PLUG_DIR)
-endif
+call plug#begin($PLUG_DIR)
 
 Plug 'itchyny/lightline.vim'
     set laststatus=2
