@@ -61,7 +61,7 @@ Plug 'junegunn/vim-emoji'
 Plug 'derekwyatt/vim-scala'
 Plug 'ujihisa/unite-colorscheme'
 Plug 'ujihisa/unite-font'
-Plug 'supermomonga/vimshell-pure.vim'
+" Plug 'supermomonga/vimshell-pure.vim'
 Plug 'koron/nyancat-vim'
 Plug 'osyo-manga/vim-over'
 Plug 'nathanaelkane/vim-indent-guides'
@@ -82,12 +82,12 @@ Plug 'basyura/TweetVim', {'depends' :
 "Plug 'Lokaltog/vim-easymotion'
 
 " ShougoWare
-Plug 'Shougo/Vimfiler'
-Plug 'Shougo/Vimshell'
-Plug 'Shougo/neocomplcache'
-Plug 'Shougo/neocomplcache-rsense'
-Plug 'Shougo/neosnippet'
-Plug 'Shougo/neosnippet-snippets'
+" Plug 'Shougo/Vimfiler'
+" Plug 'Shougo/Vimshell'
+" Plug 'Shougo/neocomplcache'
+" Plug 'Shougo/neocomplcache-rsense'
+" Plug 'Shougo/neosnippet'
+" Plug 'Shougo/neosnippet-snippets'
 "Plug 'Shougo/neocomplete'
 
 " colorscheme
