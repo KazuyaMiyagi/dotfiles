@@ -48,7 +48,6 @@ let g:vdebug_options= {
 \}
 "Plug 'yuratomo/w3m.vim'
 Plug 'tsukkee/unite-tag'
-Plug 'mtsmfm/unite-turnip'
 Plug 'mhinz/vim-signify'
 "Plug 'mhinz/vim-startify'
 Plug 'kannokanno/previm'
