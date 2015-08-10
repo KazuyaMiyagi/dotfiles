@@ -42,6 +42,7 @@ Plug 'codegram/vim-codereview', {'depends' :
 
 "Plug 'Markology'
 Plug 'mattn/gist-vim'
+Plug 'mattn/vim-maketable'
 Plug 'joonty/vdebug'
 let g:vdebug_options= {
 \  'port' : 9010
