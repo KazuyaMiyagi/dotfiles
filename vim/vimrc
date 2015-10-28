@@ -9,6 +9,9 @@ call plug#begin($PLUG_DIR)
 Plug 'itchyny/lightline.vim'
     set laststatus=2
     set t_Co=256
+    let g:lightline = {
+    \ 'colorscheme': 'PaperColor'
+    \ }
 
 Plug 'scrooloose/syntastic'
     let g:syntastic_always_populate_loc_list = 1
@@ -54,7 +57,7 @@ Plug 'mhinz/vim-signify'
 Plug 'kannokanno/previm'
 Plug 'tyru/open-browser.vim'
 Plug 'thinca/vim-scouter'
-"Plug 'vim-jp/vimdoc-ja'
+Plug 'vim-jp/vimdoc-ja'
 Plug 'tpope/vim-fugitive'
 Plug 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plug 'taichouchou2/vim-endwise'
