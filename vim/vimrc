@@ -103,6 +103,8 @@ Plug 'vim-scripts/rdark'
 Plug 'tomasr/molokai'
 Plug 'cocopon/iceberg.vim'
 Plug 'NERV-ous'
+Plug 'sjl/badwolf'
+Plug 'morhetz/gruvbox'
 
 " vim-scripts repos
 Plug 'L9'
@@ -199,7 +201,7 @@ set background=dark
 if has('win32') && !has('gui_running')
     colorscheme default
 else
-    colorscheme hybrid
+    colorscheme gruvbox
 endif
 
 " 行末の半角スペースハイライト
