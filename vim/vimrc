@@ -208,8 +208,12 @@ else
 endif
 
 " 行末の半角スペースハイライト
-highlight WhitespaceEOL ctermbg=red guibg=red
+highlight WhitespaceEOL cterm=undercurl,reverse
 match WhitespaceEOL /\s\+$/
+
+" 全角スペースの表示
+highlight ZenkakuSpace cterm=undercurl,reverse
+match ZenkakuSpace /　/
 
 if has('multi_byte_ime') || has('xim')
   highlight CursorIM guibg=Purple guifg=NONE
