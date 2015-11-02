@@ -1,7 +1,6 @@
 source $MYVIMRC
 if has('win32')
-    set guifont=Inconsolata:h11:cANSI,Consolas:h11:cANSI
-    set guifontwide=Migu_1M:h11:cSHIFTJIS,MS_Gothic:h11:cSHIFTJIS,MS_Mincho:h11:cSHIFTJIS
+    set guifont=Consolas:cSHIFTJIS
 elseif has('mac')
     set guifont=Osaka-Mono:h16
 else
