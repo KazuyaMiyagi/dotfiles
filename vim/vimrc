@@ -139,14 +139,16 @@ set title
 set showcmd
 set backspace=indent,eol,start
 
-if has('mac') || has('win32')
+
+if has('mac') || has('win32') || has('win32unix')
     set clipboard=unnamed
 else
     set clipboard=unnamedplus
 endif
 
-set nolist
-set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
+set list
+"set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
+set listchars=trail:\ "
 
 " Search
 set ignorecase
@@ -207,12 +209,10 @@ else
     colorscheme gruvbox
 endif
 
-" 行末の半角スペースハイライト
-highlight WhitespaceEOL cterm=undercurl,reverse
-match WhitespaceEOL /\s\+$/
+highlight SpecialKey cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
 
 " 全角スペースの表示
-highlight ZenkakuSpace cterm=undercurl,reverse
+highlight ZenkakuSpace cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
 match ZenkakuSpace /　/
 
 if has('multi_byte_ime') || has('xim')
