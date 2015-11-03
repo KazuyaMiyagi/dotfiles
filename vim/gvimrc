@@ -2,11 +2,12 @@ source $MYVIMRC
 if has('win32')
     set guifont=Consolas:cSHIFTJIS
 elseif has('mac')
-    set guifont=Osaka-Mono:h16
+    set guifont=Osaka-Mono:h13
 else
     set guifont=Ricty\ 12,Inconsolata\ 12,Ubuntu\ Mono\ 12
     set guifontwide=Ricty\ 12,Migu\ 1M\ 12,TakaoGothic\ 12
 endif
+	"tab
 " iI|!1| ほげさn感じsfjsdlfkjsdfsldjfsふぁあかさたな浜やら和音
 " ○○●◎➤➤➤➤➤➤➤➤➤➤➤☛☛☛☛☛☛☛☛☛
 " oO0qQcCdD

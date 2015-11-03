@@ -148,7 +148,7 @@ endif
 
 set list
 "set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
-set listchars=trail:\ "
+set listchars=trail:\ ,tab:^_"
 
 " Search
 set ignorecase
