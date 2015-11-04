@@ -147,8 +147,13 @@ else
 endif
 
 set list
-"set listchars=eol:\\,tab:^_,trail:~,extends:>,precedes:<",conceal:@,nbsp:@
-set listchars=trail:\ ,tab:^_"
+set listchars=eol:↩,tab:▶─,trail:⊠,extends:⇢,precedes:⇠,nbsp:…
+"set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
+
+"				    🍣    
+" iI|!1| ほげさn感じsfjsdlfkjsdfsldjfsふぁあかさたな浜やら和音
+" ○○●◎➤➤➤➤➤➤➤➤➤➤➤☛☛☛☛☛☛☛☛☛
+" oO0qQcCdD
 
 " Search
 set ignorecase

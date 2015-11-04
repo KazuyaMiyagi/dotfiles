@@ -7,11 +7,7 @@ else
     set guifont=Ricty\ 12,Inconsolata\ 12,Ubuntu\ Mono\ 12
     set guifontwide=Ricty\ 12,Migu\ 1M\ 12,TakaoGothic\ 12
 endif
-	"tab
-" iI|!1| ほげさn感じsfjsdlfkjsdfsldjfsふぁあかさたな浜やら和音
-" ○○●◎➤➤➤➤➤➤➤➤➤➤➤☛☛☛☛☛☛☛☛☛
-" oO0qQcCdD
-"set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
+
 command! ReloadGVimrc source $MYGVIMRC
 set visualbell t_vb=
 set lines=30
