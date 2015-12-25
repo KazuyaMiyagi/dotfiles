@@ -1,13 +1,20 @@
+if [ ! $(id -u) -eq 0 ] ; then
+    echo "Not root"
+    exit 1
+fi
+
 if [ -f /etc/redhat-release ] ; then
-  sudo yum -y install git curl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel
-  pushd /usr/src
-  if [ ! -d git ] ; then
-    sudo git clone git://git.kernel.org/pub/scm/git/git.git
-  fi
-  cd git
-  make configure
-  ./configure --prefix=/usr
-  make all doc info
-  sudo make install install-doc install-html install-info
-  popd
+yum -y install git curl-devel expat-devel gettext-devel openssl-devel perl-devel zlib-devel
+pushd /usr/local/src
+if [ ! -d git ] ; then
+    git clone git://git.kernel.org/pub/scm/git/git.git
+fi
+cd git
+git pull
+make configure
+./configure --prefix=/usr/local
+make all
+make install
+make clean
+popd
 fi
