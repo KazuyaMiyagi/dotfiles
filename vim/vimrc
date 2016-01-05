@@ -74,15 +74,6 @@ Plug 'itchyny/calendar.vim'
     "let g:calendar_google_calendar = 1
     "let g:calendar_google_task = 1
 
-Plug 'basyura/TweetVim', {'depends' :
-    \ [ 'mattn/webapi-vim',
-    \   'basyura/twibill.vim',
-    \   'tyru/open-browser.vim',
-    \   'h1mesuke/unite-outline',
-    \   'basyura/bitly.vim',
-    \   'Shougo/unite.vim'
-    \ ]}
-
 "Plug 'Lokaltog/vim-easymotion'
 
 " ShougoWare
