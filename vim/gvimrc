@@ -23,3 +23,8 @@ set guioptions-=m
 " guiのタブを使わない、D&D で入替えができないため
 set guioptions-=e
 set showtabline=2
+
+if has('multi_byte_ime')
+    highlight Cursor guifg=NONE guibg=Green
+    highlight CursorIM guifg=NONE guibg=Purple
+endif
