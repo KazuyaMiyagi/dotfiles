@@ -69,6 +69,7 @@ Plug 'ujihisa/unite-font'
 Plug 'koron/nyancat-vim'
 Plug 'osyo-manga/vim-over'
 Plug 'nathanaelkane/vim-indent-guides'
+Plug 'kchmck/vim-coffee-script'
 
 Plug 'itchyny/calendar.vim'
     "let g:calendar_google_calendar = 1
