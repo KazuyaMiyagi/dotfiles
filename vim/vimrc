@@ -26,12 +26,13 @@ Plug 'scrooloose/syntastic'
     let g:syntastic_loc_list_height = 5
     let g:syntastic_mode_map = {
         \ 'mode': 'active',
-        \ 'active_filetypes': ['ruby', 'php', 'pp', 'javascript', 'json'],
+        \ 'active_filetypes': ['ruby', 'php', 'pp', 'javascript', 'json', 'eruby', 'javascript', 'coffee'],
         \ 'passive_filetypes': []
         \ }
     let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
     let g:syntastic_php_phpcs_post_args = '--standard=psr2'
     let g:syntastic_ruby_checkers = ['rubocop']
+    let g:syntastic_coffee_coffeelint_args = "--file ~/dotfiles/coffeelint.json"
 
 Plug 'glidenote/memolist.vim'
     if isdirectory(expand('~/Dropbox'))
@@ -171,7 +172,9 @@ set shiftround
 inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
 
 autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
+autocmd FileType eruby :set ts=2 sw=2 fenc=utf-8
 autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
+autocmd FileType coffee :set ts=2 sw=2 fenc=utf-8
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
 autocmd BufNewFile,BufRead *.md set filetype=markdown
 
