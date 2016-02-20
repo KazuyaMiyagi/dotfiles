@@ -1,0 +1,7 @@
+#Usee only ascii symbols in comments.
+AsciiComments:
+  Enabled: false
+Metrics/LineLength:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
