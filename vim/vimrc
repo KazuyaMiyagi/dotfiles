@@ -73,6 +73,7 @@ Plug 'nathanaelkane/vim-indent-guides'
 Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-haml'
 Plug 'timcharper/textile.vim'
+Plug 'chase/vim-ansible-yaml'
 
 Plug 'itchyny/calendar.vim'
     "let g:calendar_google_calendar = 1
