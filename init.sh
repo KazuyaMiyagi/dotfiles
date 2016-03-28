@@ -9,6 +9,7 @@ ln --symbolic $DOTFILE_DIR/tmux.conf ~/.tmux.conf
 ln --symbolic $DOTFILE_DIR/gitconfig ~/.gitconfig
 ln --symbolic $DOTFILE_DIR/gitignore ~/.gitignore
 ln --symbolic $DOTFILE_DIR/gemrc ~/.gemrc
+ln --symbolic $DOTFILE_DIR/my.cnf ~/.my.cnf
 ln --symbolic --no-dereference $DOTFILE_DIR/bundle/ ~/.bundle
 
 echo "source $DOTFILE_DIR/bashrc" >> ~/.bashrc
