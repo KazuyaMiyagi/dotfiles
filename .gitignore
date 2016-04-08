@@ -1,4 +1,6 @@
 /vim/autoload
 /vim/plugged
+/vim/undo/*
+!.gitkeep
 *.swp
 .netrwhist
