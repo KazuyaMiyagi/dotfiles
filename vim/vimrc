@@ -186,22 +186,6 @@ autocmd BufNewFile,BufRead *
             \     set swapfile|
             \ endif
 
-function! EnvFunction()
-    set encoding
-    set fileencoding
-    set fileformat
-    set guifont
-    set guifontwide
-    set ambiwidth
-    colorscheme
-endfunction
-
-command! Env :call EnvFunction()
-command! Trim :%s/\s\+$//
-command! ReloadVimrc source $MYVIMRC
-command! Bgdark set background=dark
-command! Bglight set background=light
-
 " color
 syntax on
 set background=dark
