@@ -39,55 +39,18 @@ Plug 'glidenote/memolist.vim'
     let g:memolist_memo_suffix = "md"
     let g:memolist_filename_prefix_none = 1
 
-Plug 'codegram/vim-codereview', {'depends' :
-    \ 'junkblocker/patchreview-vim'
-    \ }
-
 "Plug 'Markology'
-Plug 'mattn/gist-vim'
 Plug 'mattn/vim-maketable'
-Plug 'joonty/vdebug'
-let g:vdebug_options= {
-\  'port' : 9010
-\}
-"Plug 'yuratomo/w3m.vim'
-Plug 'tsukkee/unite-tag'
 Plug 'mhinz/vim-signify'
-"Plug 'mhinz/vim-startify'
 Plug 'kannokanno/previm'
-Plug 'tyru/open-browser.vim'
-Plug 'thinca/vim-scouter'
 Plug 'vim-jp/vimdoc-ja'
-Plug 'tpope/vim-fugitive'
 Plug 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plug 'taichouchou2/vim-endwise'
-Plug 'junegunn/vim-emoji'
-Plug 'derekwyatt/vim-scala'
-Plug 'ujihisa/unite-colorscheme'
-Plug 'ujihisa/unite-font'
-" Plug 'supermomonga/vimshell-pure.vim'
-Plug 'koron/nyancat-vim'
 Plug 'osyo-manga/vim-over'
-Plug 'nathanaelkane/vim-indent-guides'
 Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-haml'
 Plug 'timcharper/textile.vim'
 Plug 'chase/vim-ansible-yaml'
-
-Plug 'itchyny/calendar.vim'
-    "let g:calendar_google_calendar = 1
-    "let g:calendar_google_task = 1
-
-"Plug 'Lokaltog/vim-easymotion'
-
-" ShougoWare
-" Plug 'Shougo/Vimfiler'
-" Plug 'Shougo/Vimshell'
-" Plug 'Shougo/neocomplcache'
-" Plug 'Shougo/neocomplcache-rsense'
-" Plug 'Shougo/neosnippet'
-" Plug 'Shougo/neosnippet-snippets'
-"Plug 'Shougo/neocomplete'
 
 " colorscheme
 Plug 'nanotech/jellybeans.vim'
@@ -107,9 +70,6 @@ Plug 'morhetz/gruvbox'
 " vim-scripts repos
 Plug 'L9'
 Plug 'rails.vim'
-
-" Non github repos
-"Plug 'git://git.wincent.com/command-t.git'
 
 call plug#end()
 
