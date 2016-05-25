@@ -44,9 +44,11 @@ Plug 'mattn/vim-maketable'
 Plug 'mhinz/vim-signify'
 Plug 'kannokanno/previm'
 Plug 'vim-jp/vimdoc-ja'
-Plug 'rstacruz/sparkup', {'rtp': 'vim/'}
+Plug 'rstacruz/sparkup'
 Plug 'taichouchou2/vim-endwise'
 Plug 'osyo-manga/vim-over'
+
+" syntax
 Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-haml'
 Plug 'timcharper/textile.vim'
@@ -89,7 +91,6 @@ set mouse=a
 set ttymouse=xterm2
 set nowrap
 set nonumber
-"set relativenumber
 set title
 set showcmd
 set backspace=indent,eol,start
@@ -103,12 +104,6 @@ endif
 
 set list
 set listchars=eol:↩,tab:▶─,trail:⊠,extends:⇢,precedes:⇠,nbsp:…
-"set listchars=eol:⏎,tab:➤‒,trail:⊠,extends:☛,precedes:☚,conceal:⇿,nbsp:⧈
-
-"				    🍣    
-" iI|!1| ほげさn感じsfjsdlfkjsdfsldjfsふぁあかさたな浜やら和音
-" ○○●◎➤➤➤➤➤➤➤➤➤➤➤☛☛☛☛☛☛☛☛☛
-" oO0qQcCdD
 
 " Search
 set ignorecase
