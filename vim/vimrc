@@ -47,7 +47,8 @@ Plug 'vim-jp/vimdoc-ja'
 Plug 'rstacruz/sparkup'
 Plug 'taichouchou2/vim-endwise'
 Plug 'osyo-manga/vim-over'
-
+Plug 'tyru/open-browser.vim'
+Plug 'bronson/vim-trailing-whitespace'
 " syntax
 Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-haml'
