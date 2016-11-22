@@ -21,3 +21,5 @@ if [ -d /usr/local/src/git ] ; then
 else
     PS1='\[\033[1;34m\]\u\[\033[0m\] at \[\033[1;34m\]\H\[\033[0m\] \[\033[1;32m\]\w\[\033[0m\]\n\$ '
 fi
+
+export LESSCHARSET=utf-8

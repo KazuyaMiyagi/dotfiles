@@ -1,4 +1,5 @@
 export PROMPT="%F{cyan}${USER}%f at %F{cyan}${HOST}%f $PROMPT"
+export LESSCHARSET=utf-8
 
 p() { peco | while read LINE; do $@ $LINE; done }
 
