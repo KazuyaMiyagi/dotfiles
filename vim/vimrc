@@ -165,3 +165,6 @@ vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v,'\/'),"\n",'\\n','g')<CR><C
 " Undo
 set undofile
 set undodir=~/.vim/undo/
+
+" Swap
+set directory=~/vimfiles/swap/,~/.vim/swap/,.
