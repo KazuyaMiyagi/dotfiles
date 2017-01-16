@@ -40,6 +40,7 @@ Plug 'glidenote/memolist.vim'
     let g:memolist_filename_prefix_none = 1
 
 "Plug 'Markology'
+Plug 'scrooloose/nerdtree'
 Plug 'mattn/vim-maketable'
 Plug 'mhinz/vim-signify'
 Plug 'Glench/Vim-Jinja2-Syntax'
