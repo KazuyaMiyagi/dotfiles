@@ -51,6 +51,7 @@ Plug 'taichouchou2/vim-endwise'
 Plug 'osyo-manga/vim-over'
 Plug 'tyru/open-browser.vim'
 Plug 'bronson/vim-trailing-whitespace'
+Plug 'jwalton512/vim-blade'
 " syntax
 Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-haml'
