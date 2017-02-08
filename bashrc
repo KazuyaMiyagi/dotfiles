@@ -23,3 +23,4 @@ else
 fi
 
 export LESSCHARSET=utf-8
+export PATH=~/bin:$PATH

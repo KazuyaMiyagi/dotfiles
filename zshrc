@@ -1,5 +1,6 @@
 export PROMPT="%F{cyan}${USER}%f at %F{cyan}${HOST}%f $PROMPT"
 export LESSCHARSET=utf-8
+export PATH=~/bin:$PATH
 
 p() { peco | while read LINE; do $@ $LINE; done }
 
