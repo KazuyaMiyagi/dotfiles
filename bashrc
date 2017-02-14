@@ -23,4 +23,4 @@ else
 fi
 
 export LESSCHARSET=utf-8
-export PATH=~/bin:~/.composer/vendor/bin:$PATH
+export PATH=/usr/local/sbin:~/bin:~/.composer/vendor/bin:$PATH
