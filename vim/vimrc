@@ -30,7 +30,7 @@ Plug 'scrooloose/syntastic'
         \ 'passive_filetypes': []
         \ }
     let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
-    let g:syntastic_php_phpcs_post_args = '--standard=psr2'
+    let g:syntastic_php_phpcs_post_args = '--standard=psr2 --exclude=Generic.WhiteSpace.DisallowTabIndent,Generic.Files.LineLength'
     let g:syntastic_ruby_checkers = ['rubocop']
     let g:syntastic_coffee_coffeelint_args = "--file ~/dotfiles/coffeelint.json"
 
