@@ -153,7 +153,7 @@ set background=dark
 if has('win32') && !has('gui_running')
     colorscheme default
 else
-    colorscheme gruvbox
+    colorscheme molokai
 endif
 
 highlight SpecialKey cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
