@@ -74,6 +74,7 @@ Plug 'cocopon/iceberg.vim'
 Plug 'NERV-ous'
 Plug 'sjl/badwolf'
 Plug 'morhetz/gruvbox'
+Plug 'rizzatti/dash.vim'
 
 " vim-scripts repos
 Plug 'L9'
