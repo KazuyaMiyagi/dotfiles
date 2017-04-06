@@ -59,6 +59,7 @@ Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-haml'
 Plug 'timcharper/textile.vim'
 Plug 'chase/vim-ansible-yaml'
+Plug 'kylef/apiblueprint.vim'
 
 " colorscheme
 Plug 'nanotech/jellybeans.vim'
