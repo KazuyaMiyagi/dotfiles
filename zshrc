@@ -6,3 +6,7 @@ alias o='git ls-files | p open'
 alias j='ghq list -p | p cd'
 alias be='bundle exec'
 alias composer='docker run --rm -v $(pwd):/app composer/composer'
+eval "$(direnv hook zsh)"
+eval "$(rbenv init -)"
+export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/Library/Python/2.7/bin:$PATH"
