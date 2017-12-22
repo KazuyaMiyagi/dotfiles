@@ -5,3 +5,11 @@
 !.gitkeep
 *.swp
 .netrwhist
+
+composer/auth.json
+composer/cache
+composer/composer.lock
+composer/keys.dev.pub
+composer/keys.tags.pub
+composer/vendor
+composer/.htaccess
