@@ -1,4 +1,5 @@
-export PROMPT="%F{cyan}${USER}%f@%F{cyan}${HOST}%f $PROMPT"
+export PROMPT="%F{cyan}${USER}%F{magenta}@%F{cyan}${HOST}%f $PROMPT"
+export RPROMPT="(%F{green}%~%f)[%*]"
 export LESSCHARSET=utf-8
 export PATH=/usr/local/sbin:~/bin:~/.composer/vendor/bin:$PATH
 p() { peco | while read LINE; do $@ $LINE; done }
