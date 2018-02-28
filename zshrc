@@ -10,7 +10,6 @@ eval "$(direnv hook zsh)"
 eval "$(rbenv init -)"
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
-export PATH="$HOME/Library/Python/2.7/bin:$PATH"
 export PATH="$HOME/.nodenv/shims:$PATH"
 
 alias phpunit=phpunitat57
