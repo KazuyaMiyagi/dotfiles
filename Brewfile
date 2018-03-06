@@ -14,6 +14,7 @@ brew "xz"
 brew "python"
 brew "awscli"
 brew "coreutils"
+brew "curl"
 brew "direnv"
 brew "dnsmasq", restart_service: true
 brew "ffmpeg"
