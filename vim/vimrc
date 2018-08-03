@@ -41,6 +41,10 @@ Plug 'glidenote/memolist.vim'
     let g:memolist_memo_suffix = "md"
     let g:memolist_filename_prefix_none = 1
 
+Plug 'rizzatti/dash.vim'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'luochen1990/rainbow'
+let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 "Plug 'Markology'
 Plug 'scrooloose/nerdtree'
 Plug 'mattn/vim-maketable'
@@ -75,8 +79,6 @@ Plug 'cocopon/iceberg.vim'
 Plug 'NERV-ous'
 Plug 'sjl/badwolf'
 Plug 'morhetz/gruvbox'
-Plug 'rizzatti/dash.vim'
-Plug 'editorconfig/editorconfig-vim'
 
 " vim-scripts repos
 Plug 'L9'
