@@ -58,7 +58,7 @@ brew "qemu"
 brew "ruby-build"
 brew "rbenv"
 brew "reattach-to-user-namespace"
-brew "ruby"
+brew "ruby", link: true
 brew "tig"
 brew "tmux"
 brew "tree"
