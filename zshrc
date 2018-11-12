@@ -8,6 +8,8 @@ alias j='ghq list -p | p cd'
 alias be='bundle exec'
 eval "$(direnv hook zsh)"
 eval "$(rbenv init -)"
+export PATH="$GOPATH/bin:$PATH"
+export GOPATH="$HOME/.go"
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.nodenv/shims:$PATH"
