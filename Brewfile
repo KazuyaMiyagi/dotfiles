@@ -27,6 +27,8 @@ brew "php"
 brew "deployer"
 brew "direnv"
 brew "dnsmasq", restart_service: true
+brew "docker-completion"
+brew "docker-compose-completion"
 brew "ffmpeg"
 brew "ghq"
 brew "git"
