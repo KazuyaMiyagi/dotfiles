@@ -15,4 +15,4 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.nodenv/shims:$PATH"
 
 alias phpunit-coverage='phpunit --coverage-html reports --coverage-clover reports/coverage.xml'
-alias tree='tree -N'
+alias tree='tree -N -C'
