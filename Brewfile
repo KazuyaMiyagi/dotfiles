@@ -66,6 +66,7 @@ brew "rbenv"
 brew "reattach-to-user-namespace"
 brew "ruby", link: true
 brew "telnet"
+brew "terraform"
 brew "tig"
 brew "tmux"
 brew "tree"
