@@ -64,7 +64,7 @@ brew "qemu"
 brew "ruby-build"
 brew "rbenv"
 brew "reattach-to-user-namespace"
-brew "ruby", link: true
+brew "ruby"
 brew "telnet"
 brew "terraform"
 brew "tig"
