@@ -16,3 +16,4 @@ export PATH="$HOME/.nodenv/shims:$PATH"
 
 alias phpunit-coverage='phpunit --coverage-html reports --coverage-clover reports/coverage.xml'
 alias tree='tree -N -C'
+export DOCKER_BUILDKIT=1
