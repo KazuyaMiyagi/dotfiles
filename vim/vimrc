@@ -77,13 +77,13 @@ Plug 'vim-scripts/Wombat'
 Plug 'vim-scripts/rdark'
 Plug 'tomasr/molokai'
 Plug 'cocopon/iceberg.vim'
-Plug 'NERV-ous'
+Plug 'vim-scripts/NERV-ous'
 Plug 'sjl/badwolf'
 Plug 'morhetz/gruvbox'
 
 " vim-scripts repos
-Plug 'L9'
-Plug 'rails.vim'
+Plug 'vim-scripts/L9'
+Plug 'vim-scripts/rails.vim'
 
 call plug#end()
 
