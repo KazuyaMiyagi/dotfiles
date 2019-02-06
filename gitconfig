@@ -2,6 +2,7 @@
     autoCRLF = false
     excludesfile = ~/.gitignore
     editor = vim
+    pager = less -X -L
 [color]
     ui = true
 [alias]
