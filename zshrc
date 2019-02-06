@@ -13,6 +13,7 @@ export GOPATH="$HOME/.go"
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.nodenv/shims:$PATH"
+eval "$(nodenv init -)"
 
 alias phpunit-coverage='phpunit --coverage-html reports --coverage-clover reports/coverage.xml'
 alias tree='tree -N -C'
