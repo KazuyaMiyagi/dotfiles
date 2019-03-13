@@ -13,7 +13,7 @@ brew "autoconf"
 brew "awscli"
 brew "bat"
 brew "libpng"
-brew "gettext"
+brew "gettext", link: true
 brew "libffi"
 brew "pcre"
 brew "glib"
