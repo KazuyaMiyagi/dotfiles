@@ -75,7 +75,7 @@ brew "tmux"
 brew "tree"
 brew "utf8proc"
 brew "vim"
-brew "yarn", args: ["without-node"]
+brew "yarn"
 brew "youtube-dl"
 brew "zsh"
 cask "adobe-acrobat-reader"
