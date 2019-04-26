@@ -59,6 +59,12 @@ Plug 'osyo-manga/vim-over'
 Plug 'tyru/open-browser.vim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'jwalton512/vim-blade'
+Plug 'hashivim/vim-terraform'
+let g:terraform_align=1
+let g:terraform_fold_sections=1
+let g:terraform_commentstring='//%s'
+let g:terraform_fmt_on_save=1
+
 " syntax
 Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-haml'
@@ -143,6 +149,7 @@ autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
 autocmd FileType eruby :set ts=2 sw=2 fenc=utf-8
 autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
 autocmd FileType coffee :set ts=2 sw=2 fenc=utf-8
+autocmd FileType json :set ts=2 sw=2 fenc=utf-8
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
 autocmd BufNewFile,BufRead *.md set filetype=markdown
 
