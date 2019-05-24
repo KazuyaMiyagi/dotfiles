@@ -1,0 +1,3 @@
+use_show_aws_profile() {
+    export RPROMPT="%F{031}%f%K{031}%F{214}  %F{white} AWS_PROFILE  ${AWS_PROFILE}%k%f"
+}
