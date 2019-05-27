@@ -16,6 +16,7 @@ eval "$(nodenv init -)"
 alias phpunit-coverage='phpunit --coverage-html reports --coverage-clover reports/coverage.xml'
 alias tree='tree -N -C'
 export DOCKER_BUILDKIT=1
+alias tf='terraform'
 
 autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
