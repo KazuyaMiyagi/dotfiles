@@ -59,6 +59,7 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
 }
 GIT_SYMBOL='%F{202} %f'
 AWS_SYMBOL='%F{214} %f'
-export PROMPT="%n%F{magenta}@%f%M [%F{cyan}%c%f] %1(v|%B${GIT_SYMBOL}%1v%b|) %2(v|%B%F{yellow}%2v%f%b|)
+export PROMPT="
+%n%F{magenta}@%f%M [%F{cyan}%c%f] %1(v|%B${GIT_SYMBOL}%1v%b|) %2(v|%B%F{yellow}%2v%f%b|) %3(v|%B${AWS_SYMBOL}AWS_PROFILE(%3v%)%b|)
 %(?.%F{green}.%F{red}(%?%))$%f "
-export RPROMPT="%3(v|%B${AWS_SYMBOL}AWS_PROFILE(%3v%)%b|)"
+export RPROMPT=
