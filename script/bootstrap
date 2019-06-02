@@ -1,0 +1,10 @@
+# !/bin/sh
+set -e
+git pull --prune
+brew update
+brew upgrade
+brew doctor
+brew cleanup
+brew cask upgrade
+brew cask doctor
+brew bundle dump -f
