@@ -18,3 +18,6 @@ bundle/cache
 
 # zsh
 zsh/.zcompdump*
+
+# direnv
+direnv/allow/*
