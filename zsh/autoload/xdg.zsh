@@ -7,3 +7,10 @@ export XDG_DATA_HOME=$HOME/.local/share
 
 # zsh
 export HISTFILE=$XDG_DATA_HOME/zsh/history
+
+# go
+export GOPATH="$XDG_DATA_HOME/go"
+
+# RubyGems
+export GEM_HOME="$XDG_DATA_HOME/gem"
+export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
