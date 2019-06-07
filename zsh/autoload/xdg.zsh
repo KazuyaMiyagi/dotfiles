@@ -14,3 +14,6 @@ export GOPATH="$XDG_DATA_HOME/go"
 # RubyGems
 export GEM_HOME="$XDG_DATA_HOME/gem"
 export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
+
+# composer
+export COMPOSER_BIN_DIR="$XDG_DATA_HOME/composer/vendor/bin"
