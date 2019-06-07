@@ -1,3 +1,9 @@
+path=(
+    $GOPATH/bin(N-/)
+    $COMPOSER_BIN_DIR(N-/)
+    $path
+)
+
 alias be='bundle exec'
 alias j='ghq list -p | p cd'
 alias o='git ls-files | p open'
@@ -7,22 +13,11 @@ alias tree='tree -N -C'
 alias ls='ls -G'
 
 export DOCKER_BUILDKIT=1
-export GOPATH="$XDG_DATA_HOME/go"
 export LESSCHARSET=utf-8
-export PATH="$GOPATH/bin:$PATH"
-export PATH="$HOME/.nodenv/shims:$PATH"
-export PATH="$HOME/.rbenv/bin:$PATH"
-export PATH="$HOME/bin:$PATH"
-export PATH=/usr/local/sbin:~/bin:~/.composer/vendor/bin:$PATH
 
 eval "$(nodenv init -)"
-eval "$(direnv hook zsh)"
 eval "$(rbenv init -)"
-
-for file in $(ls $ZDOTDIR/function/*.zsh) ;
-do
-    source $file
-done
+eval "$(direnv hook zsh)"
 
 for file in $(ls $ZDOTDIR/autoload/*.zsh) ;
 do
