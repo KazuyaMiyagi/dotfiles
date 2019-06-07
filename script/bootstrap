@@ -1,10 +1,68 @@
-# !/bin/sh
+#/bin/sh
+
+# script/bootstrap: Resolve all dependencies that the application requires to
+#                   run.
+
 set -e
-git pull --prune
-brew update
-brew upgrade
-brew doctor
-brew cleanup
-brew cask upgrade
-brew cask doctor
-brew bundle dump -f
+
+cd "$(dirname "$0")/.."
+
+readonly DOTFILE_ROOT_DIR="$(pwd)"
+
+source ${DOTFILE_ROOT_DIR}/zsh/autoload/xdg.zsh
+
+# __is_installed checks install status the specified command
+function __is_installed() {
+  type $1 &> /dev/null
+}
+
+homebrew_install() {
+    if ! __is_installed brew ; then
+        echo "==> Installing Homebrew."
+        /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    else
+        echo "==> Homebrew was already installed."
+    fi
+}
+
+homebrew_bundle_install() {
+    brew bundle check >/dev/null 2>&1  || {
+        echo "==> Installing Homebrew dependencies…"
+        brew bundle
+    }
+}
+
+homebrew_update() {
+    echo "==> Update Homebrew packages."
+    brew update
+    brew upgrade
+    brew cleanup
+    brew doctor
+    echo "==> Finished Update Homebrew packages."
+
+    echo "==> Update Homebrew cask packages."
+    brew cask upgrade
+    brew cask doctor
+    echo "==> Finished Update Homebrew cask packages."
+
+    brew bundle dump -f
+}
+
+vim_plug_install() {
+    if [ -f ${DOTFILE_ROOT_DIR}/vim/autoload/plug.vim ]; then
+        echo "==> vim-plug was already installed."
+    else
+        echo "==> Installing vim-plug"
+        curl --fail --location --create-dirs --output ${DOTFILE_ROOT_DIR}/vim/autoload/plug.vim \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    fi
+}
+
+echo "Start bootstrap"
+
+homebrew_install
+homebrew_bundle_install
+homebrew_update
+vim_plug_install
+
+echo "Finish bootstrap!"

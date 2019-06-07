@@ -1,7 +1,7 @@
 if has('win32')
     let $PLUG_DIR = '~/vimfiles/plugged'
 else
-    let $PLUG_DIR = '~/.vim/plugged'
+    let $PLUG_DIR = $XDG_CONFIG_HOME.'/vim/plugged'
 endif
 
 call plug#begin($PLUG_DIR)
