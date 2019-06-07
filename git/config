@@ -1,6 +1,5 @@
 [core]
     autoCRLF = false
-    excludesfile = ~/.gitignore
     editor = vim
     pager = less -X -L
 [color]
@@ -18,7 +17,7 @@
     name  = Kazuya MIYAGI
     email =
 [ghq]
-    root = ~/src
+    root = ~/.local/share/ghq
 [filter "lfs"]
     clean = git-lfs clean -- %f
     smudge = git-lfs smudge -- %f
