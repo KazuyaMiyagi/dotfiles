@@ -17,3 +17,6 @@ export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
 
 # composer
 export COMPOSER_BIN_DIR="$XDG_DATA_HOME/composer/vendor/bin"
+
+# tmux
+alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
