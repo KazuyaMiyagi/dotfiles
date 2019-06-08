@@ -6,8 +6,6 @@ path=(
 )
 
 alias be='bundle exec'
-alias j='ghq list -p | p cd'
-alias o='git ls-files | p open'
 alias phpunit-coverage='phpunit --coverage-html reports --coverage-clover reports/coverage.xml'
 alias tf='terraform'
 alias tree='tree -N -C'
