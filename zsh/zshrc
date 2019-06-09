@@ -10,6 +10,10 @@ alias phpunit-coverage='phpunit --coverage-html reports --coverage-clover report
 alias tf='terraform'
 alias tree='tree -N -C'
 alias ls='ls -G'
+alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+alias chrome-incognito="chrome --incognito"
+alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
+alias chrome-canary-incognito="chrome-canary --incognito"
 
 export DOCKER_BUILDKIT=1
 export LESSCHARSET=utf-8
