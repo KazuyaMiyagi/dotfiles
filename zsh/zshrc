@@ -1,6 +1,7 @@
 path=(
     $GOPATH/bin(N-/)
     $COMPOSER_BIN_DIR(N-/)
+    $GEM_HOME/bin(N-/)
     $(brew --prefix)/sbin
     $path
 )
