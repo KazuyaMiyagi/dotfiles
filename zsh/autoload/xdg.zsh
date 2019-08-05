@@ -20,3 +20,6 @@ export COMPOSER_BIN_DIR="$XDG_DATA_HOME/composer/vendor/bin"
 
 # tmux
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
+
+# tig
+export TIGRC_USER="$XDG_CONFIG_HOME"/tig/tigrc
