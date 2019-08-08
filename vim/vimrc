@@ -150,6 +150,7 @@ autocmd FileType eruby :set ts=2 sw=2 fenc=utf-8
 autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
 autocmd FileType coffee :set ts=2 sw=2 fenc=utf-8
 autocmd FileType json :set ts=2 sw=2 fenc=utf-8
+autocmd FileType java :set noexpandtab ts=4 sw=4 nolist fenc=utf-8
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
 autocmd BufNewFile,BufRead *.md set filetype=markdown
 
