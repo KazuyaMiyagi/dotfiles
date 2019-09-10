@@ -2,6 +2,7 @@ path=(
     $GOPATH/bin(N-/)
     $COMPOSER_BIN_DIR(N-/)
     $GEM_HOME/bin(N-/)
+    $JAVA_HOME/bin(N-/)
     $(brew --prefix)/sbin
     $path
 )
@@ -18,6 +19,9 @@ alias chrome-canary-incognito="chrome-canary --incognito"
 
 export DOCKER_BUILDKIT=1
 export LESSCHARSET=utf-8
+export JAVA_HOME=$(/usr/libexec/java_home)
+export ANDROID_HOME="${HOME}/Library/Android/sdk"
+export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
 
 eval "$(nodenv init -)"
 eval "$(rbenv init -)"
