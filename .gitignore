@@ -21,3 +21,6 @@ zsh/.zcompdump*
 
 # direnv
 direnv/allow/*
+
+# npm
+/configstore/update-notifier-npm.json
