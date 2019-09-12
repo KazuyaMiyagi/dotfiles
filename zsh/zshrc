@@ -4,6 +4,7 @@ path=(
     $GEM_HOME/bin(N-/)
     $JAVA_HOME/bin(N-/)
     $(brew --prefix)/sbin
+    $XDG_CONFIG_HOME/bin(N-/)
     $path
 )
 
@@ -22,6 +23,7 @@ export LESSCHARSET=utf-8
 export JAVA_HOME=$(/usr/libexec/java_home)
 export ANDROID_HOME="${HOME}/Library/Android/sdk"
 export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
+export NODE_PATH="$(npm root -g)"
 
 eval "$(nodenv init -)"
 eval "$(rbenv init -)"
