@@ -55,7 +55,7 @@ brew "git-lfs"
 brew "go"
 brew "graphviz"
 brew "hadolint"
-brew "usbmuxd"
+brew "libusbmuxd"
 brew "libimobiledevice"
 brew "ifuse", args: ["HEAD"]
 brew "imagemagick"
