@@ -5,6 +5,7 @@ path=(
     $JAVA_HOME/bin(N-/)
     $(brew --prefix)/sbin
     $XDG_CONFIG_HOME/bin(N-/)
+    $HOME/.fastlane/bin(N-/)
     $path
 )
 
