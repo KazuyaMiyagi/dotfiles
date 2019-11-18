@@ -19,16 +19,16 @@ alias chrome-incognito="chrome --incognito"
 alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
 alias chrome-canary-incognito="chrome-canary --incognito"
 
+eval "$(nodenv init -)"
+eval "$(rbenv init -)"
+eval "$(direnv hook zsh)"
+
 export DOCKER_BUILDKIT=1
 export LESSCHARSET=utf-8
 export JAVA_HOME=$(/usr/libexec/java_home)
 export ANDROID_HOME="${HOME}/Library/Android/sdk"
 export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
 export NODE_PATH="$(npm root -g)"
-
-eval "$(nodenv init -)"
-eval "$(rbenv init -)"
-eval "$(direnv hook zsh)"
 
 for file in $(ls $ZDOTDIR/autoload/*.zsh) ;
 do
