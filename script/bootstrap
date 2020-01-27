@@ -58,11 +58,18 @@ vim_plug_install() {
     fi
 }
 
+pip_requirements_install() {
+    echo "==> Installing python packages..."
+    pip3 install -r ${DOTFILE_ROOT_DIR}/requirements.txt
+    echo "==> Finished Install python packages."
+}
+
 echo "Start bootstrap"
 
 homebrew_install
 homebrew_bundle_install
 homebrew_update
 vim_plug_install
+pip_requirements_install
 
 echo "Finish bootstrap!"
