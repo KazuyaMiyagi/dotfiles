@@ -14,7 +14,7 @@
     gr = grep -H --line-number --ignore-case
     pl = pull --prune
 [user]
-    name  = Kazuya MIYAGI
+    name  = Kazuya Miyagi
     email =
 [ghq]
     root = ~/.local/share/ghq
