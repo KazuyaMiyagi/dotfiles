@@ -38,7 +38,7 @@ brew "oniguruma"
 brew "php"
 brew "deployer"
 brew "direnv"
-brew "dnsmasq"
+brew "dnsmasq", restart_service: true
 brew "docker-completion"
 brew "docker-compose-completion"
 brew "libunistring"
