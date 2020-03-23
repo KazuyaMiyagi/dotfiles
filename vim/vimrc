@@ -13,6 +13,7 @@ Plug 'itchyny/lightline.vim'
     \ 'colorscheme': 'PaperColor'
     \ }
 
+Plug 'fatih/vim-go'
 Plug 'scrooloose/syntastic'
     let g:syntastic_always_populate_loc_list = 1
     let g:syntastic_php_checkers = ['phpcs']
