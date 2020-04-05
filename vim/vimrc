@@ -8,9 +8,10 @@ call plug#begin($PLUG_DIR)
 
 Plug 'itchyny/lightline.vim'
     set laststatus=2
+    set noshowmode
     set t_Co=256
     let g:lightline = {
-    \ 'colorscheme': 'PaperColor'
+    \ 'colorscheme': 'molokai'
     \ }
 
 Plug 'fatih/vim-go'
@@ -169,7 +170,7 @@ set background=dark
 if has('win32') && !has('gui_running')
     colorscheme default
 else
-    colorscheme gruvbox
+    colorscheme molokai
 endif
 
 highlight SpecialKey cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
