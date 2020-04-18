@@ -18,6 +18,8 @@ alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias chrome-incognito="chrome --incognito"
 alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
 alias chrome-canary-incognito="chrome-canary --incognito"
+alias plantuml_start='docker run --name plantuml-server --rm --env "PLANTUML_LIMIT_SIZE=8192" -d -p 8888:8080 plantuml/plantuml-server'
+alias plantuml_stop='docker stop plantuml-server'
 
 eval "$(nodenv init -)"
 eval "$(rbenv init -)"
