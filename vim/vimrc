@@ -126,7 +126,7 @@ else
 endif
 
 set list
-set listchars=eol:↩,tab:▶─,trail:⊠,extends:⇢,precedes:⇠,nbsp:…
+set listchars=eol:↩,tab:<->,trail:⊠,extends:⇢,precedes:⇠,nbsp:…
 
 " Search
 set ignorecase
