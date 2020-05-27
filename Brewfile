@@ -41,6 +41,7 @@ brew "direnv"
 brew "dnsmasq", restart_service: true
 brew "docker-completion"
 brew "docker-compose-completion"
+brew "fastlane"
 brew "libunistring"
 brew "nettle"
 brew "gnutls"
