@@ -1,9 +1,12 @@
 path=(
+    $(brew --prefix)/bin
+    $(brew --prefix)/sbin
+    $(brew --prefix)/opt/curl/bin(N-/)
+    $(brew --prefix)/opt/openssl@1.1/bin(N-/)
     $GOPATH/bin(N-/)
     $COMPOSER_BIN_DIR(N-/)
     $GEM_HOME/bin(N-/)
     $JAVA_HOME/bin(N-/)
-    $(brew --prefix)/sbin
     $XDG_CONFIG_HOME/bin(N-/)
     $HOME/.fastlane/bin(N-/)
     $path
