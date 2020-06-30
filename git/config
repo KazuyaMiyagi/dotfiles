@@ -16,8 +16,6 @@
 [user]
     name  = Kazuya Miyagi
     email =
-[ghq]
-    root = ~/.local/share/ghq
 [filter "lfs"]
     clean = git-lfs clean -- %f
     smudge = git-lfs smudge -- %f
