@@ -60,7 +60,7 @@ vim_plug_install() {
 
 pip_requirements_install() {
     echo "==> Installing python packages..."
-    pip3 install -r ${DOTFILE_ROOT_DIR}/requirements.txt
+    pip install -r ${DOTFILE_ROOT_DIR}/requirements.txt
     echo "==> Finished Install python packages."
 }
 
