@@ -38,7 +38,7 @@ brew "oniguruma"
 brew "php"
 brew "deployer"
 brew "direnv"
-brew "dnsmasq", restart_service: true
+brew "dnsmasq"
 brew "docker-completion"
 brew "docker-compose-completion"
 brew "fastlane"
