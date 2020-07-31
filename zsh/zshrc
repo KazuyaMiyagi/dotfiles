@@ -26,6 +26,7 @@ alias plantuml_start='docker run --name plantuml-server --rm --env "PLANTUML_LIM
 alias plantuml_stop='docker stop plantuml-server'
 alias k8s_dashbord_start='kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc7/aio/deploy/recommended.yaml'
 alias k8s_dashbord_stop='kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc7/aio/deploy/recommended.yaml'
+alias jwt-decode="jq -R 'split(\".\") | .[1] | @base64d | fromjson'"
 
 eval "$(nodenv init -)"
 eval "$(rbenv init -)"
