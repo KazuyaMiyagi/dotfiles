@@ -1,0 +1,18 @@
+#!/bin/bash -eu
+
+function execute() {
+    local output="${1}"
+    local rewrite_cmd=""
+    shift
+    local cmd="${@}"
+    if [ ! -z "${CONFIRM:-""}" ]; then
+        echo "$ ${cmd}"
+        echo "To execute the above command, press the Enter key."
+        echo "To rewrite the command, enter the command and press Enter key."
+        read rewrite_cmd
+    fi
+    echo "$ ${rewrite_cmd:-$cmd}"
+    ${rewrite_cmd:-$cmd} | tee "${output}"
+}
+
+execute ${@}
