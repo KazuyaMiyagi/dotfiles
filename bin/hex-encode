@@ -1,0 +1,11 @@
+#!/bin/bash -eu
+
+function hex-encode() {
+    local src="${1}"
+    local dest="${2}"
+    echo "Hex Encoding from ${src} to ${dest}"
+    php -r "file_put_contents('${dest}', bin2hex(file_get_contents('${src}')));"
+    echo "Complete Hex Encode"
+}
+
+hex-encode ${@}
