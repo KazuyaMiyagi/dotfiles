@@ -3,9 +3,9 @@
 function hex-decode() {
     local src="${1}"
     local dest="${2}"
-    echo "Hex Decoding from ${src} to ${dest}"
+    echo "Hex decoding from ${src} to ${dest}..."
     php -r "file_put_contents('${dest}', hex2bin(file_get_contents('${src}')));"
-    echo "Complete Hex Decode"
+    echo "Done hex decode"
 }
 
 hex-decode ${@}
