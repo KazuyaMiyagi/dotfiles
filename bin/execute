@@ -1,14 +1,15 @@
 #!/bin/bash -eu
 
+# usage `CONFIRM=yes execute command.log ls |& tee evidence.log`
 function execute() {
     local output="${1}"
-    local rewrite_cmd=""
     shift
     local cmd="${@}"
+    local rewrite_cmd=""
     if [ ! -z "${CONFIRM:-""}" ]; then
-        echo "$ ${cmd}"
-        echo "To execute the above command, press the Enter key."
-        echo "To rewrite the command, enter the command and press Enter key."
+        echo "$ ${cmd}" >&2
+        echo "To execute the above command, press the Enter key." >&2
+        echo "To rewrite the command, enter the command and press Enter key." >&2
         read rewrite_cmd
     fi
     echo "$ ${rewrite_cmd:-$cmd}"
