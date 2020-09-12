@@ -41,8 +41,8 @@ homebrew_update() {
     echo "==> Finished Update Homebrew packages."
 
     echo "==> Update Homebrew cask packages."
-    brew cask upgrade
-    brew cask doctor
+    brew upgrade --cask
+    brew doctor --verbose
     echo "==> Finished Update Homebrew cask packages."
 
     brew bundle dump --force
