@@ -65,11 +65,11 @@ pip_requirements_install() {
 }
 
 tpm_install() {
-    if [ -d ~/.tmux/plugins/tpm ]; then
+    if [ -d ${XDG_CONFIG_HOME}/tmux/plugins/tpm ]; then
         echo "==> tpm was already installed."
     else
         echo "==> Installing tpm..."
-        git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+        git clone https://github.com/tmux-plugins/tpm ${XDG_CONFIG_HOME}/tmux/plugins/tpm
         echo "==> Finished Install tpm."
     fi
 }

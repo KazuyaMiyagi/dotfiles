@@ -24,3 +24,6 @@ direnv/allow/*
 
 # npm
 /configstore/update-notifier-npm.json
+
+# tmux
+/tmux/plugins/
