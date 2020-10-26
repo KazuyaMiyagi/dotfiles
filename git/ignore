@@ -1,5 +1,20 @@
+tmp
+
+# macOS
 .DS_Store
+
+# Vim
 *~
 *.swp
-tmp
+
+# JetBrains IDE
 .idea
+
+# env
+.env
+.envrc
+
+# terraform
+.terraform
+terraform.tfstate*
+terraform.tfvars
