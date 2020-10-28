@@ -91,6 +91,9 @@ Plug 'cocopon/iceberg.vim'
 Plug 'vim-scripts/NERV-ous'
 Plug 'sjl/badwolf'
 Plug 'morhetz/gruvbox'
+Plug 'ghifarit53/tokyonight-vim'
+let g:tokyonight_enable_italic = 0
+let g:tokyonight_disable_italic_comment = 1
 
 " vim-scripts repos
 Plug 'vim-scripts/L9'
@@ -172,7 +175,7 @@ set background=dark
 if has('win32') && !has('gui_running')
     colorscheme default
 else
-    colorscheme molokai
+    colorscheme tokyonight
 endif
 
 highlight SpecialKey cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
