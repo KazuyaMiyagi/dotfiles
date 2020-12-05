@@ -61,7 +61,6 @@ brew "graphviz"
 brew "hadolint"
 brew "libusbmuxd"
 brew "libimobiledevice"
-brew "ifuse", args: ["HEAD"]
 brew "imagemagick"
 brew "ios-webkit-debug-proxy"
 brew "jmeter"
