@@ -1,0 +1,3 @@
+# https://git-scm.com/docs/git-config#_conditional_includes
+[includeIf "gitdir:github.com/KazuyaMiyagi/"]
+    path = ~/.config/git/local/github.com_KazuyaMiyagi.inc

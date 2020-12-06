@@ -28,3 +28,7 @@ direnv/allow/*
 
 # tmux
 /tmux/plugins/
+
+# git
+/git/local/*
+!/git/local/config.example

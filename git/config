@@ -15,7 +15,7 @@
     pl = pull --prune
 [user]
     name  = Kazuya Miyagi
-    email =
+    email = umi.kukki@gmail.com
 [filter "lfs"]
     clean = git-lfs clean -- %f
     smudge = git-lfs smudge -- %f
@@ -27,3 +27,8 @@
     rebase = false
 [init]
 	defaultBranch = main
+
+# Include local setting
+# https://git-scm.com/docs/git-config#_includes
+[include]
+    path = ~/.config/git/local/config
