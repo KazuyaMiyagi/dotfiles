@@ -9,10 +9,10 @@ export XDG_DATA_HOME="$HOME/.local/share"
 export HISTFILE="$XDG_DATA_HOME/zsh/history"
 
 # go
-export GOPATH="$XDG_DATA_HOME/go"
+export GOPATH="$XDG_DATA_HOME/git"
 
 # ghq
-export GHQ_ROOT="$XDG_DATA_HOME/go/src"
+export GHQ_ROOT="$XDG_DATA_HOME/git/src"
 
 # RubyGems
 export GEM_HOME="$XDG_DATA_HOME/gem"
