@@ -69,6 +69,11 @@ else
     ln -s ${DOTFILE_ROOT_DIR}/vim ~/.vim
 fi
 
+if [ ! -d ~/.local/share/zsh ] ; then
+    echo "Create ~/.local/share/zsh"
+    mkdir -p ~/.local/share/zsh
+fi
+
 echo "Finish setup!"
 echo ""
 
