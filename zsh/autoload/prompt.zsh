@@ -45,6 +45,6 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
 }
 
 export PROMPT="
-[%n@%m %c] %1(v|${GIT_SYMBOL}%1v|) %2(v|%2v|) %3(v|${AWS_SYMBOL}AWS_PROFILE(%3v%)|) %(?..%F{red}EXIT_CODE(%?%)%f)
+[%n@%m %3~] %1(v|${GIT_SYMBOL}%1v|) %2(v|%2v|) %3(v|${AWS_SYMBOL}AWS_PROFILE(%3v%)|) %(?..%F{red}EXIT_CODE(%?%)%f)
 %(?.%F{green}.%F{red})%(#.#.$)%f "
 export RPROMPT=
