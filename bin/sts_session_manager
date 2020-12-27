@@ -1,0 +1,152 @@
+#! /bin/bash
+
+set -eu
+
+function __is_installed() {
+    type "${1}" &> /dev/null
+}
+
+function __validate() {
+    check_required_tools > /dev/null
+
+    if [ -z "${AWS_PROFILE:=""}" ]; then
+        echo "Error: AWS_PROFILE is not export" >&2
+        exit 1
+    fi
+
+    if ! aws configure get role_arn > /dev/null; then
+        echo "Error: role_arn is not set for this AWS_PROFILE" >&2
+        exit 1
+    fi
+}
+
+
+function check_required_tools() {
+    echo "==> Start checking required tools..."
+    local REQUIRED_TOOLS=(aws jq)
+
+    if [ "$(uname)" == "Darwin" ]; then
+        REQUIRED_TOOLS+=(gdate)
+    fi
+
+    for tool in ${REQUIRED_TOOLS[@]}; do
+        if ! __is_installed "${tool}"; then
+            echo "[Error] ${tool} not installed. Please install the ${tool}." >&2
+            exit 1
+        else
+            echo "[Success] ${tool} was already installed."
+        fi
+    done
+    echo -e "<== End checking required tools.\n"
+}
+
+function switch_back() {
+    echo "unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION"
+}
+
+function switch_role() {
+    __validate
+
+    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^(stdin)=\ //").json"
+    local SESSION_NAME="${SESSION_NAME:=$(whoami)}"
+    local DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
+    local STS_ASSUME_ROLE_COMMAND="aws --profile=${AWS_PROFILE} sts assume-role --role-arn $(aws configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
+
+    if [ ! -s "${CACHE_FILE}" ]; then
+        echo "Create new AWS STS session token..." >&2
+        ${STS_ASSUME_ROLE_COMMAND} > "${CACHE_FILE}"
+    fi
+
+    if [ "$(uname)" == "Darwin" ]; then
+        local DATE_CMD="gdate"
+    else
+        local DATE_CMD="date"
+    fi
+
+    local EXPIRATION=$(jq -r ".Credentials.Expiration" < "${CACHE_FILE}")
+    local EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
+    local NOW_UNIXTIME=$("${DATE_CMD}" "+%s")
+
+    if [ "${EXPIRATION_UNIXTIME}" -lt "${NOW_UNIXTIME}" ]; then
+        echo "AWS STS session token is expired." >&2
+        echo "Recreate AWS STS session token..." >&2
+        ${STS_ASSUME_ROLE_COMMAND} > "${CACHE_FILE}"
+    fi
+
+    cat <<-EOL
+		export AWS_ACCESS_KEY_ID=$(jq -r ".Credentials.AccessKeyId" < "${CACHE_FILE}")
+		export AWS_SECRET_ACCESS_KEY=$(jq -r ".Credentials.SecretAccessKey" < "${CACHE_FILE}")
+		export AWS_SESSION_TOKEN=$(jq -r ".Credentials.SessionToken" < "${CACHE_FILE}")
+		export AWS_SESSION_EXPIRATION="$("${DATE_CMD}" -d "${EXPIRATION}" --iso-8601=seconds)"
+	EOL
+}
+
+function list() {
+    ls -1 "${CACHE_DIR}"
+}
+
+function show() {
+    __validate
+
+    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^(stdin)=\ //").json"
+    if [ -s "${CACHE_FILE}" ]; then
+        jq --raw-output "." < "${CACHE_FILE}"
+    else
+        echo "Session cache not found." >&2
+        exit 1
+    fi
+}
+
+function remove() {
+    __validate
+
+    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^(stdin)=\ //").json"
+    if [ -s "${CACHE_FILE}" ]; then
+        rm -i "${CACHE_FILE}"
+    else
+        echo "Session cache not found." >&2
+        exit 1
+    fi
+}
+
+function usage() {
+    readonly COMMAND="sts_session_manager"
+    cat <<-EOL
+		Usage: ${COMMAND} <subcommand>
+		Subcommands:
+		    ${COMMAND} check_required_tools | check -- Check required tools
+		    ${COMMAND} switch_role                  -- Print switch_role export command
+		    ${COMMAND} switch_back                  -- Print switch_back unset command
+		    ${COMMAND} list | ls                    -- List sts cache file
+		    ${COMMAND} show                         -- Show sts cache file detail
+		    ${COMMAND} remove | rm                  -- Remove sts cache file
+	EOL
+    exit 1
+}
+
+readonly SUBCOMMAND="${1:-""}"
+readonly CACHE_DIR="${HOME}/.aws/cli/cache"
+
+case "${SUBCOMMAND}" in
+    check_required_tools | check)
+        check_required_tools
+        ;;
+    switch_role)
+        switch_role
+        ;;
+    switch_back)
+        switch_back
+        ;;
+    list | ls)
+        list
+        ;;
+    show)
+        show
+        ;;
+    remove | rm)
+        remove
+        ;;
+    *)
+        usage
+        ;;
+esac

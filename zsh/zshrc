@@ -13,6 +13,11 @@ path=(
     $path
 )
 
+fpath=(
+    $XDG_CONFIG_HOME/zsh/functions/(N-/)
+    $fpath
+)
+
 alias be='bundle exec'
 alias phpunit-coverage='phpunit --coverage-html reports --coverage-clover reports/coverage.xml'
 alias tf='terraform'

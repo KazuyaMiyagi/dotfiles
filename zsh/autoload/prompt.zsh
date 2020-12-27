@@ -2,8 +2,9 @@ autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 
 # https://nerdfonts.com/
-readonly AWS_SYMBOL='%F{214} %f'
-readonly GIT_SYMBOL='%F{202} %f'
+readonly AWS_SYMBOL='%F{#D86613} %f'
+readonly AWS_SESSION_EXPIRATION_SYMBOL='%F{#D6242D} %f'
+readonly GIT_SYMBOL='%F{#f64d27} %f'
 readonly GIT_STAGED_SYMBOL='✔︎'
 readonly GIT_UNSTAGED_SYMBOL='+'
 readonly GIT_UNTRACKED_SYMBOL='?'
@@ -21,6 +22,7 @@ _vcs_info_precmd() {
    [[ -n $vcs_info_msg_0_ ]] && psvar[1]=$vcs_info_msg_0_
    [[ -n $vcs_info_msg_1_ ]] && psvar[2]=$vcs_info_msg_1_
    [[ -n $AWS_PROFILE ]] && psvar[3]=$AWS_PROFILE
+   [[ -n $AWS_SESSION_EXPIRATION ]] && psvar[4]=$AWS_SESSION_EXPIRATION
 }
 
 add-zsh-hook precmd _vcs_info_precmd
@@ -44,7 +46,8 @@ zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
     fi
 }
 
+# http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
 export PROMPT="
-[%n@%m %3~] %1(v|${GIT_SYMBOL}%1v|) %2(v|%2v|) %3(v|${AWS_SYMBOL}AWS_PROFILE(%3v%)|) %(?..%F{red}EXIT_CODE(%?%)%f)
+[%n@%m %3~] %1(v|${GIT_SYMBOL}%1v|) %2(v|%2v|) %3(v|${AWS_SYMBOL}AWS_PROFILE(%3v%)|) %4(v|${AWS_SESSION_EXPIRATION_SYMBOL}AWS_SESSION_EXPIRATION(%4v%)|) %(?..%F{red}EXIT_CODE(%?%)%f)
 %(?.%F{green}.%F{red})%(#.#.$)%f "
 export RPROMPT=
