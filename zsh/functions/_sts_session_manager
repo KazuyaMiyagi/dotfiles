@@ -2,7 +2,7 @@
 
 function _sts_session_manager() {
     _values \
-        "description of completion"\
+        "Usage: eval \$(sts_session_manager \"<switch_role|switch_back>)\""\
         'check_required_tools[Check required tools]'\
         'switch_role[Print switch role export command]'\
         'switch_back[Print switch back unset command]'\
