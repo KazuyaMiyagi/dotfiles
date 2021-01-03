@@ -11,7 +11,7 @@ Plug 'itchyny/lightline.vim'
     set noshowmode
     set t_Co=256
     let g:lightline = {
-    \ 'colorscheme': 'molokai'
+    \ 'colorscheme': 'tokyonight'
     \ }
 Plug 'mattn/vim-sqlfmt'
 Plug 'fatih/vim-go'
