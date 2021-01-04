@@ -1,0 +1,10 @@
+# !/bin/bash
+
+set -eu
+
+readonly URL="https://signin.aws.amazon.com/switchrole?account=%s&roleName=%s&displayName=%s"
+readonly ROLE_ARN=$(aws configure get role_arn)
+readonly ACCOUNT=$(cut -d ':' -f 5 <<< "${ROLE_ARN}")
+readonly ROLE_NAME=$(cut -d '/' -f 2 <<< "${ROLE_ARN}")
+
+open "$(printf "${URL}" "${ACCOUNT}" "${ROLE_NAME}" "${AWS_PROFILE}")"
