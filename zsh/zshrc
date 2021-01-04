@@ -1,6 +1,8 @@
 alias be='bundle exec'
 alias phpunit-coverage='phpunit --coverage-html reports --coverage-clover reports/coverage.xml'
 alias tf='terraform'
+alias switch_role='eval "$(sts_session_manager switch_role)"'
+alias switch_back='eval "$(sts_session_manager switch_back)"'
 alias tree='tree -N -C'
 alias ls='ls -G'
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
