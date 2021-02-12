@@ -17,7 +17,6 @@ tmp
 # terraform
 .terraform
 terraform.tfstate*
-terraform.tfvars
 
 # zsh
 zsh/.zsh_history
