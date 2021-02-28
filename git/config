@@ -1,36 +1,36 @@
 [core]
-    autoCRLF = false
-    editor = vim
-    pager = less -X -L
+	autoCRLF = false
+	editor = vim
+	pager = less -X -L
 [color]
-    ui = true
+	ui = true
 [alias]
-    st = status --short --branch
-    br = branch
-    co = checkout
-    df = diff --ignore-all-space --color-words
-    mg = merge --no-ff
-    lg = log --graph --decorate --oneline
-    gr = grep -H --line-number --ignore-case
-    pl = pull --prune
+	st = status --short --branch
+	br = branch
+	co = checkout
+	df = diff --ignore-all-space --color-words
+	mg = merge --no-ff
+	lg = log --graph --decorate --oneline
+	gr = grep -H --line-number --ignore-case
+	pl = pull --prune
 [user]
-    name  = Kazuya Miyagi
-    email = umi.kukki@gmail.com
+	name  = Kazuya Miyagi
+	email = umi.kukki@gmail.com
 [filter "lfs"]
-    clean = git-lfs clean -- %f
-    smudge = git-lfs smudge -- %f
-    process = git-lfs filter-process
-    required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
 [pager]
-    branch = false
+	branch = false
 [pull]
-    rebase = false
+	rebase = false
 [init]
 	defaultBranch = main
 
 # Include local setting
 # https://git-scm.com/docs/git-config#_includes
 [include]
-    path = ~/.config/git/local/config
+	path = ~/.config/git/local/config
 [commit]
 	verbose = true
