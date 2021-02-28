@@ -32,3 +32,5 @@
 # https://git-scm.com/docs/git-config#_includes
 [include]
     path = ~/.config/git/local/config
+[commit]
+	verbose = true
