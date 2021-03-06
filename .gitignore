@@ -32,3 +32,6 @@ direnv/allow/*
 # git
 /git/local/*
 !/git/local/config.example
+
+# iTerm
+/iterm2
