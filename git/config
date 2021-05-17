@@ -15,7 +15,7 @@
 	pl = pull --prune
 [user]
 	name  = Kazuya Miyagi
-	email = umi.kukki@gmail.com
+	email = KazuyaMiyagi@users.noreply.github.com
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
