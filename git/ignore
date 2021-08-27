@@ -17,6 +17,7 @@ tmp
 # terraform
 .terraform
 terraform.tfstate*
+ignore_and_override.tf
 
 # zsh
 zsh/.zsh_history
