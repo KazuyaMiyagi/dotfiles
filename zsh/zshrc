@@ -29,6 +29,9 @@ export ANDROID_HOME="${HOME}/Library/Android/sdk"
 export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
 export NODE_PATH="$(npm root -g)"
 export COMPOSER_MEMORY_LIMIT=-1
+export TF_CLI_ARGS_plan="--parallelism=50"
+export TF_CLI_ARGS_apply="--parallelism=50"
+export TF_CLI_ARGS_refresh="--parallelism=50"
 
 for file in $(ls $ZDOTDIR/autoload/*.zsh) ;
 do
