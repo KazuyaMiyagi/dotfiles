@@ -30,4 +30,5 @@ cursor:
     shape: Block
     blinking: Always
 
-background_opacity: 0.75
+window:
+  opacity: 0.75
