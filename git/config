@@ -34,3 +34,9 @@
 	path = ~/.config/git/local/config
 [commit]
 	verbose = true
+
+#https://git-scm.com/docs/git-config#Documentation/git-config.txt-urlltbasegtinsteadOf
+#https://git-scm.com/docs/git-config#Documentation/git-config.txt-urlltbasegtpushInsteadOf
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+	pushInsteadOf = https://github.com/
