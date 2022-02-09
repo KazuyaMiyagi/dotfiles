@@ -18,9 +18,6 @@ export GHQ_ROOT="$XDG_DATA_HOME/git/src"
 export GEM_HOME="$XDG_DATA_HOME/gem"
 export GEM_SPEC_CACHE="$XDG_CACHE_HOME/gem"
 
-# composer
-export COMPOSER_BIN_DIR="$XDG_DATA_HOME/composer/vendor/bin"
-
 # tmux
 alias tmux="tmux -f $XDG_CONFIG_HOME/tmux/tmux.conf"
 
