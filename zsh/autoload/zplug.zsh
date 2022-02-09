@@ -1,4 +1,4 @@
-export ZPLUG_HOME=/usr/local/opt/zplug
+export ZPLUG_HOME="${HOMEBREW_PREFIX}/opt/zplug"
 
 if [ -f $ZPLUG_HOME/init.zsh ]; then
     source $ZPLUG_HOME/init.zsh

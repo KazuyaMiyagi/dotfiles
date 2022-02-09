@@ -1,3 +1,14 @@
+if [[ "$(/usr/bin/uname -m)" == "arm64" ]] ; then
+    export HOMEBREW_PREFIX="/opt/homebrew"
+else
+    export HOMEBREW_PREFIX="/usr/local"
+fi
+
+eval "$(${HOMEBREW_PREFIX}/bin/brew shellenv)"
+eval "$(nodenv init -)"
+eval "$(rbenv init -)"
+eval "$(direnv hook zsh)"
+
 alias be='bundle exec'
 alias tf='terraform'
 alias switch_role='eval "$(sts_session_manager switch_role)"'
@@ -17,10 +28,6 @@ alias k8s_dashbord_stop='kubectl delete -f https://raw.githubusercontent.com/kub
 alias jwt-decode="jq -R 'split(\".\") | .[1] | @base64d | fromjson'"
 alias youtube-dl="youtube-dl -f bestvideo+bestaudio --merge-output-format mp4"
 
-eval "$(nodenv init -)"
-eval "$(rbenv init -)"
-eval "$(direnv hook zsh)"
-
 export DOCKER_BUILDKIT=1
 export LESSCHARSET=utf-8
 export JAVA_HOME=$(/usr/libexec/java_home)
@@ -35,11 +42,11 @@ do
 done
 
 path=(
-    $(brew --prefix)/bin
-    $(brew --prefix)/sbin
-    $(brew --prefix)/opt/python/libexec/bin
-    $(brew --prefix)/opt/curl/bin(N-/)
-    $(brew --prefix)/opt/openssl@1.1/bin(N-/)
+    ${HOMEBREW_PREFIX}/bin
+    ${HOMEBREW_PREFIX}/sbin
+    ${HOMEBREW_PREFIX}/opt/python/libexec/bin
+    ${HOMEBREW_PREFIX}/opt/curl/bin(N-/)
+    ${HOMEBREW_PREFIX}/opt/openssl@1.1/bin(N-/)
     $GOPATH/bin(N-/)
     $GEM_HOME/bin(N-/)
     $JAVA_HOME/bin(N-/)
