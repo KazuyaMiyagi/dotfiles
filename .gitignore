@@ -27,3 +27,6 @@ direnv/allow/*
 
 # iTerm
 /iterm2
+
+# gh
+/gh
