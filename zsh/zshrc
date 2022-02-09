@@ -51,7 +51,6 @@ path=(
     $GEM_HOME/bin(N-/)
     $JAVA_HOME/bin(N-/)
     $XDG_CONFIG_HOME/bin(N-/)
-    $HOME/.fastlane/bin(N-/)
     /Applications/draw.io.app/Contents/MacOS(N-/)
     $path
 )
