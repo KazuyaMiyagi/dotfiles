@@ -5,8 +5,6 @@ else
 fi
 
 eval "$(${HOMEBREW_PREFIX}/bin/brew shellenv)"
-eval "$(nodenv init -)"
-eval "$(rbenv init -)"
 eval "$(direnv hook zsh)"
 
 alias be='bundle exec'
@@ -31,7 +29,6 @@ alias youtube-dl="youtube-dl -f bestvideo+bestaudio --merge-output-format mp4"
 export DOCKER_BUILDKIT=1
 export LESSCHARSET=utf-8
 export JAVA_HOME=$(/usr/libexec/java_home)
-export NODE_PATH="$(npm root -g)"
 export TF_CLI_ARGS_plan="--parallelism=50"
 export TF_CLI_ARGS_apply="--parallelism=50"
 export TF_CLI_ARGS_refresh="--parallelism=50"
