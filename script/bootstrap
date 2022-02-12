@@ -57,6 +57,11 @@ vim_plug_install() {
     fi
 }
 
+vim_plug_package_install() {
+    echo "==> Installing vim-plug packages."
+    vim +PlugUpgrade +PlugUpdate +qa
+}
+
 asdf_install() {
     for plugin in $(cut -d ' ' -f1 ./tool-versions); do
         asdf plugin add ${plugin} || true
@@ -87,6 +92,7 @@ homebrew_install
 homebrew_bundle_install
 homebrew_update
 vim_plug_install
+vim_plug_package_install
 asdf_install
 pip_requirements_install
 tpm_install
