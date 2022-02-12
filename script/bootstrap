@@ -58,9 +58,17 @@ vim_plug_install() {
     fi
 }
 
+asdf_install() {
+    for plugin in $(cut -d ' ' -f1 ./tool-versions); do
+        asdf plugin add ${plugin} || true
+    done
+    asdf install
+}
+
 pip_requirements_install() {
     echo "==> Installing python packages..."
     pip install -r ${DOTFILE_ROOT_DIR}/requirements.txt
+    asdf reshim python
     echo "==> Finished Install python packages."
 }
 
@@ -80,6 +88,7 @@ homebrew_install
 homebrew_bundle_install
 homebrew_update
 vim_plug_install
+asdf_install
 pip_requirements_install
 tpm_install
 

@@ -41,11 +41,9 @@ done
 path=(
     ${HOMEBREW_PREFIX}/bin
     ${HOMEBREW_PREFIX}/sbin
-    ${HOMEBREW_PREFIX}/opt/python/libexec/bin
     ${HOMEBREW_PREFIX}/opt/curl/bin(N-/)
     ${HOMEBREW_PREFIX}/opt/openssl@1.1/bin(N-/)
     $GOPATH/bin(N-/)
-    $GEM_HOME/bin(N-/)
     $JAVA_HOME/bin(N-/)
     $XDG_CONFIG_HOME/bin(N-/)
     /Applications/draw.io.app/Contents/MacOS(N-/)
@@ -56,3 +54,5 @@ fpath=(
     $XDG_CONFIG_HOME/zsh/functions/(N-/)
     $fpath
 )
+
+. ${HOMEBREW_PREFIX}/opt/asdf/asdf.sh
