@@ -14,8 +14,8 @@ zstyle ':vcs_info:*' check-for-changes true
 zstyle ':vcs_info:*' check-for-staged-changes true
 zstyle ':vcs_info:*' stagedstr "${GIT_STAGED_SYMBOL}"
 zstyle ':vcs_info:*' unstagedstr "${GIT_UNSTAGED_SYMBOL}"
-zstyle ':vcs_info:*' formats "%s(%b [%u%c])"
-zstyle ':vcs_info:*' actionformats "%s(%b|%a [%u%c])"
+zstyle ':vcs_info:*' formats "%s(%b[%u%c])"
+zstyle ':vcs_info:*' actionformats "%s(%b|%a[%u%c])"
 
 _vcs_info_precmd() {
    vcs_info
