@@ -62,11 +62,28 @@ vim_plug_package_install() {
     vim +PlugUpgrade +PlugUpdate +qa
 }
 
-asdf_install() {
+asdf_plugins_install() {
+    echo "==> Installing asdf plugins..."
     for plugin in $(cut -d ' ' -f1 ./tool-versions); do
         asdf plugin add ${plugin} || true
     done
     asdf install
+    echo "==> Finished install asdf plugins."
+}
+
+asdf_plugins_update() {
+    echo "==> Updating asdf plugins..."
+    asdf plugin update --all
+    echo "==> Finished update asdf plugins."
+}
+
+asdf_managed_tools_update() {
+    echo "==> Updating asdf managed tools version..."
+    for plugin in $(cut -d ' ' -f1 ./tool-versions); do
+        asdf install ${plugin} latest
+        asdf global ${plugin} latest
+    done
+    echo "==> Finished update asdf managed tools version."
 }
 
 pip_requirements_install() {
@@ -93,7 +110,9 @@ homebrew_bundle_install
 homebrew_update
 vim_plug_install
 vim_plug_package_install
-asdf_install
+asdf_plugins_install
+asdf_plugins_update
+asdf_managed_tools_update
 pip_requirements_install
 tpm_install
 
