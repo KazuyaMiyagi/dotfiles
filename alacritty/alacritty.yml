@@ -32,3 +32,8 @@ cursor:
 
 window:
   opacity: 0.75
+
+key_bindings:
+  # IME input work around
+  # https://github.com/alacritty/alacritty/issues/1606#issuecomment-579754834
+  - { key: Back, action: ReceiveChar}
