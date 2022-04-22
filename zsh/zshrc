@@ -31,12 +31,6 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 export TF_CLI_ARGS_plan="--parallelism=50"
 export TF_CLI_ARGS_apply="--parallelism=50"
 export TF_CLI_ARGS_refresh="--parallelism=50"
-export ASDF_HASHICORP_OVERWRITE_ARCH_TERRAFORM="amd64"
-
-for file in $(ls $ZDOTDIR/autoload/*.zsh) ;
-do
-    source $file
-done
 
 path=(
     ${HOMEBREW_PREFIX}/bin
@@ -55,5 +49,7 @@ fpath=(
     $fpath
 )
 
-. ${HOMEBREW_PREFIX}/opt/asdf/asdf.sh
- eval "$(asdf exec direnv hook zsh)"
+for file in $(ls $ZDOTDIR/autoload/*.zsh) ;
+do
+    source $file
+done
