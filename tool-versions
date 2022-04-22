@@ -1,6 +1,6 @@
-terraform 1.1.7
-nodejs 17.7.2
-ruby 3.1.1
-python 3.10.3
-kubectl 1.23.5
-direnv 2.30.3
+terraform 1.1.9
+nodejs 18.0.0
+ruby 3.1.2
+python 3.10.4
+kubectl 1.23.6
+direnv 2.31.0
