@@ -1,5 +1,5 @@
 terraform 1.1.9
-nodejs 18.0.0
+nodejs 18.1.0
 ruby 3.1.2
 python 3.10.4
 kubectl 1.24.0
