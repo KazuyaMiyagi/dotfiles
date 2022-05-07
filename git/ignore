@@ -21,3 +21,6 @@ ignore_and_override.tf
 
 # zsh
 zsh/.zsh_history
+
+# 1password-cli
+op/config
