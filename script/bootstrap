@@ -59,7 +59,9 @@ vim_plug_install() {
 
 vim_plug_package_install() {
     echo "==> Installing vim-plug packages."
+    git config --global --rename-section url.git@github.com: temp
     vim +PlugUpgrade +PlugUpdate +qa
+    git config --global --rename-section temp url.git@github.com:
 }
 
 asdf_plugins_install() {
