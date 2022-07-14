@@ -43,3 +43,5 @@
 [url "git@gist.github.com:"]
 	insteadOf = https://gist.github.com/
 	pushInsteadOf = https://gist.github.com/
+[push]
+	autoSetupRemote = true
