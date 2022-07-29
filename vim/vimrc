@@ -37,9 +37,6 @@ Plug 'scrooloose/syntastic'
     let g:syntastic_python_checkers = ['flake8']
 
 Plug 'glidenote/memolist.vim'
-    if isdirectory(expand('~/Dropbox'))
-        let g:memolist_path = '~/Dropbox/Memo'
-    endif
     let g:memolist_memo_suffix = "md"
     let g:memolist_filename_prefix_none = 1
 
@@ -169,13 +166,6 @@ autocmd FileType java :set noexpandtab ts=4 sw=4 nolist fenc=utf-8
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
 autocmd BufNewFile,BufRead *.md set filetype=markdown
 
-autocmd BufNewFile,BufRead *
-            \ if expand('%:~') =~ '^\~/Dropbox' |
-            \     set noswapfile |
-            \ else |
-            \     set swapfile|
-            \ endif
-
 " color
 syntax on
 set background=dark
@@ -200,6 +190,7 @@ set undofile
 set undodir=~/.vim/undo/
 
 " Swap
+set swapfile
 set directory=~/vimfiles/swap/,~/.vim/swap/,.
 
 if exists('+termguicolors')
