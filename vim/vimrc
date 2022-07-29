@@ -23,13 +23,12 @@ Plug 'scrooloose/syntastic'
     let g:syntastic_loc_list_height = 5
     let g:syntastic_mode_map = {
         \ 'mode': 'active',
-        \ 'active_filetypes': ['ruby', 'pp', 'javascript', 'json', 'eruby', 'javascript', 'coffee'],
+        \ 'active_filetypes': ['ruby', 'pp', 'javascript', 'json', 'eruby', 'javascript'],
         \ 'passive_filetypes': []
         \ }
     let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
     let g:syntastic_ruby_checkers = ['rubocop']
     let g:syntastic_dockerfile_checkers = ['hadolint']
-    let g:syntastic_coffee_coffeelint_args = "--file ~/dotfiles/coffeelint.json"
     let g:syntastic_python_checkers = ['flake8']
 
 Plug 'glidenote/memolist.vim'
@@ -61,7 +60,6 @@ let g:terraform_commentstring='//%s'
 let g:terraform_fmt_on_save=1
 
 " syntax
-Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-haml'
 Plug 'timcharper/textile.vim'
 Plug 'chase/vim-ansible-yaml'
@@ -148,7 +146,6 @@ inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
 autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
 autocmd FileType eruby :set ts=2 sw=2 fenc=utf-8
 autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
-autocmd FileType coffee :set ts=2 sw=2 fenc=utf-8
 autocmd FileType json :set ts=2 sw=2 fenc=utf-8
 autocmd FileType java :set noexpandtab ts=4 sw=4 nolist fenc=utf-8
 autocmd BufNewFile,BufRead *.pp set filetype=puppet
