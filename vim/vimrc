@@ -1,8 +1,4 @@
-if has('win32')
-    let $PLUG_DIR = '~/vimfiles/plugged'
-else
-    let $PLUG_DIR = $XDG_CONFIG_HOME.'/vim/plugged'
-endif
+let $PLUG_DIR = $XDG_CONFIG_HOME.'/vim/plugged'
 
 call plug#begin($PLUG_DIR)
 
@@ -107,11 +103,7 @@ call plug#end()
 
 filetype plugin indent on     " Required!
 
-if has('win32') && !has('gui_running')
-    set encoding=cp932
-else
-    set encoding=utf-8
-endif
+set encoding=utf-8
 "set fileencoding=utf-8
 "set fileformat=unix
 set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
@@ -126,11 +118,7 @@ set showcmd
 set backspace=indent,eol,start
 
 
-if has('mac') || has('win32') || has('win32unix')
-    set clipboard=unnamed
-else
-    set clipboard=unnamedplus
-endif
+set clipboard=unnamed
 
 set list
 set listchars=eol:↩,tab:<->,trail:⊠,extends:⇢,precedes:⇠,nbsp:…
@@ -169,11 +157,7 @@ autocmd BufNewFile,BufRead *.md set filetype=markdown
 " color
 syntax on
 set background=dark
-if has('win32') && !has('gui_running')
-    colorscheme default
-else
-    colorscheme tokyonight
-endif
+colorscheme tokyonight
 
 highlight SpecialKey cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
 
