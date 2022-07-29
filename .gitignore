@@ -30,3 +30,6 @@ direnv/allow/*
 
 # gh
 /gh
+
+# irb
+/irb/irb_history
