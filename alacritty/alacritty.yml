@@ -1,4 +1,5 @@
 window:
+  opacity: 0.75
   dimensions:
     columns: 170
     lines: 50
@@ -29,9 +30,6 @@ cursor:
   style:
     shape: Block
     blinking: Always
-
-window:
-  opacity: 0.75
 
 key_bindings:
   # IME input work around
