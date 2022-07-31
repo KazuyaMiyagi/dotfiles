@@ -35,7 +35,6 @@ let g:terraform_fmt_on_save=1
 " syntax
 Plug 'tpope/vim-haml'
 Plug 'timcharper/textile.vim'
-Plug 'chase/vim-ansible-yaml'
 Plug 'kylef/apiblueprint.vim'
 
 " colorscheme
