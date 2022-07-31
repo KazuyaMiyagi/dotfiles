@@ -61,12 +61,26 @@ Plug 'vim-scripts/L9'
 Plug 'vim-scripts/rails.vim'
 
 " Language server
+Plug 'prabirshrestha/vim-lsp'
+let g:lsp_preview_float = 1
+let g:lsp_diagnostics_float_cursor = 1
+autocmd! BufWritePre * call execute('LspDocumentFormatSync')
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
-Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
+let g:lsp_settings = {
+\  'pylsp-all': {
+\    'cmd': {server_info->['pylsp']},
+\    'workspace_config': {
+\      'pylsp': {
+\        'plugins': {
+\          'flake8': {'enabled': v:true}
+\        }
+\      }
+\    }
+\  },
+\}
 Plug 'mattn/vim-lsp-icons'
-
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 
