@@ -72,6 +72,7 @@ let g:lsp_settings = {
 \    'cmd': {server_info->['pylsp']},
 \    'workspace_config': {
 \      'pylsp': {
+\        'configurationSources': ['flake8'],
 \        'plugins': {
 \          'flake8': {'enabled': v:true}
 \        }
