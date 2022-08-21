@@ -3,12 +3,12 @@ set runtimepath+=$XDG_DATA_HOME/vim
 call plug#begin($XDG_DATA_HOME . '/vim/plugged')
 
 Plug 'itchyny/lightline.vim'
-    set laststatus=2
-    set noshowmode
-    set t_Co=256
-    let g:lightline = {
-    \ 'colorscheme': 'tokyonight'
-    \ }
+set laststatus=2
+set noshowmode
+set t_Co=256
+let g:lightline = {
+            \ 'colorscheme': 'tokyonight'
+            \ }
 Plug 'mattn/vim-sqlfmt'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'luochen1990/rainbow'
@@ -16,7 +16,7 @@ let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 Plug 'mattn/vim-maketable'
 Plug 'mhinz/vim-signify'
 Plug 'kannokanno/previm'
-    let g:previm_plantuml_imageprefix = 'http://localhost:8888/img/'
+let g:previm_plantuml_imageprefix = 'http://localhost:8888/img/'
 Plug 'vim-jp/vimdoc-ja'
 Plug 'taichouchou2/vim-endwise'
 Plug 'osyo-manga/vim-over'
@@ -42,31 +42,23 @@ Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'mattn/vim-lsp-settings'
 let g:lsp_settings = {
-\  'pylsp-all': {
-\    'cmd': {server_info->['pylsp']},
-\    'workspace_config': {
-\      'pylsp': {
-\        'configurationSources': ['flake8'],
-\        'plugins': {
-\          'flake8': {'enabled': v:true}
-\        }
-\      }
-\    }
-\  },
-\}
+            \  'pylsp-all': {
+            \    'cmd': {server_info->['pylsp']},
+            \    'workspace_config': {
+            \      'pylsp': {
+            \        'configurationSources': ['flake8'],
+            \        'plugins': {
+            \          'flake8': {'enabled': v:true}
+            \        }
+            \      }
+            \    }
+            \  },
+            \}
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 
 call plug#end()
 
-filetype plugin indent on     " Required!
-
-set encoding=utf-8
-"set fileencoding=utf-8
-"set fileformat=unix
-set fileencodings=utf-8,iso-2022-jp,euc-jp,cp932
-set fileformats=unix,dos
-set nobackup
 set mouse=a
 set ttymouse=xterm2
 set nowrap
@@ -74,7 +66,6 @@ set nonumber
 set title
 set showcmd
 set backspace=indent,eol,start
-
 
 set clipboard=unnamed
 
@@ -100,30 +91,17 @@ set expandtab
 set smarttab
 set shiftround
 
-" datetime
-inoremap <Leader>c <C-R>=strftime('%Y-%m-%dT%H:%M:%S+09:00')<CR>
-
-autocmd FileType ruby :set ts=2 sw=2 fenc=utf-8
-autocmd FileType eruby :set ts=2 sw=2 fenc=utf-8
-autocmd FileType cucumber :set ts=2 sw=2 fenc=utf-8
-autocmd FileType json :set ts=2 sw=2 fenc=utf-8
-autocmd FileType java :set noexpandtab ts=4 sw=4 nolist fenc=utf-8
-autocmd BufNewFile,BufRead *.pp set filetype=puppet
-autocmd BufNewFile,BufRead *.md set filetype=markdown
-
 " color
 syntax on
 set background=dark
 colorscheme tokyonight
-
-highlight SpecialKey cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
 
 " 全角スペースの表示
 highlight ZenkakuSpace cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
 match ZenkakuSpace /　/
 
 " Hack #104: Visual mode で選択したテキストを検索する
-" http://vim-users.jp/2009/11/hack104/
+" https://vim-jp.org/vim-users-jp/2009/11/25/Hack-104.html
 vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v,'\/'),"\n",'\\n','g')<CR><CR>
 
 " Undo
@@ -140,9 +118,3 @@ set backupdir=$XDG_DATA_HOME/vim/backup | call mkdir(&backupdir, 'p')
 
 " netrw
 let g:netrw_home = $XDG_DATA_HOME."/vim"
-
-if exists('+termguicolors')
-    let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
-    let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
-    set termguicolors
-endif
