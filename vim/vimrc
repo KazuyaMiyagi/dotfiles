@@ -13,13 +13,11 @@ Plug 'mattn/vim-sqlfmt'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'luochen1990/rainbow'
 let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
-Plug 'scrooloose/nerdtree'
 Plug 'mattn/vim-maketable'
 Plug 'mhinz/vim-signify'
 Plug 'kannokanno/previm'
     let g:previm_plantuml_imageprefix = 'http://localhost:8888/img/'
 Plug 'vim-jp/vimdoc-ja'
-Plug 'rstacruz/sparkup'
 Plug 'taichouchou2/vim-endwise'
 Plug 'osyo-manga/vim-over'
 Plug 'tyru/open-browser.vim'
@@ -30,32 +28,10 @@ let g:terraform_fold_sections=0
 let g:terraform_commentstring='//%s'
 let g:terraform_fmt_on_save=1
 
-" syntax
-Plug 'tpope/vim-haml'
-Plug 'timcharper/textile.vim'
-Plug 'kylef/apiblueprint.vim'
-
 " colorscheme
-Plug 'nanotech/jellybeans.vim'
-Plug 'w0ng/vim-hybrid'
-Plug 'vim-scripts/twilight'
-Plug 'jonathanfilip/vim-lucius'
-Plug 'jpo/vim-railscasts-theme'
-Plug 'altercation/vim-colors-solarized'
-Plug 'vim-scripts/Wombat'
-Plug 'vim-scripts/rdark'
-Plug 'tomasr/molokai'
-Plug 'cocopon/iceberg.vim'
-Plug 'vim-scripts/NERV-ous'
-Plug 'sjl/badwolf'
-Plug 'morhetz/gruvbox'
 Plug 'ghifarit53/tokyonight-vim'
 let g:tokyonight_enable_italic = 0
 let g:tokyonight_disable_italic_comment = 1
-
-" vim-scripts repos
-Plug 'vim-scripts/L9'
-Plug 'vim-scripts/rails.vim'
 
 " Language server
 Plug 'prabirshrestha/vim-lsp'
@@ -78,7 +54,6 @@ let g:lsp_settings = {
 \    }
 \  },
 \}
-Plug 'mattn/vim-lsp-icons'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 
