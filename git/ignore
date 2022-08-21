@@ -18,12 +18,3 @@ tmp
 .terraform
 terraform.tfstate*
 ignore_and_override.tf
-
-# zsh
-zsh/.zsh_history
-
-# 1password-cli
-op/config
-
-# google-cloud-sdk
-/gcloud

@@ -1,19 +1,15 @@
-/vim/autoload
+! *.gitkeep
+
+# vim
+/vim/autoload/plug.vim
 /vim/plugged
 /vim/undo/*
 /vim/swap/*
-!.gitkeep
-*.swp
-.netrwhist
-
-bundle/cache
 
 # zsh
-zsh/.zcompdump*
-zsh/.zsh_sessions/
-
-# direnv
-direnv/allow/*
+/zsh/.zcompdump*
+/zsh/.zsh_sessions/
+/zsh/.zsh_history
 
 # npm
 /configstore/update-notifier-npm.json
@@ -23,7 +19,7 @@ direnv/allow/*
 
 # git
 /git/local/*
-!/git/local/config.example
+! /git/local/config.example
 
 # iTerm
 /iterm2
@@ -33,3 +29,9 @@ direnv/allow/*
 
 # irb
 /irb/irb_history
+
+# 1password-cli
+/op/config
+
+# google-cloud-sdk
+/gcloud
