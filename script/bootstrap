@@ -9,8 +9,6 @@ cd "$(dirname "$0")/.."
 
 readonly DOTFILE_ROOT_DIR="$(pwd)"
 
-source ${DOTFILE_ROOT_DIR}/zsh/autoload/xdg.zsh
-
 # __is_installed checks install status the specified command
 function __is_installed() {
   type $1 &> /dev/null
