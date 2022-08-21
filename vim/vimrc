@@ -1,6 +1,6 @@
-let $PLUG_DIR = $XDG_CONFIG_HOME.'/vim/plugged'
+set runtimepath+=$XDG_DATA_HOME/vim
 
-call plug#begin($PLUG_DIR)
+call plug#begin($XDG_DATA_HOME . '/vim/plugged')
 
 Plug 'itchyny/lightline.vim'
     set laststatus=2
@@ -128,11 +128,18 @@ vnoremap <silent> * "vy/\V<C-r>=substitute(escape(@v,'\/'),"\n",'\\n','g')<CR><C
 
 " Undo
 set undofile
-set undodir=~/.vim/undo/
+set undodir=$XDG_DATA_HOME/vim/undo     | call mkdir(&undodir,   'p')
 
 " Swap
 set swapfile
-set directory=~/vimfiles/swap/,~/.vim/swap/,.
+set directory=$XDG_DATA_HOME/vim/swap   | call mkdir(&directory, 'p')
+
+" Backup
+set backup
+set backupdir=$XDG_DATA_HOME/vim/backup | call mkdir(&backupdir, 'p')
+
+" netrw
+let g:netrw_home = $XDG_DATA_HOME."/vim"
 
 if exists('+termguicolors')
     let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"

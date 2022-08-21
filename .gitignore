@@ -1,12 +1,5 @@
 ! *.gitkeep
 
-# vim
-/vim/autoload/plug.vim
-/vim/plugged
-/vim/undo/*
-/vim/swap/*
-/vim/.netrwhist
-
 # zsh
 /zsh/.zcompdump*
 /zsh/.zsh_sessions/
