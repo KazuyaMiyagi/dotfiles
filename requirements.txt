@@ -1,6 +1,5 @@
 flake8
 pep8-naming
-powerline-status
 pyls-isort
 python-lsp-black
 python-lsp-server[all]

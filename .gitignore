@@ -14,9 +14,6 @@
 # npm
 /configstore/update-notifier-npm.json
 
-# tmux
-/tmux/plugins/
-
 # git
 /git/local/*
 ! /git/local/config.example

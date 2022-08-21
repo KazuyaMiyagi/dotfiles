@@ -93,16 +93,6 @@ pip_requirements_install() {
     echo "==> Finished Install python packages."
 }
 
-tpm_install() {
-    if [ -d ${XDG_CONFIG_HOME}/tmux/plugins/tpm ]; then
-        echo "==> tpm was already installed."
-    else
-        echo "==> Installing tpm..."
-        git clone https://github.com/tmux-plugins/tpm ${XDG_CONFIG_HOME}/tmux/plugins/tpm
-        echo "==> Finished Install tpm."
-    fi
-}
-
 echo "Start bootstrap"
 
 homebrew_install
@@ -114,6 +104,5 @@ asdf_plugins_install
 asdf_plugins_update
 asdf_managed_tools_update
 pip_requirements_install
-tpm_install
 
 echo "Finish bootstrap!"
