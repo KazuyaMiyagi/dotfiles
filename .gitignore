@@ -5,6 +5,7 @@
 /vim/plugged
 /vim/undo/*
 /vim/swap/*
+/vim/.netrwhist
 
 # zsh
 /zsh/.zcompdump*
