@@ -5,8 +5,8 @@ if [ -f $ZPLUG_HOME/init.zsh ]; then
 
     zplug "mollifier/anyframe"
     if zplug check "mollifier/anyframe"; then
-        bindkey '^r' anyframe-widget-put-history
-        bindkey '^j' anyframe-widget-cd-ghq-repository
+        bindkey "^r" anyframe-widget-put-history
+        bindkey "^j" anyframe-widget-cd-ghq-repository
     fi
 
     zplug "zsh-users/zsh-autosuggestions"

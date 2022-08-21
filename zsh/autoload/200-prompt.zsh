@@ -2,20 +2,20 @@ autoload -Uz add-zsh-hook
 autoload -Uz vcs_info
 
 # https://nerdfonts.com/
-readonly AWS_SYMBOL='%F{#D86613} %f'
-readonly AWS_SESSION_EXPIRATION_SYMBOL='%F{#D6242D} %f'
+readonly AWS_SYMBOL="%F{#D86613} %f"
+readonly AWS_SESSION_EXPIRATION_SYMBOL="%F{#D6242D} %f"
 readonly TF_WORKSPACE_SYMBOL="%F{#844FBA} %f"
-readonly GIT_SYMBOL='%F{#f64d27} %f'
-readonly GIT_STAGED_SYMBOL='✔︎'
-readonly GIT_UNSTAGED_SYMBOL='+'
-readonly GIT_UNTRACKED_SYMBOL='?'
+readonly GIT_SYMBOL="%F{#f64d27} %f"
+readonly GIT_STAGED_SYMBOL="✔︎"
+readonly GIT_UNSTAGED_SYMBOL="+"
+readonly GIT_UNTRACKED_SYMBOL="?"
 
-zstyle ':vcs_info:*' check-for-changes true
-zstyle ':vcs_info:*' check-for-staged-changes true
-zstyle ':vcs_info:*' stagedstr "${GIT_STAGED_SYMBOL}"
-zstyle ':vcs_info:*' unstagedstr "${GIT_UNSTAGED_SYMBOL}"
-zstyle ':vcs_info:*' formats "%s(%b[%u%c])"
-zstyle ':vcs_info:*' actionformats "%s(%b|%a[%u%c])"
+zstyle ":vcs_info:*" check-for-changes true
+zstyle ":vcs_info:*" check-for-staged-changes true
+zstyle ":vcs_info:*" stagedstr "${GIT_STAGED_SYMBOL}"
+zstyle ":vcs_info:*" unstagedstr "${GIT_UNSTAGED_SYMBOL}"
+zstyle ":vcs_info:*" formats "%s(%b[%u%c])"
+zstyle ":vcs_info:*" actionformats "%s(%b|%a[%u%c])"
 
 _vcs_info_precmd() {
    vcs_info
@@ -35,11 +35,11 @@ add-zsh-hook precmd _vcs_info_precmd
 
 ### git: Show marker (${GIT_UNTRACKED_SYMBOL}) if there are untracked files in repository
 # Make sure you have added staged to your 'formats':  %c
-zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
+zstyle ":vcs_info:git*+set-message:*" hooks git-untracked
 
 +vi-git-untracked(){
-    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
-        git status --porcelain | grep '??' &> /dev/null ; then
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == "true" ]] && \
+        git status --porcelain | grep "??" &> /dev/null ; then
         # This will show the marker if there are any untracked files in repo.
         # If instead you want to show the marker only if there are untracked
         # files in $PWD, use:
