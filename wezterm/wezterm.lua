@@ -44,6 +44,7 @@ return {
 
     font_size = 14,
     font = wezterm.font_with_fallback({ "Hack Nerd Font" }),
+    adjust_window_size_when_changing_font_size = false,
 
     color_scheme = "tokyonight",
     window_frame = {
