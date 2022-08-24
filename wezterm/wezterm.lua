@@ -43,11 +43,11 @@ return {
     initial_rows = 48,
 
     font_size = 14,
-    font = wezterm.font_with_fallback { "Hack Nerd Font" },
+    font = wezterm.font_with_fallback({ "Hack Nerd Font" }),
 
     color_scheme = "tokyonight",
     window_frame = {
-        font = wezterm.font { family = "Hack Nerd Font", weight = 'Bold' },
+        font = wezterm.font({ family = "Hack Nerd Font", weight = 'Bold' }),
         font_size = 14,
         active_titlebar_bg = '#333333',
         inactive_titlebar_bg = '#333333',
