@@ -1,6 +1,6 @@
 terraform 1.2.8
 nodejs 18.8.0
 ruby 3.1.2
-python 3.10.6
+python 3.10.7
 kubectl 1.25.0
 direnv 2.32.1
