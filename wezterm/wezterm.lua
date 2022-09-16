@@ -43,7 +43,10 @@ return {
     initial_rows = 48,
 
     font_size = 14,
-    font = wezterm.font_with_fallback({ "Hack Nerd Font" }),
+    font = wezterm.font_with_fallback({
+        "Hack Nerd Font",
+        { family = "Hiragino Kaku Gothic Pro", weight = "Light" },
+    }),
     adjust_window_size_when_changing_font_size = false,
 
     color_scheme = "tokyonight",
