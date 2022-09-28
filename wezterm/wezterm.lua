@@ -34,6 +34,14 @@ wezterm.on("update-right-status", function(window, pane)
     }))
 end)
 
+wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_width)
+    local tab_width = 25
+    text = wezterm.pad_right(wezterm.truncate_right(tab.active_pane.title, tab_width), tab_width)
+    return {
+        { Text = text },
+    }
+end)
+
 return {
     window_background_opacity = 0.75,
     text_background_opacity = 0.75,
