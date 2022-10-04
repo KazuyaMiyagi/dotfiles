@@ -14,8 +14,9 @@
 	gr = grep -H --line-number --ignore-case
 	pl = pull --prune
 [user]
-	name  = Kazuya Miyagi
+	name = Kazuya Miyagi
 	email = KazuyaMiyagi@users.noreply.github.com
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOFpnV4uomyleWW+PrXiQWIxrfgjnnUpwTGf9JotzDsN
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -34,6 +35,7 @@
 	path = ~/.config/git/local/config
 [commit]
 	verbose = true
+	gpgsign = true
 
 #https://git-scm.com/docs/git-config#Documentation/git-config.txt-urlltbasegtinsteadOf
 #https://git-scm.com/docs/git-config#Documentation/git-config.txt-urlltbasegtpushInsteadOf
@@ -45,3 +47,7 @@
 	pushInsteadOf = https://gist.github.com/
 [push]
 	autoSetupRemote = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
