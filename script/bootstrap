@@ -86,13 +86,6 @@ asdf_managed_tools_update() {
     echo "==> Finished update asdf managed tools version."
 }
 
-pip_requirements_install() {
-    echo "==> Installing python packages..."
-    pip install -r ${DOTFILE_ROOT_DIR}/requirements.txt
-    asdf reshim python
-    echo "==> Finished Install python packages."
-}
-
 echo "Start bootstrap"
 
 homebrew_install
@@ -103,6 +96,5 @@ vim_plug_package_install
 asdf_plugins_install
 asdf_plugins_update
 asdf_managed_tools_update
-pip_requirements_install
 
 echo "Finish bootstrap!"
