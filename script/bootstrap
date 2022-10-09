@@ -64,7 +64,7 @@ vim_plug_package_install() {
 
 asdf_plugins_install() {
     echo "==> Installing asdf plugins..."
-    for plugin in $(cut -d ' ' -f1 ./tool-versions); do
+    for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions); do
         asdf plugin add ${plugin} || true
     done
     asdf install
@@ -79,7 +79,7 @@ asdf_plugins_update() {
 
 asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools version..."
-    for plugin in $(cut -d ' ' -f1 ./tool-versions); do
+    for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions); do
         asdf install ${plugin} latest
         asdf global ${plugin} latest
     done

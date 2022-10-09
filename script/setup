@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.."
 readonly DOTFILE_ROOT_DIR="$(pwd)"
 readonly BACKUP_DIR="$DOTFILE_ROOT_DIR/backup"
 
-source $DOTFILE_ROOT_DIR/zsh/autoload/xdg.zsh
+source $DOTFILE_ROOT_DIR/zsh/autoload/100-xdg.zsh
 
 echo "Start setup"
 
@@ -67,6 +67,16 @@ elif [ -d ~/.vim ] ; then
 else
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
     ln -s ${DOTFILE_ROOT_DIR}/vim ~/.vim
+fi
+
+if [ -L ~/tool-versions ] ; then
+    echo "~/tool-versions symbolic link found. unlink ~/tool-versions."
+    unlink ~/tool-versions
+    echo "Create symbolic link ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions"
+    ln -s ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions
+else
+    echo "Create symbolic link ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions"
+    ln -s ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions
 fi
 
 if [ ! -d ~/.local/share/zsh ] ; then
