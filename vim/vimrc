@@ -60,6 +60,12 @@ let g:lsp_settings = {
             \          'indentSize': 2,
             \          'semicolons': 'insert'
             \        },
+            \      },
+            \      'javascript': {
+            \        'format': {
+            \          'indentSize': 2,
+            \          'semicolons': 'insert'
+            \        },
             \      }
             \    }
             \  },
