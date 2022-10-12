@@ -53,6 +53,16 @@ let g:lsp_settings = {
             \      }
             \    }
             \  },
+            \  'typescript-language-server': {
+            \    'workspace_config': {
+            \      'typescript': {
+            \        'format': {
+            \          'indentSize': 2,
+            \          'semicolons': 'insert'
+            \        },
+            \      }
+            \    }
+            \  },
             \}
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
