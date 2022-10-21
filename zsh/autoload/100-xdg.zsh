@@ -14,9 +14,14 @@ export GOPATH="${XDG_DATA_HOME}/git"
 # ghq
 export GHQ_ROOT="${XDG_DATA_HOME}/git/src"
 
-# RubyGems
+# Ruby#RubyGems
 export GEM_HOME="${XDG_DATA_HOME}/gem"
 export GEM_SPEC_CACHE="${XDG_CACHE_HOME}/gem"
+
+# Ruby#Bundler
+export BUNDLE_USER_CONFIG="${XDG_CONFIG_HOME}/bundle"
+export BUNDLE_USER_CACHE="${XDG_CACHE_HOME}/bundle"
+export BUNDLE_USER_PLUGIN="${XDG_DATA_HOME}/bundle"
 
 # tig
 export TIGRC_USER="${XDG_CONFIG_HOME}/tig/tigrc"

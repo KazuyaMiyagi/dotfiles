@@ -6,6 +6,7 @@ path=(
     /Applications/draw.io.app/Contents/MacOS(N-/)
     ${GOPATH}/bin(N-/)
     ${JAVA_HOME}/bin(N-/)
+    ${GEM_HOME}/bin(N-/)
     ${XDG_CONFIG_HOME}/bin(N-/)
     ${path}
 )
