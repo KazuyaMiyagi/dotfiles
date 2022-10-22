@@ -15,7 +15,6 @@ export GOPATH="${XDG_DATA_HOME}/git"
 export GHQ_ROOT="${XDG_DATA_HOME}/git/src"
 
 # Ruby#RubyGems
-export GEM_HOME="${XDG_DATA_HOME}/gem"
 export GEM_SPEC_CACHE="${XDG_CACHE_HOME}/gem"
 
 # Ruby#Bundler
