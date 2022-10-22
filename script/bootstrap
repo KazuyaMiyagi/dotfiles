@@ -79,7 +79,7 @@ asdf_plugins_update() {
 
 asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools version..."
-    for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions); do
+    for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | grep -v ruby); do
         asdf install ${plugin} latest
         asdf global ${plugin} latest
     done
