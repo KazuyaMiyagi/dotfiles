@@ -5,7 +5,6 @@ path=(
     ${HOMEBREW_PREFIX}/opt/openssl@3/bin(N-/)
     /Applications/draw.io.app/Contents/MacOS(N-/)
     ${GOPATH}/bin(N-/)
-    ${JAVA_HOME}/bin(N-/)
     ${XDG_CONFIG_HOME}/bin(N-/)
     ${path}
 )
