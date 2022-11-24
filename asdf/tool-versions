@@ -3,4 +3,4 @@ nodejs 19.1.0
 ruby 3.1.2
 python 3.11.0
 kubectl 1.25.4
-direnv 2.32.1
+direnv 2.32.2
