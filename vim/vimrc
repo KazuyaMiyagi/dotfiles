@@ -43,6 +43,7 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'mattn/vim-lsp-settings'
 Plug 'tsuyoshicho/vim-efm-langserver-settings'
 let g:lsp_settings_filetype_ruby = ['steep']
+let g:lsp_settings_filetype_json = ['json-languageserver']
 let g:lsp_settings = {
             \  'pylsp-all': {
             \    'cmd': {server_info->['pylsp']},
