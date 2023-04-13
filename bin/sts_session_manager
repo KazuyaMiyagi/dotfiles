@@ -47,7 +47,7 @@ function switch_back() {
 function switch_role() {
     __validate
 
-    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^(stdin)=\ //").json"
+    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
     local SESSION_NAME="${SESSION_NAME:=$(whoami)}"
     local DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
     local STS_ASSUME_ROLE_COMMAND="aws --profile=${AWS_PROFILE} sts assume-role --role-arn $(aws configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
@@ -88,7 +88,7 @@ function list() {
 function show() {
     __validate
 
-    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^(stdin)=\ //").json"
+    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
     if [ -s "${CACHE_FILE}" ]; then
         jq --raw-output "." < "${CACHE_FILE}"
     else
@@ -100,7 +100,7 @@ function show() {
 function remove() {
     __validate
 
-    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^(stdin)=\ //").json"
+    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
     if [ -s "${CACHE_FILE}" ]; then
         rm -i "${CACHE_FILE}"
     else
