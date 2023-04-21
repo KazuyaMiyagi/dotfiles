@@ -79,6 +79,14 @@ else
     ln -s ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions
 fi
 
+if [ -L "${HOME}/.tflint.hcl" ] ; then
+    echo "${HOME}/.tflint.hcl symbolic link found. unlink ~/.tflint.hcl."
+    unlink ~/.tflint.hcl
+fi
+
+echo "Create symbolic link ${DOTFILE_ROOT_DIR}/tflint/.tflint.hcl ~/.tflint.hcl"
+ln -s "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl"
+
 if [ ! -d ~/.local/share/zsh ] ; then
     echo "Create ~/.local/share/zsh"
     mkdir -p ~/.local/share/zsh

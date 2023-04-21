@@ -86,6 +86,12 @@ asdf_managed_tools_update() {
     echo "==> Finished update asdf managed tools version."
 }
 
+tflint_init() {
+    echo "==> Starting TFLint initialization..."
+    tflint --init
+    echo "==> TFLint initialization completed."
+}
+
 echo "Start bootstrap"
 
 homebrew_install
@@ -96,5 +102,6 @@ vim_plug_package_install
 asdf_plugins_install
 asdf_plugins_update
 asdf_managed_tools_update
+tflint_init
 
 echo "Finish bootstrap!"
