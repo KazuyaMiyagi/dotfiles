@@ -80,7 +80,6 @@ Plug 'hrsh7th/vim-vsnip-integ'
 call plug#end()
 
 set mouse=a
-set ttymouse=xterm2
 set nowrap
 set nonumber
 set title
