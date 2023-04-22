@@ -10,6 +10,18 @@ tools:
     lint-formats:
       - "%f:%l:%c: %m"
 
+  shellcheck: &shellcheck
+    prefix: "shellcheck"
+    lint-command: "shellcheck --format gcc"
+    lint-formats:
+      - "%f:%l:%c: %trror: %m"
+      - "%f:%l:%c: %tarning: %m"
+      - "%f:%l:%c: %tote: %m"
+
+  shfmt: &shfmt
+    format-command: "shfmt --language-dialect bash --indent 4 --binary-next-line --case-indent --space-redirects --keep-padding"
+    format-stdin: true
+
   tflint: &tflint
     prefix: "tflint"
     lint-command: "tflint --format compact --recursive --module"
@@ -48,3 +60,7 @@ languages:
 
   terraform:
     - <<: *tflint
+
+  sh:
+    - <<: *shellcheck
+    - <<: *shfmt

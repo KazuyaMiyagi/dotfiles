@@ -20,7 +20,6 @@ function __validate() {
     fi
 }
 
-
 function check_required_tools() {
     echo "==> Start checking required tools..."
     local REQUIRED_TOOLS=(aws jq)
@@ -73,7 +72,7 @@ function switch_role() {
         ${STS_ASSUME_ROLE_COMMAND} > "${CACHE_FILE}"
     fi
 
-    cat <<-EOL
+    cat <<- EOL
 		export AWS_ACCESS_KEY_ID=$(jq -r ".Credentials.AccessKeyId" < "${CACHE_FILE}")
 		export AWS_SECRET_ACCESS_KEY=$(jq -r ".Credentials.SecretAccessKey" < "${CACHE_FILE}")
 		export AWS_SESSION_TOKEN=$(jq -r ".Credentials.SessionToken" < "${CACHE_FILE}")
@@ -111,7 +110,7 @@ function remove() {
 
 function usage() {
     readonly COMMAND="sts_session_manager"
-    cat <<-EOL
+    cat <<- EOL
 		Usage: ${COMMAND} <subcommand>
 		Subcommands:
 		    ${COMMAND} check_required_tools | check -- Check required tools
