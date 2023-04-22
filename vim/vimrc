@@ -54,7 +54,6 @@ augroup END
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'mattn/vim-lsp-settings'
-Plug 'tsuyoshicho/vim-efm-langserver-settings'
 let g:lsp_settings_filetype_ruby = ['steep']
 let g:lsp_settings_filetype_json = ['json-languageserver']
 let g:lsp_settings = {
@@ -84,6 +83,9 @@ let g:lsp_settings = {
             \        },
             \      }
             \    }
+            \  },
+            \  'efm-langserver': {
+            \    'disabled': v:false
             \  },
             \}
 Plug 'hrsh7th/vim-vsnip'
