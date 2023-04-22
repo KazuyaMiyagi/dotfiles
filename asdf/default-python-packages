@@ -5,3 +5,4 @@ pyls-isort
 python-lsp-black
 python-lsp-server[all]
 sqlparse
+vim-vint
