@@ -17,6 +17,14 @@ tools:
     lint-formats:
       - "%f:%l %m"
 
+  textlint: &textlint
+    prefix: "textlint"
+    lint-command: "textlint --config ${XDG_CONFIG_HOME}/textlint/textlintrc --format compact ${INPUT}"
+    lint-stdin: true
+    lint-formats:
+      - "%f: line %l, col %c, %tnfo - %m"
+      - "%f: line %l, col %c, %tarning - %m"
+      - "%f: line %l, col %c, %trror - %m"
 
 languages:
   vim:
@@ -24,3 +32,4 @@ languages:
 
   markdown:
     - <<: *markdownlint-cli2
+    - <<: *textlint

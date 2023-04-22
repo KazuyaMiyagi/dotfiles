@@ -1,5 +1,11 @@
 eslint
 markdownlint-cli2
 prettier
+textlint
+textlint-rule-no-dead-link
+textlint-rule-no-todo
+textlint-rule-preset-ja-technical-writing
+textlint-rule-preset-japanese
+textlint-rule-preset-jtf-stye
 typescript
 wscat
