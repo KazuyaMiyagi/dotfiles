@@ -10,6 +10,17 @@ tools:
     lint-formats:
       - "%f:%l:%c: %m"
 
+  markdownlint-cli2: &markdownlint-cli2
+    prefix: "markdownlint-cli2"
+    lint-command: "markdownlint-cli2 ${INPUT}"
+    lint-stdin: true
+    lint-formats:
+      - "%f:%l %m"
+
+
 languages:
   vim:
     - <<: *vim-vint
+
+  markdown:
+    - <<: *markdownlint-cli2

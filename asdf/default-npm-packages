@@ -1,4 +1,5 @@
 eslint
+markdownlint-cli2
 prettier
 typescript
 wscat
