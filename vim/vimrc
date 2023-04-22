@@ -1,3 +1,6 @@
+set encoding=utf-8
+scriptencoding utf-8
+
 set runtimepath+=$XDG_DATA_HOME/vim
 
 call plug#begin($XDG_DATA_HOME . '/vim/plugged')
@@ -43,7 +46,11 @@ let g:lsp_diagnostics_signs_information = {'text': '󰰄'}
 let g:lsp_diagnostics_signs_hint = {'text': '󰰁'}
 let g:lsp_diagnostics_signs_warning = {'text': '󰰮'}
 let g:lsp_diagnostics_signs_error = {'text': '󰯸'}
-autocmd! BufWritePre * call execute('LspDocumentFormatSync')
+
+augroup vimrc
+    autocmd! BufWritePre * call execute('LspDocumentFormatSync')
+augroup END
+
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'mattn/vim-lsp-settings'
@@ -141,4 +148,4 @@ set backup
 set backupdir=$XDG_DATA_HOME/vim/backup | call mkdir(&backupdir, 'p')
 
 " netrw
-let g:netrw_home = $XDG_DATA_HOME."/vim"
+let g:netrw_home = $XDG_DATA_HOME . '/vim'
