@@ -10,6 +10,18 @@ tools:
     lint-formats:
       - "%f:%l:%c: %m"
 
+  tflint: &tflint
+    prefix: "tflint"
+    lint-command: "tflint --format compact --recursive --module"
+    lint-stdin: true
+    lint-formats:
+      - ":%l:%c: %totice - %m"
+      - ":%l:%c: %tarning - %m"
+      - ":%l:%c: %trror - %m"
+      - "%f:%l:%c: %totice - %m"
+      - "%f:%l:%c: %tarning - %m"
+      - "%f:%l:%c: %trror - %m"
+
   markdownlint-cli2: &markdownlint-cli2
     prefix: "markdownlint-cli2"
     lint-command: "markdownlint-cli2 ${INPUT}"
@@ -33,3 +45,6 @@ languages:
   markdown:
     - <<: *markdownlint-cli2
     - <<: *textlint
+
+  terraform:
+    - <<: *tflint
