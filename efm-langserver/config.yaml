@@ -50,6 +50,12 @@ tools:
       - "%f: line %l, col %c, %tarning - %m"
       - "%f: line %l, col %c, %trror - %m"
 
+  hadolint: &hadolint
+    prefix: "hadolint"
+    lint-command: "hadolint --no-color"
+    lint-formats:
+      - "%f:%l %m"
+
 languages:
   vim:
     - <<: *vim-vint
@@ -60,6 +66,9 @@ languages:
 
   terraform:
     - <<: *tflint
+
+  dockerfile:
+    - <<: *hadolint
 
   sh:
     - <<: *shellcheck
