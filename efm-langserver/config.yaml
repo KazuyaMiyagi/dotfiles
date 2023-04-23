@@ -2,6 +2,9 @@ version: 2
 
 root-markers:
   - .git/
+  - .terraform/
+  - main.tf
+  - versions.tf
 
 tools:
   vim-vint: &vim-vint
