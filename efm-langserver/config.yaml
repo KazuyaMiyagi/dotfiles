@@ -10,17 +10,21 @@ tools:
     lint-formats:
       - "%f:%l:%c: %m"
 
-  shellcheck: &shellcheck
-    prefix: "shellcheck"
-    lint-command: "shellcheck --format gcc"
+  markdownlint-cli2: &markdownlint-cli2
+    prefix: "markdownlint-cli2"
+    lint-command: "markdownlint-cli2 ${INPUT}"
+    lint-stdin: true
     lint-formats:
-      - "%f:%l:%c: %trror: %m"
-      - "%f:%l:%c: %tarning: %m"
-      - "%f:%l:%c: %tote: %m"
+      - "%f:%l %m"
 
-  shfmt: &shfmt
-    format-command: "shfmt --language-dialect bash --indent 4 --binary-next-line --case-indent --space-redirects --keep-padding"
-    format-stdin: true
+  textlint: &textlint
+    prefix: "textlint"
+    lint-command: "textlint --config ${XDG_CONFIG_HOME}/textlint/textlintrc --format compact ${INPUT}"
+    lint-stdin: true
+    lint-formats:
+      - "%f: line %l, col %c, %tnfo - %m"
+      - "%f: line %l, col %c, %tarning - %m"
+      - "%f: line %l, col %c, %trror - %m"
 
   tflint: &tflint
     prefix: "tflint"
@@ -49,27 +53,23 @@ tools:
       H: W
       C: E
 
-  markdownlint-cli2: &markdownlint-cli2
-    prefix: "markdownlint-cli2"
-    lint-command: "markdownlint-cli2 ${INPUT}"
-    lint-stdin: true
-    lint-formats:
-      - "%f:%l %m"
-
-  textlint: &textlint
-    prefix: "textlint"
-    lint-command: "textlint --config ${XDG_CONFIG_HOME}/textlint/textlintrc --format compact ${INPUT}"
-    lint-stdin: true
-    lint-formats:
-      - "%f: line %l, col %c, %tnfo - %m"
-      - "%f: line %l, col %c, %tarning - %m"
-      - "%f: line %l, col %c, %trror - %m"
-
   hadolint: &hadolint
     prefix: "hadolint"
     lint-command: "hadolint --no-color"
     lint-formats:
       - "%f:%l %m"
+
+  shellcheck: &shellcheck
+    prefix: "shellcheck"
+    lint-command: "shellcheck --format gcc"
+    lint-formats:
+      - "%f:%l:%c: %trror: %m"
+      - "%f:%l:%c: %tarning: %m"
+      - "%f:%l:%c: %tote: %m"
+
+  shfmt: &shfmt
+    format-command: "shfmt --language-dialect bash --indent 4 --binary-next-line --case-indent --space-redirects --keep-padding"
+    format-stdin: true
 
 languages:
   vim:
