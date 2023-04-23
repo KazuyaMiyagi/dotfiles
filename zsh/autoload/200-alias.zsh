@@ -16,4 +16,4 @@ alias k8s_dashbord_start="kubectl apply -f https://raw.githubusercontent.com/kub
 alias k8s_dashbord_stop="kubectl delete -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc7/aio/deploy/recommended.yaml"
 alias jwt-decode="jq -R 'split(\".\") | .[1] | @base64d | fromjson'"
 alias youtube-dl="youtube-dl -f bestvideo+bestaudio --merge-output-format mp4"
-alias flake8="flake8 --config ${XDG_CONFIG_HOME}/flake8"
+alias flake8="flake8 --config \${XDG_CONFIG_HOME}/flake8"
