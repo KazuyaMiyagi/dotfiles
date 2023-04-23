@@ -1,6 +1,7 @@
 alias be="bundle exec"
 alias tf="terraform"
 alias switch_role="eval \"\$(sts_session_manager switch_role)\""
+alias switch_mfa_session="eval \"\$(sts_session_manager switch_mfa_session \$(eval \$(aws configure get get_mfa_token_command)))\""
 alias switch_back="eval \"\$(sts_session_manager switch_back)\""
 alias tree="tree -N -C"
 alias ls="ls -G"
