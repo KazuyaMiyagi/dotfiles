@@ -4,7 +4,7 @@
 function execute() {
     local output="${1}"
     shift
-    local cmd="${@}"
+    local cmd="${*}"
     local rewrite_cmd=""
     if [ ! -z "${CONFIRM:-""}" ]; then
         echo "$ ${cmd}" >&2
