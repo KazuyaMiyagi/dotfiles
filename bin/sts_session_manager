@@ -18,7 +18,7 @@ function __validate() {
             exit 1
         fi
 
-        if ! $(echo "${MFA_TOKEN}" | grep -q -E "\d{6}"); then
+        if ! echo "${MFA_TOKEN}" | grep -q -E "\d{6}"; then
             echo "Error: mfa_token must be a 6 digit number" >&2
             exit 1
         fi
