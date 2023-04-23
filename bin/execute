@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#! /bin/bash -eu
 
 # usage `CONFIRM=yes execute command.log ls |& tee evidence.log`
 function execute() {

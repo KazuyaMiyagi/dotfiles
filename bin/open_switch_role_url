@@ -1,6 +1,4 @@
-#! /bin/bash
-
-set -eu
+#! /bin/bash -eu
 
 readonly ROLE_ARN=$(aws configure get role_arn)
 readonly ACCOUNT=$(cut -d ':' -f 5 <<< "${ROLE_ARN}")

@@ -1,6 +1,4 @@
-#! /bin/bash
-
-set -eu
+#! /bin/bash -eu
 
 function __is_installed() {
     type "${1}" &> /dev/null
