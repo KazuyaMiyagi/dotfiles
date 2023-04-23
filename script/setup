@@ -20,12 +20,12 @@ if [ ! -d "${BACKUP_DIR}" ]; then
 fi
 
 if [ -L ~/.config ]; then
-    echo "~/.config symbolic link found. unlink ~/.config."
+    echo "${HOME}/.config symbolic link found. unlink ~/.config."
     unlink ~/.config
     echo "Create symbolic link ${DOTFILE_ROOT_DIR} ~/.config"
     ln -s "${DOTFILE_ROOT_DIR}" ~/.config
 elif [ -d ~/.config ]; then
-    echo "~/.config directory found. backup to ${BACKUP_DIR}/config"
+    echo "${HOME}/.config directory found. backup to ${BACKUP_DIR}/config"
     mv ~/.config "${BACKUP_DIR}/config"
     echo "Create symbolic link ${DOTFILE_ROOT_DIR} ~/.config"
     ln -s "${DOTFILE_ROOT_DIR}" ~/.config
@@ -35,7 +35,7 @@ else
 fi
 
 if [ -f ~/.zshenv ]; then
-    echo "~/.zshenv found. backup to ${BACKUP_DIR}/zshenv"
+    echo "${HOME}/.zshenv found. backup to ${BACKUP_DIR}/zshenv"
     mv ~/.zshenv "${BACKUP_DIR}/zshenv"
     echo "Create ~/.zshenv"
     echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" > ~/.zshenv
@@ -45,7 +45,7 @@ else
 fi
 
 if [ -f ~/.bashrc ]; then
-    echo "~/.bashrc found. backup to ${BACKUP_DIR}/bashrc"
+    echo "${HOME}/.bashrc found. backup to ${BACKUP_DIR}/bashrc"
     mv ~/.bashrc "${BACKUP_DIR}/bashrc"
     echo "Create ~/.bashrc"
     echo "source ${XDG_CONFIG_HOME}/bashrc" > ~/.bashrc
@@ -55,12 +55,12 @@ else
 fi
 
 if [ -L ~/.vim ]; then
-    echo "~/.vim symbolic link found. unlink ~/.vim."
+    echo "${HOME}/.vim symbolic link found. unlink ~/.vim."
     unlink ~/.vim
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
     ln -s "${DOTFILE_ROOT_DIR}/vim" ~/.vim
 elif [ -d ~/.vim ]; then
-    echo "~/.vim directory found. backup to ${BACKUP_DIR}/vim"
+    echo "${HOME}/.vim directory found. backup to ${BACKUP_DIR}/vim"
     mv ~/.vim "${BACKUP_DIR}/vim"
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
     ln -s "${DOTFILE_ROOT_DIR}/vim ~/.vim"
@@ -70,7 +70,7 @@ else
 fi
 
 if [ -L ~/tool-versions ]; then
-    echo "~/tool-versions symbolic link found. unlink ~/tool-versions."
+    echo "${HOME}/tool-versions symbolic link found. unlink ~/tool-versions."
     unlink ~/tool-versions
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions"
     ln -s "${DOTFILE_ROOT_DIR}/asdf/tool-versions" ~/tool-versions
