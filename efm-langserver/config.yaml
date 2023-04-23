@@ -71,6 +71,10 @@ tools:
     format-command: "shfmt --language-dialect bash --indent 4 --binary-next-line --case-indent --space-redirects --keep-padding"
     format-stdin: true
 
+  jq: &jq
+    format-command: "jq ."
+    format-stdin: true
+
 languages:
   vim:
     - <<: *vim-vint
@@ -89,3 +93,6 @@ languages:
   sh:
     - <<: *shellcheck
     - <<: *shfmt
+
+  json:
+    - <<: *jq
