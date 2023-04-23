@@ -6,7 +6,7 @@ function execute() {
     shift
     local cmd="${*}"
     local rewrite_cmd=""
-    if [ ! -z "${CONFIRM:-""}" ]; then
+    if [ -n "${CONFIRM:-""}" ]; then
         echo "$ ${cmd}" >&2
         echo "To execute the above command, press the Enter key." >&2
         echo "To rewrite the command, enter the command and press Enter key." >&2
