@@ -2,11 +2,11 @@
 
 function _sts_session_manager() {
     _values \
-        "Usage: eval \$(sts_session_manager \"<switch_role|switch_back>)\""\
-        'check_required_tools[Check required tools]'\
-        'switch_role[Print switch role export command]'\
-        'switch_back[Print switch back unset command]'\
-        'list[List sts cache file]'\
-        'show[Show sts cache file detail]'\
+        "Usage: eval \$(sts_session_manager \"<switch_role|switch_back>)\"" \
+        'check_required_tools[Check required tools]' \
+        'switch_role[Print switch role export command]' \
+        'switch_back[Print switch back unset command]' \
+        'list[List sts cache file]' \
+        'show[Show sts cache file detail]' \
         'remove[Remove sts cache file]'
 }

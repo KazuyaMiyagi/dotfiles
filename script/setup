@@ -14,17 +14,17 @@ source $DOTFILE_ROOT_DIR/zsh/autoload/100-xdg.zsh
 
 echo "Start setup"
 
-if [ ! -d ${BACKUP_DIR} ] ; then
+if [ ! -d ${BACKUP_DIR} ]; then
     echo "Create ${BACKUP_DIR}"
     mkdir ${BACKUP_DIR}
 fi
 
-if [ -L ~/.config ] ; then
+if [ -L ~/.config ]; then
     echo "~/.config symbolic link found. unlink ~/.config."
     unlink ~/.config
     echo "Create symbolic link ${DOTFILE_ROOT_DIR} ~/.config"
     ln -s ${DOTFILE_ROOT_DIR} ~/.config
-elif [ -d ~/.config ] ; then
+elif [ -d ~/.config ]; then
     echo "~/.config directory found. backup to ${BACKUP_DIR}/config"
     mv ~/.config ${BACKUP_DIR}/config
     echo "Create symbolic link ${DOTFILE_ROOT_DIR} ~/.config"
@@ -34,7 +34,7 @@ else
     ln -s ${DOTFILE_ROOT_DIR} ~/.config
 fi
 
-if [ -f ~/.zshenv ] ; then
+if [ -f ~/.zshenv ]; then
     echo "~/.zshenv found. backup to ${BACKUP_DIR}/zshenv"
     mv ~/.zshenv ${BACKUP_DIR}/zshenv
     echo "Create ~/.zshenv"
@@ -44,7 +44,7 @@ else
     echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" > ~/.zshenv
 fi
 
-if [ -f ~/.bashrc ] ; then
+if [ -f ~/.bashrc ]; then
     echo "~/.bashrc found. backup to ${BACKUP_DIR}/bashrc"
     mv ~/.bashrc ${BACKUP_DIR}/bashrc
     echo "Create ~/.bashrc"
@@ -54,12 +54,12 @@ else
     echo "source ${XDG_CONFIG_HOME}/bashrc" > ~/.bashrc
 fi
 
-if [ -L ~/.vim ] ; then
+if [ -L ~/.vim ]; then
     echo "~/.vim symbolic link found. unlink ~/.vim."
     unlink ~/.vim
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
     ln -s ${DOTFILE_ROOT_DIR}/vim ~/.vim
-elif [ -d ~/.vim ] ; then
+elif [ -d ~/.vim ]; then
     echo "~/.vim directory found. backup to ${BACKUP_DIR}/vim"
     mv ~/.vim ${BACKUP_DIR}/vim
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
@@ -69,7 +69,7 @@ else
     ln -s ${DOTFILE_ROOT_DIR}/vim ~/.vim
 fi
 
-if [ -L ~/tool-versions ] ; then
+if [ -L ~/tool-versions ]; then
     echo "~/tool-versions symbolic link found. unlink ~/tool-versions."
     unlink ~/tool-versions
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions"
@@ -79,7 +79,7 @@ else
     ln -s ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions
 fi
 
-if [ -L "${HOME}/.tflint.hcl" ] ; then
+if [ -L "${HOME}/.tflint.hcl" ]; then
     echo "${HOME}/.tflint.hcl symbolic link found. unlink ~/.tflint.hcl."
     unlink ~/.tflint.hcl
 fi
@@ -87,7 +87,7 @@ fi
 echo "Create symbolic link ${DOTFILE_ROOT_DIR}/tflint/.tflint.hcl ~/.tflint.hcl"
 ln -s "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl"
 
-if [ ! -d ~/.local/share/zsh ] ; then
+if [ ! -d ~/.local/share/zsh ]; then
     echo "Create ~/.local/share/zsh"
     mkdir -p ~/.local/share/zsh
 fi

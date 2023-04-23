@@ -11,11 +11,11 @@ readonly DOTFILE_ROOT_DIR="$(pwd)"
 
 # __is_installed checks install status the specified command
 function __is_installed() {
-  type $1 &> /dev/null
+    type $1 &> /dev/null
 }
 
 homebrew_install() {
-    if ! __is_installed brew ; then
+    if ! __is_installed brew; then
         echo "==> Installing Homebrew."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     else
@@ -24,7 +24,7 @@ homebrew_install() {
 }
 
 homebrew_bundle_install() {
-    brew bundle check >/dev/null 2>&1  || {
+    brew bundle check > /dev/null 2>&1 || {
         echo "==> Installing Homebrew dependencies…"
         brew bundle install --no-lock
     }
