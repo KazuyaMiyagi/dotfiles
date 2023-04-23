@@ -1,4 +1,4 @@
-#/bin/sh
+#! /bin/sh
 
 # script/bootstrap: Resolve all dependencies that the application requires to
 #                   run.
