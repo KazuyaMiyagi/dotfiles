@@ -45,10 +45,17 @@ function switch_back() {
 function switch_role() {
     __validate
 
-    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
-    local SESSION_NAME="${SESSION_NAME:=$(whoami)}"
-    local DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
-    local STS_ASSUME_ROLE_COMMAND="aws --profile=${AWS_PROFILE} sts assume-role --role-arn $(aws configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
+    local CACHE_FILE
+    CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+
+    local SESSION_NAME
+    SESSION_NAME="${SESSION_NAME:=$(whoami)}"
+
+    local DURATION_SECONDS
+    DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
+
+    local STS_ASSUME_ROLE_COMMAND
+    STS_ASSUME_ROLE_COMMAND="aws --profile=${AWS_PROFILE} sts assume-role --role-arn $(aws configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
 
     if [ ! -s "${CACHE_FILE}" ]; then
         echo "Create new AWS STS session token..." >&2
@@ -61,9 +68,14 @@ function switch_role() {
         local DATE_CMD="date"
     fi
 
-    local EXPIRATION=$(jq -r ".Credentials.Expiration" < "${CACHE_FILE}")
-    local EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
-    local NOW_UNIXTIME=$("${DATE_CMD}" "+%s")
+    local EXPIRATION
+    EXPIRATION=$(jq -r ".Credentials.Expiration" < "${CACHE_FILE}")
+
+    local EXPIRATION_UNIXTIME
+    EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
+
+    local NOW_UNIXTIME
+    NOW_UNIXTIME=$("${DATE_CMD}" "+%s")
 
     if [ "${EXPIRATION_UNIXTIME}" -lt "${NOW_UNIXTIME}" ]; then
         echo "AWS STS session token is expired." >&2
@@ -86,7 +98,8 @@ function list() {
 function show() {
     __validate
 
-    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local CACHE_FILE
+    CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
     if [ -s "${CACHE_FILE}" ]; then
         jq --raw-output "." < "${CACHE_FILE}"
     else
@@ -98,7 +111,8 @@ function show() {
 function remove() {
     __validate
 
-    local CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local CACHE_FILE
+    CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
     if [ -s "${CACHE_FILE}" ]; then
         rm -i "${CACHE_FILE}"
     else
@@ -108,7 +122,8 @@ function remove() {
 }
 
 function usage() {
-    readonly COMMAND="sts_session_manager"
+    COMMAND="sts_session_manager"
+    readonly COMMAND
     cat <<- EOL
 		Usage: ${COMMAND} <subcommand>
 		Subcommands:
@@ -122,8 +137,11 @@ function usage() {
     exit 1
 }
 
-readonly SUBCOMMAND="${1:-""}"
-readonly CACHE_DIR="${HOME}/.aws/cli/cache"
+SUBCOMMAND="${1:-""}"
+readonly SUBCOMMAND
+
+CACHE_DIR="${HOME}/.aws/cli/cache"
+readonly CACHE_DIR
 
 case "${SUBCOMMAND}" in
     check_required_tools | check)

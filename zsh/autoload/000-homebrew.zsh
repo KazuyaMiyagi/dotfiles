@@ -8,8 +8,10 @@ if [[ "$(/usr/bin/uname)" == "Darwin" ]]; then
 
     # for ruby-build
     # https://github.com/rbenv/ruby-build/wiki#macos
-    export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@3)"
+    OPENSSL_PREFIX=$(brew --prefix openssl@3)
+    export RUBY_CONFIGURE_OPTS="--with-openssl-dir=${OPENSSL_PREFIX}"
     # https://github.com/rbenv/ruby-build/discussions/1933#discussioncomment-2131144
-    export CPPFLAGS="-I$(brew --prefix)/opt/capstone/include"
-    export LDFLAGS="-L$(brew --prefix)/opt/capstone/lib"
+    BREW_PREFIX=$(brew --prefix)
+    export CPPFLAGS="-I${BREW_PREFIX}/opt/capstone/include"
+    export LDFLAGS="-L${BREW_PREFIX}/opt/capstone/lib"
 fi

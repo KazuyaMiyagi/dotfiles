@@ -1,7 +1,12 @@
 #! /bin/bash -eu
 
-readonly ROLE_ARN=$(aws configure get role_arn)
-readonly ACCOUNT=$(cut -d ':' -f 5 <<< "${ROLE_ARN}")
-readonly ROLE_NAME=$(cut -d '/' -f 2 <<< "${ROLE_ARN}")
+ROLE_ARN="$(aws configure get role_arn)"
+readonly ROLE_ARN
+
+ACCOUNT=$(cut -d ':' -f 5 <<< "${ROLE_ARN}")
+readonly ACCOUNT
+
+ROLE_NAME=$(cut -d '/' -f 2 <<< "${ROLE_ARN}")
+readonly ROLE_NAME
 
 open "$(printf "https://signin.aws.amazon.com/switchrole?account=%s&roleName=%s&displayName=%s" "${ACCOUNT}" "${ROLE_NAME}" "${AWS_PROFILE}")"
