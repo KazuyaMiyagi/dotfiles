@@ -7,8 +7,6 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-readonly DOTFILE_ROOT_DIR="$(pwd)"
-
 # __is_installed checks install status the specified command
 function __is_installed() {
     type $1 &> /dev/null
