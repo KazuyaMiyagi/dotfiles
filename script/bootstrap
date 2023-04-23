@@ -3,11 +3,11 @@
 # script/bootstrap: Resolve all dependencies that the application requires to
 #                   run.
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "${0}")/.."
 
 # __is_installed checks install status the specified command
 function __is_installed() {
-    type "$1" &> /dev/null
+    type "${1}" &> /dev/null
 }
 
 function homebrew_install() {

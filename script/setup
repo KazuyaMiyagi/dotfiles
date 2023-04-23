@@ -3,13 +3,13 @@
 # script/setup: Set up application for the first time after cloning, or set it
 #               back to the initial first unused state.
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "${0}")/.."
 
 DOTFILE_ROOT_DIR="$(pwd)"
 readonly DOTFILE_ROOT_DIR
-readonly BACKUP_DIR="$DOTFILE_ROOT_DIR/backup"
+readonly BACKUP_DIR="${DOTFILE_ROOT_DIR}/backup"
 
-source "$DOTFILE_ROOT_DIR/zsh/autoload/100-xdg.zsh"
+source "${DOTFILE_ROOT_DIR}/zsh/autoload/100-xdg.zsh"
 
 echo "Start setup"
 
@@ -94,4 +94,4 @@ fi
 echo "Finish setup!"
 echo ""
 
-"$DOTFILE_ROOT_DIR/script/bootstrap"
+"${DOTFILE_ROOT_DIR}/script/bootstrap"

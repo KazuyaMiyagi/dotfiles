@@ -20,11 +20,11 @@ zstyle ":vcs_info:*" actionformats "%s(%b|%a[%u%c])"
 _vcs_info_precmd() {
     vcs_info
     psvar=()
-    [[ -n $vcs_info_msg_0_ ]] && psvar[1]=$vcs_info_msg_0_
-    [[ -n $vcs_info_msg_1_ ]] && psvar[2]=$vcs_info_msg_1_
-    [[ -n $AWS_PROFILE ]] && psvar[3]=$AWS_PROFILE
-    [[ -n $AWS_SESSION_EXPIRATION ]] && psvar[4]=$AWS_SESSION_EXPIRATION
-    [[ -n $TF_WORKSPACE ]] && psvar[5]=$TF_WORKSPACE
+    [[ -n ${vcs_info_msg_0_} ]] && psvar[1]=${vcs_info_msg_0_}
+    [[ -n ${vcs_info_msg_1_} ]] && psvar[2]=${vcs_info_msg_1_}
+    [[ -n ${AWS_PROFILE} ]] && psvar[3]=${AWS_PROFILE}
+    [[ -n ${AWS_SESSION_EXPIRATION} ]] && psvar[4]=${AWS_SESSION_EXPIRATION}
+    [[ -n ${TF_WORKSPACE} ]] && psvar[5]=${TF_WORKSPACE}
 }
 
 add-zsh-hook precmd _vcs_info_precmd
