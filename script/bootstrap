@@ -6,11 +6,11 @@
 cd "$(dirname "$0")/.."
 
 # __is_installed checks install status the specified command
-__is_installed() {
+function __is_installed() {
     type "$1" &> /dev/null
 }
 
-homebrew_install() {
+function homebrew_install() {
     if ! __is_installed brew; then
         echo "==> Installing Homebrew."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -19,14 +19,14 @@ homebrew_install() {
     fi
 }
 
-homebrew_bundle_install() {
+function homebrew_bundle_install() {
     brew bundle check > /dev/null 2>&1 || {
         echo "==> Installing Homebrew dependencies…"
         brew bundle install --no-lock
     }
 }
 
-homebrew_update() {
+function homebrew_update() {
     echo "==> Update Homebrew packages."
     brew update
     brew upgrade
@@ -41,7 +41,7 @@ homebrew_update() {
     brew bundle dump --force
 }
 
-vim_plug_install() {
+function vim_plug_install() {
     if [ -f "${XDG_DATA_HOME}/vim/autoload/plug.vim" ]; then
         echo "==> vim-plug was already installed."
     else
@@ -51,14 +51,14 @@ vim_plug_install() {
     fi
 }
 
-vim_plug_package_install() {
+function vim_plug_package_install() {
     echo "==> Installing vim-plug packages."
     git config --global --rename-section url.git@github.com: temp
     vim +PlugUpgrade +PlugUpdate +qa
     git config --global --rename-section temp url.git@github.com:
 }
 
-asdf_plugins_install() {
+function asdf_plugins_install() {
     echo "==> Installing asdf plugins..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
         asdf plugin add "${plugin}" || true
@@ -67,13 +67,13 @@ asdf_plugins_install() {
     echo "==> Finished install asdf plugins."
 }
 
-asdf_plugins_update() {
+function asdf_plugins_update() {
     echo "==> Updating asdf plugins..."
     asdf plugin update --all
     echo "==> Finished update asdf plugins."
 }
 
-asdf_managed_tools_update() {
+function asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools version..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
         asdf install "${plugin}" latest
@@ -82,7 +82,7 @@ asdf_managed_tools_update() {
     echo "==> Finished update asdf managed tools version."
 }
 
-tflint_init() {
+function tflint_init() {
     echo "==> Starting TFLint initialization..."
     tflint --init
     echo "==> TFLint initialization completed."
