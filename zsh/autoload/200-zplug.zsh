@@ -1,7 +1,7 @@
 export ZPLUG_HOME="${HOMEBREW_PREFIX}/opt/zplug"
 
-if [ -f $ZPLUG_HOME/init.zsh ]; then
-    source $ZPLUG_HOME/init.zsh
+if [ -f "$ZPLUG_HOME/init.zsh" ]; then
+    source "$ZPLUG_HOME/init.zsh"
 
     zplug "mollifier/anyframe"
     if zplug check "mollifier/anyframe"; then

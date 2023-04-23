@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 
 # __is_installed checks install status the specified command
 function __is_installed() {
-    type $1 &> /dev/null
+    type "$1" &> /dev/null
 }
 
 homebrew_install() {
@@ -44,11 +44,11 @@ homebrew_update() {
 }
 
 vim_plug_install() {
-    if [ -f ${XDG_DATA_HOME}/vim/autoload/plug.vim ]; then
+    if [ -f "${XDG_DATA_HOME}/vim/autoload/plug.vim" ]; then
         echo "==> vim-plug was already installed."
     else
         echo "==> Installing vim-plug"
-        curl --fail --location --create-dirs --output ${XDG_DATA_HOME}/vim/autoload/plug.vim \
+        curl --fail --location --create-dirs --output "${XDG_DATA_HOME}/vim/autoload/plug.vim" \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     fi
 }
@@ -63,7 +63,7 @@ vim_plug_package_install() {
 asdf_plugins_install() {
     echo "==> Installing asdf plugins..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
-        asdf plugin add ${plugin} || true
+        asdf plugin add "${plugin}" || true
     done
     asdf install
     echo "==> Finished install asdf plugins."
@@ -78,8 +78,8 @@ asdf_plugins_update() {
 asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools version..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
-        asdf install ${plugin} latest
-        asdf global ${plugin} latest
+        asdf install "${plugin}" latest
+        asdf global "${plugin}" latest
     done
     echo "==> Finished update asdf managed tools version."
 }
