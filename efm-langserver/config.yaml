@@ -34,6 +34,21 @@ tools:
       - "%f:%l:%c: %tarning - %m"
       - "%f:%l:%c: %trror - %m"
 
+  tfsec: &tfsec
+    prefix: "tfsec"
+    lint-command: "tfsec --format csv"
+    lint-stdin: true
+    lint-formats:
+      - "%f,%l,%e,%r,%tOW,%m,%r,%r"
+      - "%f,%l,%e,%r,%tEDIUM,%m,%r,%r"
+      - "%f,%l,%e,%r,%tIGH,%m,%r,%r"
+      - "%f,%l,%e,%r,%tRITICAL,%m,%r,%r"
+    lint-category-map:
+      L: H
+      M: I
+      H: W
+      C: E
+
   markdownlint-cli2: &markdownlint-cli2
     prefix: "markdownlint-cli2"
     lint-command: "markdownlint-cli2 ${INPUT}"
@@ -66,6 +81,7 @@ languages:
 
   terraform:
     - <<: *tflint
+    - <<: *tfsec
 
   dockerfile:
     - <<: *hadolint
