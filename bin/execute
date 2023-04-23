@@ -16,4 +16,4 @@ function execute() {
     ${rewrite_cmd:-$cmd} | tee "${output}"
 }
 
-execute ${@}
+execute "${@}"

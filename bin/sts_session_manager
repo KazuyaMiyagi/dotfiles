@@ -28,6 +28,7 @@ function check_required_tools() {
         REQUIRED_TOOLS+=(gdate)
     fi
 
+    # shellcheck disable=SC2068
     for tool in ${REQUIRED_TOOLS[@]}; do
         if ! __is_installed "${tool}"; then
             echo "[Error] ${tool} not installed. Please install the ${tool}." >&2
