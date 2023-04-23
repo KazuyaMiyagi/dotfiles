@@ -62,10 +62,10 @@ elif [ -d ~/.vim ]; then
     echo "${HOME}/.vim directory found. backup to ${BACKUP_DIR}/vim"
     mv ~/.vim "${BACKUP_DIR}/vim"
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
-    ln -s "${DOTFILE_ROOT_DIR}/vim ~/.vim"
+    ln -s "${DOTFILE_ROOT_DIR}/vim" ~/.vim
 else
     echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
-    ln -s "${DOTFILE_ROOT_DIR}/vim ~/.vim"
+    ln -s "${DOTFILE_ROOT_DIR}/vim" ~/.vim
 fi
 
 if [ -L ~/tool-versions ]; then
