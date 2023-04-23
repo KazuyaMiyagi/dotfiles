@@ -10,7 +10,7 @@ function execute() {
         echo "$ ${cmd}" >&2
         echo "To execute the above command, press the Enter key." >&2
         echo "To rewrite the command, enter the command and press Enter key." >&2
-        read rewrite_cmd
+        read -r rewrite_cmd
     fi
     echo "$ ${rewrite_cmd:-$cmd}"
     ${rewrite_cmd:-$cmd} | tee "${output}"
