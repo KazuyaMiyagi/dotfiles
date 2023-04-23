@@ -8,7 +8,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 # __is_installed checks install status the specified command
-function __is_installed() {
+__is_installed() {
     type "$1" &> /dev/null
 }
 
