@@ -14,7 +14,7 @@ function __validate() {
 
     if [ "${SUBCOMMAND}" == "switch_mfa_session" ]; then
         if [ -z "${MFA_TOKEN}" ]; then
-            echo "Error: The second argument is required for the subcommand switch_mfa_token" >&2
+            echo "Error: The second argument is required for the subcommand switch_mfa_session" >&2
             exit 1
         fi
 
@@ -192,7 +192,7 @@ function usage() {
 		Subcommands:
 		    ${COMMAND} check_required_tools | check   -- Check required tools
 		    ${COMMAND} switch_role                    -- Print switch_role export command
-            ${COMMAND} switch_mfa_session <mfa_token> -- Print switch_mfa_session export command
+		    ${COMMAND} switch_mfa_session <mfa_token> -- Print switch_mfa_session export command
 		    ${COMMAND} switch_back                    -- Print switch_back unset command
 		    ${COMMAND} list | ls                      -- List sts cache file
 		    ${COMMAND} show                           -- Show sts cache file detail
