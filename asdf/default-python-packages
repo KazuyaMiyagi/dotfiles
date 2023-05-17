@@ -1,6 +1,7 @@
 flake8
 pep8-naming
 pip
+poetry
 pyls-isort
 python-lsp-black
 python-lsp-server[all]
