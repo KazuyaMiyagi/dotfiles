@@ -3,6 +3,15 @@
     "aws-service-name": true,
     "no-dead-link": true,
     "no-todo": true,
+    "preset-ja-spacing": {
+      "ja-space-around-code": {
+        "before": true,
+        "after": true
+      },
+      "ja-space-between-half-and-full-width": {
+        "space": "always"
+      }
+    },
     "preset-ja-technical-writing": true,
     "preset-japanese": true,
     "preset-jtf-style": {
