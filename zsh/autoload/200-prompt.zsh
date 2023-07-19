@@ -5,7 +5,7 @@ autoload -Uz vcs_info
 readonly AWS_SYMBOL="%F{#D86613} %f"
 readonly AWS_SESSION_EXPIRATION_SYMBOL="%F{#D6242D} %f"
 readonly TF_WORKSPACE_SYMBOL="%F{#844FBA} %f"
-readonly GIT_SYMBOL="%F{#f64d27} %f"
+readonly GIT_SYMBOL="%F{#f64d27}󰊢 %f"
 readonly GIT_STAGED_SYMBOL="✔︎"
 readonly GIT_UNSTAGED_SYMBOL="+"
 readonly GIT_UNTRACKED_SYMBOL="?"
