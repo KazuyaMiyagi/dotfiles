@@ -3,6 +3,8 @@
   "extends": [
     "config:base"
   ],
+  "automerge": true,
+  "ignoreTests": true,
   "tflint-plugin": {
     "fileMatch": [
       "^tflint/tflint\\.hcl$"
