@@ -41,17 +41,20 @@ tools:
       - "%f:%l:%c: %tarning - %m"
       - "%f:%l:%c: %trror - %m"
 
-  tfsec: &tfsec
-    prefix: "tfsec"
-    lint-command: "tfsec --format csv"
+  trivy: &trivy
+    prefix: "trivy"
+    lint-command: trivy config --tf-exclude-downloaded-modules --format json . | jq -r '.Results[]? | .Target as $target | .Misconfigurations[]? | .Description as $description | .ID as $id | .Severity as $severity | .PrimaryURL as $primaryURL | .CauseMetadata | [$target, .StartLine, .EndLine, $severity, "[" + $id + "] " + $description + " see. " + $primaryURL] | @csv'
     lint-stdin: true
+    lint-ignore-exit-code: true
     lint-formats:
-      - "%f,%l,%e,%r,%tOW,%m,%r,%r"
-      - "%f,%l,%e,%r,%tEDIUM,%m,%r,%r"
-      - "%f,%l,%e,%r,%tIGH,%m,%r,%r"
-      - "%f,%l,%e,%r,%tRITICAL,%m,%r,%r"
+      - '"%f",%l,%e,"%tNKNOWN","%m"'
+      - '"%f",%l,%e,"%tOW","%m"'
+      - '"%f",%l,%e,"%tEDIUM","%m"'
+      - '"%f",%l,%e,"%tIGH","%m"'
+      - '"%f",%l,%e,"%tRITICAL","%m"'
     lint-category-map:
-      L: H
+      U: N
+      L: N
       M: I
       H: W
       C: E
@@ -88,7 +91,7 @@ languages:
 
   terraform:
     - <<: *tflint
-    - <<: *tfsec
+    - <<: *trivy
 
   dockerfile:
     - <<: *hadolint
