@@ -1,4 +1,5 @@
 path=(
+    ${XDG_DATA_HOME}/bin(N-/)
     ${XDG_CONFIG_HOME}/bin(N-/)
     ${HOMEBREW_PREFIX}/bin(N-/)
     ${HOMEBREW_PREFIX}/sbin(N-/)
