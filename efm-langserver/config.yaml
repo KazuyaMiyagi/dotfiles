@@ -43,7 +43,7 @@ tools:
 
   trivy-config: &trivy-config
     prefix: "trivy-config"
-    lint-command: trivy config --tf-exclude-downloaded-modules --skip-dirs '.terraform' --format json . | jq -r '.Results[]? | .Target as $target | .Misconfigurations[]? | .Description as $description | .ID as $id | .Severity as $severity | .PrimaryURL as $primaryURL | .CauseMetadata | [$target, .StartLine, .EndLine, $severity, "[" + $id + "] " + $description + " see. " + $primaryURL] | @csv'
+    lint-command: trivy config --tf-exclude-downloaded-modules --skip-dirs '.terraform' --format json "${INPUT}" | jq -r '.Results[]? | .Target as $target | .Misconfigurations[]? | .Description as $description | .ID as $id | .Severity as $severity | .PrimaryURL as $primaryURL | .CauseMetadata | [$target, .StartLine, .EndLine, $severity, "[" + $id + "] " + $description + " see. " + $primaryURL] | @csv'
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
