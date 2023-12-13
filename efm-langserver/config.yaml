@@ -41,9 +41,9 @@ tools:
       - "%f:%l:%c: %tarning - %m"
       - "%f:%l:%c: %trror - %m"
 
-  trivy: &trivy
-    prefix: "trivy"
-    lint-command: trivy config --tf-exclude-downloaded-modules --format json . | jq -r '.Results[]? | .Target as $target | .Misconfigurations[]? | .Description as $description | .ID as $id | .Severity as $severity | .PrimaryURL as $primaryURL | .CauseMetadata | [$target, .StartLine, .EndLine, $severity, "[" + $id + "] " + $description + " see. " + $primaryURL] | @csv'
+  trivy-config: &trivy-config
+    prefix: "trivy-config"
+    lint-command: trivy config --tf-exclude-downloaded-modules --skip-dirs '.terraform' --format json . | jq -r '.Results[]? | .Target as $target | .Misconfigurations[]? | .Description as $description | .ID as $id | .Severity as $severity | .PrimaryURL as $primaryURL | .CauseMetadata | [$target, .StartLine, .EndLine, $severity, "[" + $id + "] " + $description + " see. " + $primaryURL] | @csv'
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
@@ -91,7 +91,7 @@ languages:
 
   terraform:
     - <<: *tflint
-    - <<: *trivy
+    - <<: *trivy-config
 
   dockerfile:
     - <<: *hadolint
