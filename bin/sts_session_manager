@@ -69,7 +69,7 @@ function switch_role() {
     DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
 
     local STS_ASSUME_ROLE_COMMAND
-    STS_ASSUME_ROLE_COMMAND="aws --profile=${AWS_PROFILE} sts assume-role --role-arn $(aws configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
+    STS_ASSUME_ROLE_COMMAND="aws sts assume-role --role-arn $(aws configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
 
     if [ ! -s "${CACHE_FILE}" ]; then
         echo "Create new AWS STS session token..." >&2
