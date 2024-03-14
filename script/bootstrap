@@ -88,6 +88,12 @@ function tflint_init() {
     echo "==> TFLint initialization completed."
 }
 
+function gcloud_update() {
+    echo "==> Update gcloud components..."
+    gcloud components update --quiet
+    echo "==> Finished Update gcloud components."
+}
+
 echo "Start bootstrap"
 
 homebrew_install
@@ -99,5 +105,6 @@ asdf_plugins_install
 asdf_plugins_update
 asdf_managed_tools_update
 tflint_init
+gcloud_update
 
 echo "Finish bootstrap!"
