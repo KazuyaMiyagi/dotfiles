@@ -53,21 +53,6 @@ else
     echo "source ${XDG_CONFIG_HOME}/bashrc" > ~/.bashrc
 fi
 
-if [ -L ~/.vim ]; then
-    echo "${HOME}/.vim symbolic link found. unlink ~/.vim."
-    unlink ~/.vim
-    echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
-    ln -s "${DOTFILE_ROOT_DIR}/vim" ~/.vim
-elif [ -d ~/.vim ]; then
-    echo "${HOME}/.vim directory found. backup to ${BACKUP_DIR}/vim"
-    mv ~/.vim "${BACKUP_DIR}/vim"
-    echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
-    ln -s "${DOTFILE_ROOT_DIR}/vim" ~/.vim
-else
-    echo "Create symbolic link ${DOTFILE_ROOT_DIR}/vim ~/.vim"
-    ln -s "${DOTFILE_ROOT_DIR}/vim" ~/.vim
-fi
-
 if [ -L ~/tool-versions ]; then
     echo "${HOME}/tool-versions symbolic link found. unlink ~/tool-versions."
     unlink ~/tool-versions
