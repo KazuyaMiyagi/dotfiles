@@ -1,7 +1,3 @@
-config {
-  module = true
-}
-
 plugin "terraform" {
   enabled = true
   version = "0.7.0"
