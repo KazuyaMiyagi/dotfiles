@@ -1,6 +1,7 @@
 eslint
 markdownlint-cli2
 prettier
+sql-formatter
 textlint
 textlint-rule-aws-service-name
 textlint-rule-no-dead-link

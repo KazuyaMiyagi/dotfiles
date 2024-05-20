@@ -81,6 +81,10 @@ tools:
     format-command: "jq ."
     format-stdin: true
 
+  sql-formatter: &sql-formatter
+    format-command: "sql-formatter"
+    format-stdin: true
+
 languages:
   vim:
     - <<: *vim-vint
@@ -102,3 +106,6 @@ languages:
 
   json:
     - <<: *jq
+
+  sql:
+    - <<: *sql-formatter
