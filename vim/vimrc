@@ -54,7 +54,7 @@ augroup END
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'mattn/vim-lsp-settings'
-let g:lsp_settings_filetype_ruby = ['ruby-lsp']
+let g:lsp_settings_filetype_ruby = ['rubocop-lsp-mode', 'ruby-lsp']
 let g:lsp_settings_filetype_json = ['json-languageserver']
 let g:lsp_settings = {
             \  'pylsp-all': {
