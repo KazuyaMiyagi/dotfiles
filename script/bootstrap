@@ -1,5 +1,7 @@
 #! /bin/bash -eu
 
+set -o pipefail
+
 # script/bootstrap: Resolve all dependencies that the application requires to
 #                   run.
 

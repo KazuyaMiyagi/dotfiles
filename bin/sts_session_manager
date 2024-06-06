@@ -1,5 +1,7 @@
 #! /bin/bash -eu
 
+set -o pipefail
+
 function __is_installed() {
     type "${1}" &> /dev/null
 }

@@ -1,5 +1,7 @@
 #! /bin/bash -eu
 
+set -o pipefail
+
 # usage `CONFIRM=yes execute command.log ls |& tee evidence.log`
 function execute() {
     local output="${1}"
