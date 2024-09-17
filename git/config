@@ -12,7 +12,7 @@
 	mg = merge --no-ff
 	lg = log --graph --decorate --oneline
 	gr = grep -H --line-number --ignore-case
-	pl = pull --prune
+	pl = pull --prune --recurse-submodules --jobs=10
 [user]
 	name = Kazuya Miyagi
 	email = KazuyaMiyagi@users.noreply.github.com
