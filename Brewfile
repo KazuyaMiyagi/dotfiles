@@ -2,7 +2,7 @@ brew "aquasecurity/trivy/trivy"
 brew "asdf"
 brew "autoconf"
 brew "aws-sam-cli"
-brew "awscli"
+brew "awscli", args: ["HEAD"]
 brew "boost"
 brew "cairo"
 brew "ccat"
