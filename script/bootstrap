@@ -40,7 +40,7 @@ function homebrew_update() {
     echo "==> Finished Update Homebrew cask packages."
 
     brew doctor || true
-    brew bundle dump --force
+    brew bundle dump --file=- | sort > Brewfile
 }
 
 function vim_plug_install() {
