@@ -1,3 +1,4 @@
+brew "actionlint"
 brew "aquasecurity/trivy/trivy"
 brew "asdf"
 brew "autoconf"
