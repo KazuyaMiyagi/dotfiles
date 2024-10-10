@@ -1,5 +1,5 @@
 terraform 1.9.7
 nodejs 22.9.0
 ruby 3.3.5
-python 3.12.7
+python 3.13.0t
 direnv 2.35.0
