@@ -1,5 +1,8 @@
 version: 2
 
+#log-level: 1
+#log-file: /tmp/efm-langserver.log
+
 root-markers:
   - .git/
   - .terraform/
@@ -59,6 +62,14 @@ tools:
       H: W
       C: E
 
+  docker-check: &docker-check
+    prefix: "docker-check"
+    lint-command: docker build --call 'check,format=json' -f "${INPUT}" . | jq --raw-output '[.warnings[] | .location.ranges[].start.line, .location.ranges[].end.line, "[" + .ruleName + "] " + .description] | @csv'
+    lint-stdin: true
+    lint-ignore-exit-code: true
+    lint-formats:
+      - '%l,%e,"%m"'
+
   hadolint: &hadolint
     prefix: "hadolint"
     lint-command: "hadolint --no-color"
@@ -104,6 +115,7 @@ languages:
     - <<: *trivy-config
 
   dockerfile:
+    - <<: *docker-check
     - <<: *hadolint
 
   sh:
