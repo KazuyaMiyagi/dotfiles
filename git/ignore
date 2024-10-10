@@ -21,3 +21,6 @@ ignore_and_override.tf
 
 # draw.io
 .$*.drawio.*.bkp
+
+# pgcli
+pgcli
