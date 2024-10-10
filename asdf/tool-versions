@@ -2,4 +2,4 @@ terraform 1.9.7
 nodejs 22.9.0
 ruby 3.3.5
 python 3.12.7
-direnv 2.34.0
+direnv 2.35.0
