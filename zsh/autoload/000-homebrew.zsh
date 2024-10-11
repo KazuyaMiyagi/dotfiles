@@ -14,4 +14,7 @@ if [[ "$(/usr/bin/uname)" == "Darwin" ]]; then
     BREW_PREFIX=$(brew --prefix)
     export CPPFLAGS="-I${BREW_PREFIX}/opt/capstone/include"
     export LDFLAGS="-L${BREW_PREFIX}/opt/capstone/lib"
+
+    # for mysql gem
+    export LIBRARY_PATH="${LIBRARY_PATH}:$(brew --prefix zstd)/lib/"
 fi
