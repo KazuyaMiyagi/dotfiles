@@ -51,10 +51,10 @@ tools:
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
-      - '%f:%l:%e:%tONE:"%m"'
-      - '%f:%l:%e:%tOTE:"%m"'
-      - '%f:%l:%e:%tARNING:"%m"'
-      - '%f:%l:%e:%tRROR:"%m"'
+      - '%f:%l-%e:%c-%k:%tONE:"%m"'
+      - '%f:%l-%e:%c-%k:%tOTE:"%m"'
+      - '%f:%l-%e:%c-%k:%tARNING:"%m"'
+      - '%f:%l-%e:%c-%k:%tRROR:"%m"'
 
   docker-check: &docker-check
     prefix: "docker-check"
