@@ -151,3 +151,5 @@ set backupdir=$XDG_DATA_HOME/vim/backup | call mkdir(&backupdir, 'p')
 
 " netrw
 let g:netrw_home = $XDG_DATA_HOME . '/vim'
+
+set updatetime=100 " vim-lsp の :LspHover の表示が自動的に消えないよう短くする
