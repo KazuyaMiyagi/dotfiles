@@ -34,8 +34,9 @@ tools:
 
   tflint: &tflint
     prefix: "tflint"
-    lint-command: "tflint --format compact --recursive --module"
+    lint-command: "tflint --format compact --recursive --call-module-type all"
     lint-stdin: true
+    lint-ignore-exit-code: true
     lint-formats:
       - ":%l:%c: %totice - %m"
       - ":%l:%c: %tarning - %m"
