@@ -47,21 +47,14 @@ tools:
 
   trivy-config: &trivy-config
     prefix: "trivy-config"
-    lint-command: trivy config --tf-exclude-downloaded-modules --skip-dirs '.terraform' --format json "${INPUT}" | jq -r '.Results[]? | .Target as $target | .Misconfigurations[]? | .Description as $description | .ID as $id | .Severity as $severity | .PrimaryURL as $primaryURL | .CauseMetadata | [$target, .StartLine, .EndLine, $severity, "[" + $id + "] " + $description + " see. " + $primaryURL] | @csv'
+    lint-command: trivy config --tf-exclude-downloaded-modules --skip-dirs '.terraform' --format sarif "${INPUT}" | jq --raw-output --from-file "${HOME}/.config/efm-langserver/sarif-to-errfmt.jq"
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
-      - '"%f",%l,%e,"%tNKNOWN","%m"'
-      - '"%f",%l,%e,"%tOW","%m"'
-      - '"%f",%l,%e,"%tEDIUM","%m"'
-      - '"%f",%l,%e,"%tIGH","%m"'
-      - '"%f",%l,%e,"%tRITICAL","%m"'
-    lint-category-map:
-      U: N
-      L: N
-      M: I
-      H: W
-      C: E
+      - '%f:%l:%e:%tONE:"%m"'
+      - '%f:%l:%e:%tOTE:"%m"'
+      - '%f:%l:%e:%tARNING:"%m"'
+      - '%f:%l:%e:%tRROR:"%m"'
 
   docker-check: &docker-check
     prefix: "docker-check"
