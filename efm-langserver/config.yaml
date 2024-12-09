@@ -47,7 +47,7 @@ tools:
 
   trivy-config: &trivy-config
     prefix: "trivy-config"
-    lint-command: trivy config --tf-exclude-downloaded-modules --skip-dirs '.terraform' --format sarif "${INPUT}" | jq --raw-output --from-file "${HOME}/.config/efm-langserver/sarif-to-errfmt.jq"
+    lint-command: trivy config --tf-exclude-downloaded-modules --skip-dirs '.terraform' --format sarif "${INPUT}/../" | jq --raw-output --from-file "${HOME}/.config/efm-langserver/sarif-to-errfmt.jq"
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
