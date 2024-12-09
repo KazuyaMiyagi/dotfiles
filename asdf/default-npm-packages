@@ -1,3 +1,5 @@
+@commitlint/cli
+@commitlint/config-conventional
 eslint
 markdownlint-cli2
 prettier

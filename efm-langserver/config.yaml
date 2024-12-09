@@ -97,6 +97,15 @@ tools:
     lint-formats:
       - "%f:%l:%c: %m"
 
+  commitlint: &commitlint
+    prefix: commitlint
+    lint-command: 'commitlint --config ~/.config/commitlint/config.mjs | grep -E "^(\s|⚠|✖)\s+.*" | sed -e "s/^⚠/W/" -e "s/^✖/E/" -e "s/^\s/N/g"'
+    lint-stdin: true
+    lint-ignore-exit-code: true
+    lint-formats:
+      - "%t   %m"
+      - "%m"
+
 languages:
   vim:
     - <<: *vim-vint
@@ -125,3 +134,6 @@ languages:
 
   yaml:
     - <<: *actionlint
+
+  gitcommit:
+    - <<: *commitlint
