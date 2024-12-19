@@ -12,7 +12,5 @@ if [ -f "${ZPLUG_HOME}/init.zsh" ]; then
     zplug "zsh-users/zsh-autosuggestions"
     zplug "zsh-users/zsh-syntax-highlighting"
 
-    zplug "kinjo/geed", as:command, use:"geed-*"
-
     zplug load
 fi
