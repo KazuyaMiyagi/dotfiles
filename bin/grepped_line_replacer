@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+INPUT_FILE="${1:-/dev/stdin}"
+
+if [[ "$INPUT_FILE" == "/dev/stdin" && ! -s "$INPUT_FILE" ]]; then
+    echo 'usage: $ grep -n "word" > list'
+    echo '       $ vim list'
+    echo "       $ ${0} < list"
+    exit 1
+fi
+
+IFS=$'\n'
+
+if [ "$(uname)" == 'Darwin' ]; then
+    SED_COMMAND='gsed'
+else
+    SED_COMMAND='sed'
+fi
+
+while read -r LINE; do
+    FILE_NAME=$(echo "$LINE" | cut -d ':' -f 1)
+    LINE_NUMBER=$(echo "$LINE" | cut -d ':' -f 2)
+    NEW_CONTENT=$(echo "$LINE" | cut -d ':' -f 3-)
+    ESCAPED_CONTENT=$(echo "${NEW_CONTENT}" | sed 's/[\\&/]/\\&/g')
+    "${SED_COMMAND}" -i "${LINE_NUMBER}s/.*/${ESCAPED_CONTENT}/" "${FILE_NAME}"
+done <"${INPUT_FILE}"
+
