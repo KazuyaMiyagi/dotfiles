@@ -1,0 +1,22 @@
+theme = tokyonight
+background-opacity = 0.75
+unfocused-split-opacity = 0.5
+font-size = 18
+quick-terminal-position = bottom
+
+# enter
+keybind = ctrl+m=text:\x0d
+
+keybind = ctrl+z>n=next_tab
+keybind = ctrl+z>p=previous_tab
+keybind = ctrl+z>c=new_tab
+
+keybind = ctrl+z>s=new_split:down
+keybind = ctrl+z>v=new_split:right
+
+keybind = ctrl+z>h=goto_split:left
+keybind = ctrl+z>j=goto_split:bottom
+keybind = ctrl+z>k=goto_split:top
+keybind = ctrl+z>l=goto_split:right
+
+keybind = global:ctrl+tab=toggle_quick_terminal
