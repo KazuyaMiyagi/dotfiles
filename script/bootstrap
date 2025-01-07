@@ -9,7 +9,7 @@ cd "$(dirname "${0}")/.."
 
 # __is_installed checks install status the specified command
 function __is_installed() {
-    type "${1}" &> /dev/null
+    type "${1}" &>/dev/null
 }
 
 function homebrew_install() {
@@ -22,7 +22,7 @@ function homebrew_install() {
 }
 
 function homebrew_bundle_install() {
-    brew bundle check > /dev/null 2>&1 || {
+    brew bundle check >/dev/null 2>&1 || {
         echo "==> Installing Homebrew dependencies…"
         brew bundle install --no-lock
     }
@@ -40,7 +40,7 @@ function homebrew_update() {
     echo "==> Finished Update Homebrew cask packages."
 
     brew doctor || true
-    brew bundle dump --file=- | sort > Brewfile
+    brew bundle dump --file=- | sort >Brewfile
 }
 
 function vim_plug_install() {
@@ -110,3 +110,4 @@ tflint_init
 gcloud_update
 
 echo "Finish bootstrap!"
+

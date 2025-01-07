@@ -39,20 +39,20 @@ if [ -f ~/.zshenv ]; then
     echo "${HOME}/.zshenv found. backup to ${BACKUP_DIR}/zshenv"
     mv ~/.zshenv "${BACKUP_DIR}/zshenv"
     echo "Create ~/.zshenv"
-    echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" > ~/.zshenv
+    echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" >~/.zshenv
 else
     echo "Create ~/.zshenv"
-    echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" > ~/.zshenv
+    echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" >~/.zshenv
 fi
 
 if [ -f ~/.bashrc ]; then
     echo "${HOME}/.bashrc found. backup to ${BACKUP_DIR}/bashrc"
     mv ~/.bashrc "${BACKUP_DIR}/bashrc"
     echo "Create ~/.bashrc"
-    echo "source ${XDG_CONFIG_HOME}/bashrc" > ~/.bashrc
+    echo "source ${XDG_CONFIG_HOME}/bashrc" >~/.bashrc
 else
     echo "Create ~/.bashrc"
-    echo "source ${XDG_CONFIG_HOME}/bashrc" > ~/.bashrc
+    echo "source ${XDG_CONFIG_HOME}/bashrc" >~/.bashrc
 fi
 
 if [ -L ~/tool-versions ]; then
@@ -82,3 +82,4 @@ echo "Finish setup!"
 echo ""
 
 "${DOTFILE_ROOT_DIR}/script/bootstrap"
+
