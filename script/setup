@@ -1,5 +1,6 @@
-#! /bin/bash -eu
+#! /usr/bin/env bash
 
+set -eu
 set -o pipefail
 
 # script/setup: Set up application for the first time after cloning, or set it

@@ -1,5 +1,6 @@
-#! /bin/bash -eu
+#! /usr/bin/env bash
 
+set -eu
 set -o pipefail
 
 # usage `CONFIRM=yes execute command.log ls |& tee evidence.log`
