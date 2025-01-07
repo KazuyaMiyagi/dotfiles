@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+if [ "$1" = "usage" ]; then
+    echo "    edit: Opens the TODO file in the editor specified by the \$EDITOR environment variable."
+    exit 0
+fi
+
+"${EDITOR}" "${TODO_FILE}"
+

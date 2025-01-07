@@ -18,3 +18,4 @@ alias k8s_dashbord_stop="kubectl delete -f https://raw.githubusercontent.com/kub
 alias jwt-decode="jq -R 'split(\".\") | .[1] | @base64d | fromjson'"
 alias youtube-dl="youtube-dl -f bestvideo+bestaudio --merge-output-format mp4"
 alias flake8="flake8 --config \${XDG_CONFIG_HOME}/flake8"
+alias todo="todo.sh"
