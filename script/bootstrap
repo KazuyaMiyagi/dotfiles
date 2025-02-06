@@ -66,7 +66,7 @@ function asdf_plugins_install() {
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
         asdf plugin add "${plugin}" || true
     done
-    asdf install
+    asdf install || true
     echo "==> Finished install asdf plugins."
 }
 
@@ -79,8 +79,10 @@ function asdf_plugins_update() {
 function asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools version..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
-        asdf install "${plugin}" latest
-        asdf global "${plugin}" latest
+        asdf install "${plugin}" latest || true
+        pushd asdf >/dev/null
+        asdf set "${plugin}" latest || true
+        popd >/dev/null
     done
     echo "==> Finished update asdf managed tools version."
 }
