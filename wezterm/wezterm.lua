@@ -57,7 +57,7 @@ return {
     }),
     adjust_window_size_when_changing_font_size = false,
 
-    color_scheme = "tokyonight",
+    color_scheme = "gruvbox",
     window_frame = {
         font = wezterm.font({ family = "Hack Nerd Font", weight = 'Bold' }),
         font_size = 18,

@@ -10,7 +10,7 @@ set laststatus=2
 set noshowmode
 set t_Co=256
 let g:lightline = {
-            \ 'colorscheme': 'tokyonight'
+            \ 'colorscheme': 'gruvbox'
             \ }
 Plug 'editorconfig/editorconfig-vim'
 Plug 'luochen1990/rainbow'
@@ -32,9 +32,7 @@ let g:terraform_fmt_on_save=1
 Plug 'github/copilot.vim'
 
 " colorscheme
-Plug 'ghifarit53/tokyonight-vim'
-let g:tokyonight_enable_italic = 0
-let g:tokyonight_disable_italic_comment = 1
+Plug 'morhetz/gruvbox'
 
 " Language server
 Plug 'prabirshrestha/vim-lsp'
@@ -127,7 +125,7 @@ set shiftround
 " color
 syntax on
 set background=dark
-colorscheme tokyonight
+colorscheme gruvbox
 
 " 全角スペースの表示
 highlight ZenkakuSpace cterm=standout,undercurl term=standout,undercurl gui=standout,undercurl
