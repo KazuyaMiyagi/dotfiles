@@ -82,8 +82,8 @@ tools:
     format-command: "shfmt --language-dialect bash --indent 4 --binary-next-line --case-indent --space-redirects --keep-padding"
     format-stdin: true
 
-  jq: &jq
-    format-command: "jq ."
+  prettier: &prettier
+    format-command: "prettier --stdin-filepath ${INPUT}"
     format-stdin: true
 
   sql-formatter: &sql-formatter
@@ -127,7 +127,7 @@ languages:
     - <<: *shfmt
 
   json:
-    - <<: *jq
+    - <<: *prettier
 
   sql:
     - <<: *sql-formatter
