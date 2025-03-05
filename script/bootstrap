@@ -78,12 +78,12 @@ function asdf_plugins_update() {
 
 function asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools version..."
-    for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
+    pushd asdf >/dev/null
+    for plugin in $(cut -d ' ' -f1 ./tool-versions | tr '\n' ' '); do
         asdf install "${plugin}" latest
-        pushd asdf >/dev/null
         asdf set "${plugin}" latest
-        popd >/dev/null
     done
+    popd >/dev/null
     echo "==> Finished update asdf managed tools version."
 }
 
