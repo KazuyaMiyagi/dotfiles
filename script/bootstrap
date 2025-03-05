@@ -25,7 +25,7 @@ function homebrew_install() {
 function homebrew_bundle_install() {
     brew bundle check >/dev/null 2>&1 || {
         echo "==> Installing Homebrew dependencies…"
-        brew bundle install --no-lock
+        brew bundle install
     }
 }
 
