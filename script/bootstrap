@@ -64,9 +64,9 @@ function vim_plug_package_install() {
 function asdf_plugins_install() {
     echo "==> Installing asdf plugins..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
-        asdf plugin add "${plugin}" || true
+        asdf plugin add "${plugin}"
     done
-    asdf install || true
+    asdf install
     echo "==> Finished install asdf plugins."
 }
 
@@ -79,9 +79,9 @@ function asdf_plugins_update() {
 function asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools version..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
-        asdf install "${plugin}" latest || true
+        asdf install "${plugin}" latest
         pushd asdf >/dev/null
-        asdf set "${plugin}" latest || true
+        asdf set "${plugin}" latest
         popd >/dev/null
     done
     echo "==> Finished update asdf managed tools version."
