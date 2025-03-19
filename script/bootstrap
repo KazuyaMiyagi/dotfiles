@@ -66,8 +66,30 @@ function asdf_plugins_install() {
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
         asdf plugin add "${plugin}"
     done
-    asdf install
     echo "==> Finished install asdf plugins."
+}
+
+function asdf_plugins_python_apply_path() {
+    echo "==> Applying to asdf Python plugin patch..."
+    pushd "${XDG_DATA_HOME}/asdf/plugins/python/" >/dev/null
+    git reset --hard HEAD >/dev/null
+    cat <<-'HEREDOC' | git apply
+	diff --git a/bin/list-all b/bin/list-all
+	index c0ecb83..e934faa 100755
+	--- a/bin/list-all
+	+++ b/bin/list-all
+	@@ -4,7 +4,7 @@ source "$(dirname "$0")/utils.sh"
+	
+	 list_all() {
+	   install_or_update_python_build
+	-  $(python_build_path) --definitions | tr '\n' ' '
+	+  $(python_build_path) --definitions | grep -E -v -e '^.*t$' | tr '\n' ' '
+	 }
+	
+	 list_all
+	HEREDOC
+    popd >/dev/null
+    echo "==> Finished applying to asdf Python plugin patch."
 }
 
 function asdf_plugins_update() {
@@ -107,6 +129,7 @@ homebrew_update
 vim_plug_install
 vim_plug_package_install
 asdf_plugins_install
+asdf_plugins_python_apply_path
 asdf_plugins_update
 asdf_managed_tools_update
 tflint_init
