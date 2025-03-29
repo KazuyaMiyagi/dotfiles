@@ -1,0 +1,13 @@
+#compdef sts-session-manager
+
+function _sts-session-manager() {
+    _values \
+        "Usage: eval \$(sts-session-manager \"<switch-role|switch-mfa-session|switch-back>)\"" \
+        'check-required-tools[Check required tools]' \
+        'switch-role[Print switch role export command]' \
+        'switch-mfa-session[Print switch mfa session export command]' \
+        'switch-back[Print switch back unset command]' \
+        'list[List sts cache file]' \
+        'show[Show sts cache file detail]' \
+        'remove[Remove sts cache file]'
+}

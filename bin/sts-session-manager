@@ -8,16 +8,16 @@ function __is_installed() {
 }
 
 function __validate() {
-    check_required_tools >/dev/null
+    check-required-tools >/dev/null
 
     if [ -z "${AWS_PROFILE:=""}" ]; then
         echo "Error: AWS_PROFILE is not export" >&2
         exit 1
     fi
 
-    if [ "${SUBCOMMAND}" == "switch_mfa_session" ]; then
+    if [ "${SUBCOMMAND}" == "switch-mfa-session" ]; then
         if [ -z "${MFA_TOKEN}" ]; then
-            echo "Error: The second argument is required for the subcommand switch_mfa_session" >&2
+            echo "Error: The second argument is required for the subcommand switch-mfa-session" >&2
             exit 1
         fi
 
@@ -27,7 +27,7 @@ function __validate() {
         fi
     fi
 
-    if [ "${SUBCOMMAND}" == "switch_role" ]; then
+    if [ "${SUBCOMMAND}" == "switch-role" ]; then
         if ! aws configure get role_arn >/dev/null; then
             echo "Error: role_arn is not set for this AWS_PROFILE" >&2
             exit 1
@@ -35,7 +35,7 @@ function __validate() {
     fi
 }
 
-function check_required_tools() {
+function check-required-tools() {
     echo "==> Start checking required tools..."
     local REQUIRED_TOOLS=(aws jq)
 
@@ -55,15 +55,15 @@ function check_required_tools() {
     echo -e "<== End checking required tools.\n"
 }
 
-function switch_back() {
+function switch-back() {
     echo "unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION"
 }
 
-function switch_role() {
+function switch-role() {
     __validate
 
     local CACHE_FILE
-    CACHE_FILE="${CACHE_DIR}/switch_role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    CACHE_FILE="${CACHE_DIR}/switch-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
     local SESSION_NAME
     SESSION_NAME="${SESSION_NAME:=$(whoami)}"
@@ -108,11 +108,11 @@ function switch_role() {
 	EOL
 }
 
-function switch_mfa_session() {
+function switch-mfa-session() {
     __validate
 
     local CACHE_FILE
-    CACHE_FILE="${CACHE_DIR}/switch_mfa_session-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    CACHE_FILE="${CACHE_DIR}/switch-mfa-session-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
     local SESSION_NAME
     SESSION_NAME="${SESSION_NAME:=$(whoami)}"
@@ -193,10 +193,10 @@ function usage() {
     cat <<-EOL
 		Usage: ${COMMAND} <subcommand>
 		Subcommands:
-		    ${COMMAND} check_required_tools | check   -- Check required tools
-		    ${COMMAND} switch_role                    -- Print switch_role export command
-		    ${COMMAND} switch_mfa_session <mfa_token> -- Print switch_mfa_session export command
-		    ${COMMAND} switch_back                    -- Print switch_back unset command
+		    ${COMMAND} check-required-tools | check   -- Check required tools
+		    ${COMMAND} switch-role                    -- Print switch-role export command
+		    ${COMMAND} switch-mfa-session <mfa_token> -- Print switch-mfa-session export command
+		    ${COMMAND} switch-back                    -- Print switch-back unset command
 		    ${COMMAND} list | ls                      -- List sts cache file
 		    ${COMMAND} show                           -- Show sts cache file detail
 		    ${COMMAND} remove | rm                    -- Remove sts cache file
@@ -214,17 +214,17 @@ CACHE_DIR="${HOME}/.aws/cli/cache"
 readonly CACHE_DIR
 
 case "${SUBCOMMAND}" in
-check_required_tools | check)
-    check_required_tools
+check-required-tools | check)
+    check-required-tools
     ;;
-switch_role)
-    switch_role
+switch-role)
+    switch-role
     ;;
-switch_mfa_session)
-    switch_mfa_session
+switch-mfa-session)
+    switch-mfa-session
     ;;
-switch_back)
-    switch_back
+switch-back)
+    switch-back
     ;;
 list | ls)
     list
