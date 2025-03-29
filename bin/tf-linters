@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+echo -e "==> Start Terraform validation\n"
+terraform validate
+echo -e "<== Done Terraform validation\n"
+
+echo -e "===> Start TFLint\n"
+tflint --format compact --recursive --call-module-type=local
+echo -e "<== Done TFLint\n"
+
+echo -e "==> Start trivy\n"
+trivy config --tf-exclude-downloaded-modules --skip-dirs '.terraform' --format sarif . | jq --raw-output --from-file "${XDG_CONFIG_HOME}/efm-langserver/sarif-to-errfmt.jq"
+echo -e "<== Done trivy\n"
+
