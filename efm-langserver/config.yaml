@@ -86,10 +86,6 @@ tools:
     format-command: "prettier --stdin-filepath ${INPUT}"
     format-stdin: true
 
-  sql-formatter: &sql-formatter
-    format-command: "sql-formatter --config ~/.config/sql-formatter/mysql.config.json"
-    format-stdin: true
-
   actionlint: &actionlint
     prefix: actionlint
     lint-command: "actionlint -oneline ${INPUT}"
@@ -144,7 +140,6 @@ languages:
     - <<: *prettier
 
   sql:
-    - <<: *sql-formatter
     - <<: *sqlfluff
     - <<: *sqlfmt
 
