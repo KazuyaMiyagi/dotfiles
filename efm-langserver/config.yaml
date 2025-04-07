@@ -121,6 +121,7 @@ languages:
   dockerfile:
     - <<: *docker-check
     - <<: *hadolint
+    - <<: *trivy-config
 
   sh:
     - <<: *shellcheck
