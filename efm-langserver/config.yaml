@@ -106,6 +106,16 @@ tools:
       - "%t   %m"
       - "%m"
 
+  sqlfluff: &sqlfluff
+    prefix: SQLFluff
+    lint-command: sqlfluff lint --disable-progress-bar --dialect 'bigquery' --format 'github-annotation' "${INPUT}" | jq --raw-output '.[] | [.annotation_level, .file, .start_line, .end_line, .start_column, .end_column, .message] | @csv'
+    lint-ignore-exit-code: true
+    lint-formats:
+      - '"%totice","%f",%l,%e,%c,%k,"%m"'
+      - '"%tarning","%f",%l,%e,%c,%k,"%m"'
+      - '"%tailure","%f",%l,%e,%c,%k,"%m"'
+      - '"%trror","%f",%l,%e,%c,%k,"%m"'
+
 languages:
   vim:
     - <<: *vim-vint
@@ -132,6 +142,7 @@ languages:
 
   sql:
     - <<: *sql-formatter
+    - <<: *sqlfluff
 
   yaml:
     - <<: *actionlint

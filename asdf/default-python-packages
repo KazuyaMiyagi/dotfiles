@@ -5,4 +5,6 @@ poetry
 pyls-isort
 python-lsp-black
 python-lsp-server[all]
+sqlfluff
+sqlfluff-templater-dbt
 vim-vint
