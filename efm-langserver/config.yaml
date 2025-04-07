@@ -116,6 +116,9 @@ tools:
       - '"%tailure","%f",%l,%e,%c,%k,"%m"'
       - '"%trror","%f",%l,%e,%c,%k,"%m"'
 
+  sqlfmt: &sqlfmt
+    format-command: sqlfmt - < "${INPUT}"
+
 languages:
   vim:
     - <<: *vim-vint
@@ -143,6 +146,7 @@ languages:
   sql:
     - <<: *sql-formatter
     - <<: *sqlfluff
+    - <<: *sqlfmt
 
   yaml:
     - <<: *actionlint

@@ -5,6 +5,7 @@ poetry
 pyls-isort
 python-lsp-black
 python-lsp-server[all]
+shandy-sqlfmt[jinjafmt]
 sqlfluff
 sqlfluff-templater-dbt
 vim-vint
