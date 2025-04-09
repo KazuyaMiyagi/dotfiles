@@ -112,8 +112,9 @@ tools:
       - '"%tailure","%f",%l,%e,%c,%k,"%m"'
       - '"%trror","%f",%l,%e,%c,%k,"%m"'
 
-  sqlfmt: &sqlfmt
-    format-command: sqlfmt - < "${INPUT}"
+  sqlfmt: &sqlfmt # 再終行に空行が入るので、gheadで削除する
+    format-command: sqlfmt - | ghead -n -1
+    format-stdin: true
 
 languages:
   vim:
