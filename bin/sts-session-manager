@@ -100,12 +100,12 @@ function switch-role() {
         ${STS_ASSUME_ROLE_COMMAND} >"${CACHE_FILE}"
     fi
 
-    cat <<-EOL
+    cat <<-HEREDOC
 		export AWS_ACCESS_KEY_ID=$(jq -r ".Credentials.AccessKeyId" <"${CACHE_FILE}")
 		export AWS_SECRET_ACCESS_KEY=$(jq -r ".Credentials.SecretAccessKey" <"${CACHE_FILE}")
 		export AWS_SESSION_TOKEN=$(jq -r ".Credentials.SessionToken" <"${CACHE_FILE}")
 		export AWS_SESSION_EXPIRATION="$("${DATE_CMD}" -d "${EXPIRATION}" --iso-8601=seconds)"
-	EOL
+	HEREDOC
 }
 
 function switch-mfa-session() {
@@ -149,12 +149,12 @@ function switch-mfa-session() {
         ${STS_GET_SESSION_TOKEN_COMMAND} >"${CACHE_FILE}"
     fi
 
-    cat <<-EOL
+    cat <<-HEREDOC
 		export AWS_ACCESS_KEY_ID=$(jq -r ".Credentials.AccessKeyId" <"${CACHE_FILE}")
 		export AWS_SECRET_ACCESS_KEY=$(jq -r ".Credentials.SecretAccessKey" <"${CACHE_FILE}")
 		export AWS_SESSION_TOKEN=$(jq -r ".Credentials.SessionToken" <"${CACHE_FILE}")
 		export AWS_SESSION_EXPIRATION="$("${DATE_CMD}" -d "${EXPIRATION}" --iso-8601=seconds)"
-	EOL
+	HEREDOC
 }
 
 function list() {
@@ -190,7 +190,7 @@ function remove() {
 function usage() {
     COMMAND="sts_session_manager"
     readonly COMMAND
-    cat <<-EOL
+    cat <<-HEREDOC
 		Usage: ${COMMAND} <subcommand>
 		Subcommands:
 		    ${COMMAND} check-required-tools | check   -- Check required tools
@@ -200,7 +200,7 @@ function usage() {
 		    ${COMMAND} list | ls                      -- List sts cache file
 		    ${COMMAND} show                           -- Show sts cache file detail
 		    ${COMMAND} remove | rm                    -- Remove sts cache file
-	EOL
+	HEREDOC
     exit 1
 }
 
