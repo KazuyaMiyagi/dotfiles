@@ -88,7 +88,7 @@ function assume-role() {
     fi
 
     local EXPIRATION
-    EXPIRATION=$(jq -r ".Credentials.Expiration" <"${CACHE_FILE}")
+    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${CACHE_FILE}")
 
     local EXPIRATION_UNIXTIME
     EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
@@ -103,7 +103,7 @@ function assume-role() {
         ${STS_ASSUME_ROLE_COMMAND} >"${CACHE_FILE}"
     fi
 
-    jq -r '{Version: 1} + .Credentials' <"${CACHE_FILE}"
+    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${CACHE_FILE}"
 }
 
 function get-session-token() {
@@ -133,7 +133,7 @@ function get-session-token() {
     fi
 
     local EXPIRATION
-    EXPIRATION=$(jq -r ".Credentials.Expiration" <"${CACHE_FILE}")
+    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${CACHE_FILE}")
 
     local EXPIRATION_UNIXTIME
     EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
@@ -147,7 +147,7 @@ function get-session-token() {
         ${STS_GET_SESSION_TOKEN_COMMAND} >"${CACHE_FILE}"
     fi
 
-    jq -r '{Version: 1} + .Credentials' <"${CACHE_FILE}"
+    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${CACHE_FILE}"
 }
 
 function list() {
@@ -160,7 +160,7 @@ function show() {
     local CACHE_FILE
     CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
     if [ -s "${CACHE_FILE}" ]; then
-        jq --raw-output "." <"${CACHE_FILE}"
+        jq "." <"${CACHE_FILE}"
     else
         echo "Session cache not found." >&2
         exit 1
