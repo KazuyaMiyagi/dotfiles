@@ -5,7 +5,6 @@ function _sts-session-manager() {
         "Usage: sts-session-manager get-session-token \"<base_aws_profile>\" \"000000\" OR sts-session-manager assume-role \"<base_aws_profile>\"" \
         'check-required-tools[Check required tools]' \
         'get-session-token[Outputs AWS session token in external process format]' \
-        'switch-back[Print switch back unset command]' \
         'assume-role[Outputs AWS assume-role token in external process format]' \
         'list[List sts cache file]' \
         'show[Show sts cache file detail]' \

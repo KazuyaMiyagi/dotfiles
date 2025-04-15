@@ -1,6 +1,5 @@
 alias be="bundle exec"
 alias tf="terraform"
-alias switch-back="eval \"\$(sts-session-manager switch-back)\""
 alias tree="tree -N -C"
 alias ls="ls -G"
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"

@@ -60,10 +60,6 @@ function check-required-tools() {
     echo -e "<== End checking required tools.\n"
 }
 
-function switch-back() {
-    echo "unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION"
-}
-
 function assume-role() {
     __validate
 
@@ -192,7 +188,6 @@ function usage() {
 		Subcommands:
 		    ${COMMAND} check-required-tools | check                     -- Check required tools
 		    ${COMMAND} get-session-token <base_aws_profile> <mfa_token> -- Outputs AWS session token in external process format
-		    ${COMMAND} switch-back                                      -- Print switch-back unset command
 		    ${COMMAND} assume-role                                      -- Outputs AWS assume-role token in external process format
 		    ${COMMAND} list | ls                                        -- List sts cache file
 		    ${COMMAND} show                                             -- Show sts cache file detail
@@ -222,9 +217,6 @@ assume-role)
     ;;
 get-session-token)
     get-session-token
-    ;;
-switch-back)
-    switch-back
     ;;
 list | ls)
     list
