@@ -15,9 +15,14 @@ function __validate() {
         exit 1
     fi
 
-    if [ "${SUBCOMMAND}" == "switch-mfa-session" ]; then
+    if [ "${SUBCOMMAND}" == "get-session-token" ]; then
+        if [ -z "${BASE_AWS_PROFILE}" ]; then
+            echo "Error: The second argument is required for the subcommand get-session-token" >&2
+            exit 1
+        fi
+
         if [ -z "${MFA_TOKEN}" ]; then
-            echo "Error: The second argument is required for the subcommand switch-mfa-session" >&2
+            echo "Error: The third argument is required for the subcommand get-session-token" >&2
             exit 1
         fi
 
@@ -108,11 +113,11 @@ function switch-role() {
 	HEREDOC
 }
 
-function switch-mfa-session() {
+function get-session-token() {
     __validate
 
     local CACHE_FILE
-    CACHE_FILE="${CACHE_DIR}/switch-mfa-session-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
     local SESSION_NAME
     SESSION_NAME="${SESSION_NAME:=$(whoami)}"
@@ -121,7 +126,7 @@ function switch-mfa-session() {
     DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
 
     local STS_GET_SESSION_TOKEN_COMMAND
-    STS_GET_SESSION_TOKEN_COMMAND="aws sts get-session-token --serial-number $(aws configure get mfa_serial) --token-code ${MFA_TOKEN} --duration-seconds ${DURATION_SECONDS}"
+    STS_GET_SESSION_TOKEN_COMMAND="aws --profile ${BASE_AWS_PROFILE} sts get-session-token --serial-number $(aws configure get mfa_serial) --token-code ${MFA_TOKEN} --duration-seconds ${DURATION_SECONDS}"
 
     if [ ! -s "${CACHE_FILE}" ]; then
         echo "Create new AWS STS session token..." >&2
@@ -149,12 +154,7 @@ function switch-mfa-session() {
         ${STS_GET_SESSION_TOKEN_COMMAND} >"${CACHE_FILE}"
     fi
 
-    cat <<-HEREDOC
-		export AWS_ACCESS_KEY_ID=$(jq -r ".Credentials.AccessKeyId" <"${CACHE_FILE}")
-		export AWS_SECRET_ACCESS_KEY=$(jq -r ".Credentials.SecretAccessKey" <"${CACHE_FILE}")
-		export AWS_SESSION_TOKEN=$(jq -r ".Credentials.SessionToken" <"${CACHE_FILE}")
-		export AWS_SESSION_EXPIRATION="$("${DATE_CMD}" -d "${EXPIRATION}" --iso-8601=seconds)"
-	HEREDOC
+    jq -r '{Version: 1} + .Credentials' <"${CACHE_FILE}"
 }
 
 function list() {
@@ -193,13 +193,13 @@ function usage() {
     cat <<-HEREDOC
 		Usage: ${COMMAND} <subcommand>
 		Subcommands:
-		    ${COMMAND} check-required-tools | check   -- Check required tools
-		    ${COMMAND} switch-role                    -- Print switch-role export command
-		    ${COMMAND} switch-mfa-session <mfa_token> -- Print switch-mfa-session export command
-		    ${COMMAND} switch-back                    -- Print switch-back unset command
-		    ${COMMAND} list | ls                      -- List sts cache file
-		    ${COMMAND} show                           -- Show sts cache file detail
-		    ${COMMAND} remove | rm                    -- Remove sts cache file
+		    ${COMMAND} check-required-tools | check                     -- Check required tools
+		    ${COMMAND} switch-role                                      -- Print switch-role export command
+		    ${COMMAND} get-session-token <base_aws_profile> <mfa_token> -- Outputs AWS session token in external process format
+		    ${COMMAND} switch-back                                      -- Print switch-back unset command
+		    ${COMMAND} list | ls                                        -- List sts cache file
+		    ${COMMAND} show                                             -- Show sts cache file detail
+		    ${COMMAND} remove | rm                                      -- Remove sts cache file
 	HEREDOC
     exit 1
 }
@@ -207,7 +207,10 @@ function usage() {
 SUBCOMMAND="${1:-""}"
 readonly SUBCOMMAND
 
-MFA_TOKEN="${2:-""}"
+BASE_AWS_PROFILE="${2:-""}"
+readonly BASE_AWS_PROFILE
+
+MFA_TOKEN="${3:-""}"
 readonly MFA_TOKEN
 
 CACHE_DIR="${HOME}/.aws/cli/cache"
@@ -220,8 +223,8 @@ check-required-tools | check)
 switch-role)
     switch-role
     ;;
-switch-mfa-session)
-    switch-mfa-session
+get-session-token)
+    get-session-token
     ;;
 switch-back)
     switch-back

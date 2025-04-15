@@ -2,10 +2,10 @@
 
 function _sts-session-manager() {
     _values \
-        "Usage: eval \$(sts-session-manager \"<switch-role|switch-mfa-session|switch-back>)\"" \
+        "Usage: eval \$(sts-session-manager \"<switch-role|switch-back>)\" OR sts-session-manager get-session-token \"<base_aws_profile>\" \"000000\"" \
         'check-required-tools[Check required tools]' \
         'switch-role[Print switch role export command]' \
-        'switch-mfa-session[Print switch mfa session export command]' \
+        'get-session-token[Outputs AWS session token in external process format]' \
         'switch-back[Print switch back unset command]' \
         'list[List sts cache file]' \
         'show[Show sts cache file detail]' \
