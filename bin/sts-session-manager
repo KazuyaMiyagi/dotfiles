@@ -63,8 +63,8 @@ function check-required-tools() {
 function assume-role() {
     __validate
 
-    local CACHE_FILE
-    CACHE_FILE="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local ASSUME_ROLE_CACHE_FILE
+    ASSUME_ROLE_CACHE_FILE="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
     local SESSION_NAME
     SESSION_NAME="${SESSION_NAME:=$(whoami)}"
@@ -75,10 +75,10 @@ function assume-role() {
     local STS_ASSUME_ROLE_COMMAND
     STS_ASSUME_ROLE_COMMAND="aws --profile $(aws --profile "${BASE_AWS_PROFILE}" configure get source_profile) sts assume-role --role-arn $(aws --profile "${BASE_AWS_PROFILE}" configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
 
-    if [ ! -s "${CACHE_FILE}" ]; then
+    if [ ! -f "${ASSUME_ROLE_CACHE_FILE}" ]; then
         echo "Create new AWS STS session token..." >&2
         export AWS_PROFILE="${BASE_AWS_PROFILE}"
-        ${STS_ASSUME_ROLE_COMMAND} >"${CACHE_FILE}"
+        ${STS_ASSUME_ROLE_COMMAND} >"${ASSUME_ROLE_CACHE_FILE}"
     fi
 
     if [ "$(uname)" == "Darwin" ]; then
@@ -88,7 +88,7 @@ function assume-role() {
     fi
 
     local EXPIRATION
-    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${CACHE_FILE}")
+    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${ASSUME_ROLE_CACHE_FILE}")
 
     local EXPIRATION_UNIXTIME
     EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
@@ -100,17 +100,17 @@ function assume-role() {
         echo "AWS STS session token is expired." >&2
         echo "Recreate AWS STS session token..." >&2
         export AWS_PROFILE="${BASE_AWS_PROFILE}"
-        ${STS_ASSUME_ROLE_COMMAND} >"${CACHE_FILE}"
+        ${STS_ASSUME_ROLE_COMMAND} >"${ASSUME_ROLE_CACHE_FILE}"
     fi
 
-    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${CACHE_FILE}"
+    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${ASSUME_ROLE_CACHE_FILE}"
 }
 
 function get-session-token() {
     __validate
 
-    local CACHE_FILE
-    CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local GET_SESSION_TOKEN_CACHE_FILE
+    GET_SESSION_TOKEN_CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
     local SESSION_NAME
     SESSION_NAME="${SESSION_NAME:=$(whoami)}"
@@ -121,9 +121,9 @@ function get-session-token() {
     local STS_GET_SESSION_TOKEN_COMMAND
     STS_GET_SESSION_TOKEN_COMMAND="aws --profile ${BASE_AWS_PROFILE} sts get-session-token --serial-number $(aws configure get mfa_serial) --token-code ${MFA_TOKEN} --duration-seconds ${DURATION_SECONDS}"
 
-    if [ ! -s "${CACHE_FILE}" ]; then
+    if [ ! -f "${GET_SESSION_TOKEN_CACHE_FILE}" ]; then
         echo "Create new AWS STS session token..." >&2
-        ${STS_GET_SESSION_TOKEN_COMMAND} >"${CACHE_FILE}"
+        ${STS_GET_SESSION_TOKEN_COMMAND} >"${GET_SESSION_TOKEN_CACHE_FILE}"
     fi
 
     if [ "$(uname)" == "Darwin" ]; then
@@ -133,7 +133,7 @@ function get-session-token() {
     fi
 
     local EXPIRATION
-    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${CACHE_FILE}")
+    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${GET_SESSION_TOKEN_CACHE_FILE}")
 
     local EXPIRATION_UNIXTIME
     EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
@@ -144,10 +144,10 @@ function get-session-token() {
     if [ "${EXPIRATION_UNIXTIME}" -lt "${NOW_UNIXTIME}" ]; then
         echo "AWS STS session token is expired." >&2
         echo "Recreate AWS STS session token..." >&2
-        ${STS_GET_SESSION_TOKEN_COMMAND} >"${CACHE_FILE}"
+        ${STS_GET_SESSION_TOKEN_COMMAND} >"${GET_SESSION_TOKEN_CACHE_FILE}"
     fi
 
-    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${CACHE_FILE}"
+    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${GET_SESSION_TOKEN_CACHE_FILE}"
 }
 
 function list() {
@@ -157,26 +157,48 @@ function list() {
 function show() {
     __validate
 
-    local CACHE_FILE
-    CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
-    if [ -s "${CACHE_FILE}" ]; then
-        jq "." <"${CACHE_FILE}"
+    local GET_SESSION_TOKEN_CACHE_FILE
+    GET_SESSION_TOKEN_CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+
+    if [ -f "${GET_SESSION_TOKEN_CACHE_FILE}" ]; then
+        echo "==> AWS STS session token cache file: ${GET_SESSION_TOKEN_CACHE_FILE}"
+        jq <"${GET_SESSION_TOKEN_CACHE_FILE}"
     else
-        echo "Session cache not found." >&2
-        exit 1
+        echo "AWS STS session token cache file not found." >&2
+    fi
+
+    local ASSUME_ROLE_CACHE_FILE
+    ASSUME_ROLE_CACHE_FILE="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+
+    if [ -f "${ASSUME_ROLE_CACHE_FILE}" ]; then
+        echo "==> AWS STS assume role cache file: ${ASSUME_ROLE_CACHE_FILE}"
+        jq <"${ASSUME_ROLE_CACHE_FILE}"
+    else
+        echo "AWS STS assume role cache file not found." >&2
     fi
 }
 
 function remove() {
     __validate
 
-    local CACHE_FILE
-    CACHE_FILE="${CACHE_DIR}/$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
-    if [ -s "${CACHE_FILE}" ]; then
-        rm -i "${CACHE_FILE}"
+    local GET_SESSION_TOKEN_CACHE_FILE
+    GET_SESSION_TOKEN_CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+
+    if [ -f "${GET_SESSION_TOKEN_CACHE_FILE}" ]; then
+        echo "Remove AWS STS session token cache file: ${GET_SESSION_TOKEN_CACHE_FILE}"
+        rm -i "${GET_SESSION_TOKEN_CACHE_FILE}"
     else
-        echo "Session cache not found." >&2
-        exit 1
+        echo "AWS STS session token cache file not found." >&2
+    fi
+
+    local ASSUME_ROLE_CACHE_FILE
+    ASSUME_ROLE_CACHE_FILE="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+
+    if [ -f "${ASSUME_ROLE_CACHE_FILE}" ]; then
+        echo "Remove AWS STS assume role cache file: ${ASSUME_ROLE_CACHE_FILE}"
+        rm -i "${ASSUME_ROLE_CACHE_FILE}"
+    else
+        echo "AWS STS assume role cache file not found." >&2
     fi
 }
 
