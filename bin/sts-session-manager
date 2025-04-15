@@ -32,9 +32,9 @@ function __validate() {
         fi
     fi
 
-    if [ "${SUBCOMMAND}" == "switch-role" ]; then
-        if ! aws configure get role_arn >/dev/null; then
-            echo "Error: role_arn is not set for this AWS_PROFILE" >&2
+    if [ "${SUBCOMMAND}" == "assume-role" ]; then
+        if [ -z "${BASE_AWS_PROFILE}" ]; then
+            echo "Error: The second argument is required for the subcommand assume-role" >&2
             exit 1
         fi
     fi
@@ -64,11 +64,11 @@ function switch-back() {
     echo "unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_SESSION_EXPIRATION"
 }
 
-function switch-role() {
+function assume-role() {
     __validate
 
     local CACHE_FILE
-    CACHE_FILE="${CACHE_DIR}/switch-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    CACHE_FILE="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
     local SESSION_NAME
     SESSION_NAME="${SESSION_NAME:=$(whoami)}"
@@ -77,10 +77,11 @@ function switch-role() {
     DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
 
     local STS_ASSUME_ROLE_COMMAND
-    STS_ASSUME_ROLE_COMMAND="aws sts assume-role --role-arn $(aws configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
+    STS_ASSUME_ROLE_COMMAND="aws --profile $(aws --profile "${BASE_AWS_PROFILE}" configure get source_profile) sts assume-role --role-arn $(aws --profile "${BASE_AWS_PROFILE}" configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
 
     if [ ! -s "${CACHE_FILE}" ]; then
         echo "Create new AWS STS session token..." >&2
+        export AWS_PROFILE="${BASE_AWS_PROFILE}"
         ${STS_ASSUME_ROLE_COMMAND} >"${CACHE_FILE}"
     fi
 
@@ -102,15 +103,11 @@ function switch-role() {
     if [ "${EXPIRATION_UNIXTIME}" -lt "${NOW_UNIXTIME}" ]; then
         echo "AWS STS session token is expired." >&2
         echo "Recreate AWS STS session token..." >&2
+        export AWS_PROFILE="${BASE_AWS_PROFILE}"
         ${STS_ASSUME_ROLE_COMMAND} >"${CACHE_FILE}"
     fi
 
-    cat <<-HEREDOC
-		export AWS_ACCESS_KEY_ID=$(jq -r ".Credentials.AccessKeyId" <"${CACHE_FILE}")
-		export AWS_SECRET_ACCESS_KEY=$(jq -r ".Credentials.SecretAccessKey" <"${CACHE_FILE}")
-		export AWS_SESSION_TOKEN=$(jq -r ".Credentials.SessionToken" <"${CACHE_FILE}")
-		export AWS_SESSION_EXPIRATION="$("${DATE_CMD}" -d "${EXPIRATION}" --iso-8601=seconds)"
-	HEREDOC
+    jq -r '{Version: 1} + .Credentials' <"${CACHE_FILE}"
 }
 
 function get-session-token() {
@@ -194,9 +191,9 @@ function usage() {
 		Usage: ${COMMAND} <subcommand>
 		Subcommands:
 		    ${COMMAND} check-required-tools | check                     -- Check required tools
-		    ${COMMAND} switch-role                                      -- Print switch-role export command
 		    ${COMMAND} get-session-token <base_aws_profile> <mfa_token> -- Outputs AWS session token in external process format
 		    ${COMMAND} switch-back                                      -- Print switch-back unset command
+		    ${COMMAND} assume-role                                      -- Outputs AWS assume-role token in external process format
 		    ${COMMAND} list | ls                                        -- List sts cache file
 		    ${COMMAND} show                                             -- Show sts cache file detail
 		    ${COMMAND} remove | rm                                      -- Remove sts cache file
@@ -220,8 +217,8 @@ case "${SUBCOMMAND}" in
 check-required-tools | check)
     check-required-tools
     ;;
-switch-role)
-    switch-role
+assume-role)
+    assume-role
     ;;
 get-session-token)
     get-session-token
