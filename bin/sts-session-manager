@@ -60,6 +60,50 @@ function check-required-tools() {
     echo -e "<== End checking required tools.\n"
 }
 
+function get-session-token() {
+    __validate
+
+    local GET_SESSION_TOKEN_CACHE_FILE
+    GET_SESSION_TOKEN_CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+
+    local SESSION_NAME
+    SESSION_NAME="${SESSION_NAME:=$(whoami)}"
+
+    local DURATION_SECONDS
+    DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
+
+    local STS_GET_SESSION_TOKEN_COMMAND
+    STS_GET_SESSION_TOKEN_COMMAND="aws --profile ${BASE_AWS_PROFILE} sts get-session-token --serial-number $(aws configure get mfa_serial) --token-code ${MFA_TOKEN} --duration-seconds ${DURATION_SECONDS}"
+
+    if [ ! -f "${GET_SESSION_TOKEN_CACHE_FILE}" ]; then
+        echo "Create new AWS STS session token..." >&2
+        ${STS_GET_SESSION_TOKEN_COMMAND} >"${GET_SESSION_TOKEN_CACHE_FILE}"
+    fi
+
+    if [ "$(uname)" == "Darwin" ]; then
+        local DATE_CMD="gdate"
+    else
+        local DATE_CMD="date"
+    fi
+
+    local EXPIRATION
+    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${GET_SESSION_TOKEN_CACHE_FILE}")
+
+    local EXPIRATION_UNIXTIME
+    EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
+
+    local NOW_UNIXTIME
+    NOW_UNIXTIME=$("${DATE_CMD}" "+%s")
+
+    if [ "${EXPIRATION_UNIXTIME}" -lt "${NOW_UNIXTIME}" ]; then
+        echo "AWS STS session token is expired." >&2
+        echo "Recreate AWS STS session token..." >&2
+        ${STS_GET_SESSION_TOKEN_COMMAND} >"${GET_SESSION_TOKEN_CACHE_FILE}"
+    fi
+
+    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${GET_SESSION_TOKEN_CACHE_FILE}"
+}
+
 function assume-role() {
     __validate
 
@@ -104,50 +148,6 @@ function assume-role() {
     fi
 
     jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${ASSUME_ROLE_CACHE_FILE}"
-}
-
-function get-session-token() {
-    __validate
-
-    local GET_SESSION_TOKEN_CACHE_FILE
-    GET_SESSION_TOKEN_CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
-
-    local SESSION_NAME
-    SESSION_NAME="${SESSION_NAME:=$(whoami)}"
-
-    local DURATION_SECONDS
-    DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
-
-    local STS_GET_SESSION_TOKEN_COMMAND
-    STS_GET_SESSION_TOKEN_COMMAND="aws --profile ${BASE_AWS_PROFILE} sts get-session-token --serial-number $(aws configure get mfa_serial) --token-code ${MFA_TOKEN} --duration-seconds ${DURATION_SECONDS}"
-
-    if [ ! -f "${GET_SESSION_TOKEN_CACHE_FILE}" ]; then
-        echo "Create new AWS STS session token..." >&2
-        ${STS_GET_SESSION_TOKEN_COMMAND} >"${GET_SESSION_TOKEN_CACHE_FILE}"
-    fi
-
-    if [ "$(uname)" == "Darwin" ]; then
-        local DATE_CMD="gdate"
-    else
-        local DATE_CMD="date"
-    fi
-
-    local EXPIRATION
-    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${GET_SESSION_TOKEN_CACHE_FILE}")
-
-    local EXPIRATION_UNIXTIME
-    EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
-
-    local NOW_UNIXTIME
-    NOW_UNIXTIME=$("${DATE_CMD}" "+%s")
-
-    if [ "${EXPIRATION_UNIXTIME}" -lt "${NOW_UNIXTIME}" ]; then
-        echo "AWS STS session token is expired." >&2
-        echo "Recreate AWS STS session token..." >&2
-        ${STS_GET_SESSION_TOKEN_COMMAND} >"${GET_SESSION_TOKEN_CACHE_FILE}"
-    fi
-
-    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${GET_SESSION_TOKEN_CACHE_FILE}"
 }
 
 function list() {
@@ -234,11 +234,11 @@ case "${SUBCOMMAND}" in
 check-required-tools | check)
     check-required-tools
     ;;
-assume-role)
-    assume-role
-    ;;
 get-session-token)
     get-session-token
+    ;;
+assume-role)
+    assume-role
     ;;
 list | ls)
     list
