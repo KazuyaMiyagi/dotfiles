@@ -6,8 +6,8 @@
   "automerge": true,
   "ignoreTests": true,
   "tflint-plugin": {
-    "fileMatch": [
-      "^tflint/tflint\\.hcl$"
+    "managerFilePatterns": [
+      "/^tflint/tflint\\.hcl$/"
     ]
   }
 }
