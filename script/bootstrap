@@ -69,6 +69,12 @@ function asdf_plugins_install() {
     echo "==> Finished install asdf plugins."
 }
 
+function asdf_plugins_update() {
+    echo "==> Updating asdf plugins..."
+    asdf plugin update --all
+    echo "==> Finished update asdf plugins."
+}
+
 function asdf_plugins_python_apply_path() {
     echo "==> Applying to asdf Python plugin patch..."
     pushd "${XDG_DATA_HOME}/asdf/plugins/python/" >/dev/null
@@ -90,12 +96,6 @@ function asdf_plugins_python_apply_path() {
 	HEREDOC
     popd >/dev/null
     echo "==> Finished applying to asdf Python plugin patch."
-}
-
-function asdf_plugins_update() {
-    echo "==> Updating asdf plugins..."
-    asdf plugin update --all
-    echo "==> Finished update asdf plugins."
 }
 
 function asdf_managed_tools_update() {
@@ -129,8 +129,8 @@ homebrew_update
 vim_plug_install
 vim_plug_package_install
 asdf_plugins_install
-asdf_plugins_python_apply_path
 asdf_plugins_update
+asdf_plugins_python_apply_path
 asdf_managed_tools_update
 tflint_init
 gcloud_update
