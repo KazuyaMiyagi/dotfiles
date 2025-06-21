@@ -25,6 +25,8 @@ Plug 'osyo-manga/vim-over'
 Plug 'tyru/open-browser.vim'
 Plug 'bronson/vim-trailing-whitespace'
 Plug 'google/vim-jsonnet'
+Plug 'thinca/vim-qfreplace'
+Plug 'itchyny/vim-qfedit'
 Plug 'hashivim/vim-terraform'
 let g:terraform_align=1
 let g:terraform_fold_sections=0
