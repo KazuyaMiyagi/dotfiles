@@ -1,6 +1,7 @@
 @anthropic-ai/claude-code
 @commitlint/cli
 @commitlint/config-conventional
+@google/gemini-cli
 @openai/codex
 eslint
 markdownlint-cli2
