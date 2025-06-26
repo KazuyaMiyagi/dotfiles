@@ -7,6 +7,10 @@ tmp
 *~
 *.swp
 
+# Node.js
+node_modules/
+configstore/
+
 # JetBrains IDE
 .idea
 
@@ -24,3 +28,7 @@ ignore_and_override.tf
 
 # pgcli
 pgcli
+
+# Claude
+.claude/settings.local.json
+CLAUDE.local.md
