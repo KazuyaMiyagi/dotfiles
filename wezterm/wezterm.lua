@@ -72,6 +72,17 @@ return {
     tab_bar_at_bottom = true,
     hide_tab_bar_if_only_one_tab = false,
 
+    visual_bell = {
+        target = 'BackgroundColor',
+        fade_in_function = 'EaseIn',
+        fade_in_duration_ms = 100,
+        fade_out_function = 'EaseOut',
+        fade_out_duration_ms = 100,
+    },
+    colors = {
+        visual_bell = 'grey',
+    },
+
     leader = { key = "z", mods = "CTRL", timeout_milliseconds = 1000 },
     keys = {
         { key = "z", mods = "LEADER|CTRL", action = wezterm.action.SendKey { key = "z", mods = "CTRL" }},
