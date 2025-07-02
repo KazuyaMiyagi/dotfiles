@@ -46,16 +46,6 @@ else
     echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" >~/.zshenv
 fi
 
-if [ -f ~/.bashrc ]; then
-    echo "${HOME}/.bashrc found. backup to ${BACKUP_DIR}/bashrc"
-    mv ~/.bashrc "${BACKUP_DIR}/bashrc"
-    echo "Create ~/.bashrc"
-    echo "source ${XDG_CONFIG_HOME}/bashrc" >~/.bashrc
-else
-    echo "Create ~/.bashrc"
-    echo "source ${XDG_CONFIG_HOME}/bashrc" >~/.bashrc
-fi
-
 if [ -L ~/tool-versions ]; then
     echo "${HOME}/tool-versions symbolic link found. unlink ~/tool-versions."
     unlink ~/tool-versions
