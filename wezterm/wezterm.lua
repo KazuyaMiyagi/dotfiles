@@ -42,9 +42,21 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
     }
 end)
 
+wezterm.on('window-resized', function(window, pane)
+    local overrides = {}
+
+    if window:get_dimensions().is_full_screen then
+        overrides.text_background_opacity = 1
+        overrides.window_background_opacity = 1
+    else
+        overrides.text_background_opacity = 0.75
+        overrides.window_background_opacity = 0.75
+    end
+
+    window:set_config_overrides(overrides)
+end)
+
 return {
-    window_background_opacity = 0.75,
-    text_background_opacity = 0.75,
     enable_scroll_bar = true,
 
     initial_cols = 160,
