@@ -14,6 +14,26 @@ readonly BACKUP_DIR="${DOTFILE_ROOT_DIR}/backup"
 
 source "${DOTFILE_ROOT_DIR}/zsh/autoload/100-xdg.zsh"
 
+function create_symlink() {
+    local source_path="${1}"
+    local target_path="${2}"
+    local backup_name="${3}"
+
+    echo "==> Creating symbolic link ${source_path} -> ${target_path}"
+
+    if [ -L "${target_path}" ]; then
+        echo "${target_path} symbolic link found. Unlinking ${target_path}."
+        unlink "${target_path}"
+    elif [ -e "${target_path}" ]; then
+        echo "${target_path} found. Backing up to ${BACKUP_DIR}/${backup_name}"
+        mv "${target_path}" "${BACKUP_DIR}/${backup_name}"
+    fi
+
+    ln -s "${source_path}" "${target_path}"
+
+    echo -e "==> Symbolic link created successfully!\n"
+}
+
 echo "Start setup"
 
 if [ ! -d "${BACKUP_DIR}" ]; then
@@ -21,20 +41,8 @@ if [ ! -d "${BACKUP_DIR}" ]; then
     mkdir "${BACKUP_DIR}"
 fi
 
-if [ -L ~/.config ]; then
-    echo "${HOME}/.config symbolic link found. unlink ~/.config."
-    unlink ~/.config
-    echo "Create symbolic link ${DOTFILE_ROOT_DIR} ~/.config"
-    ln -s "${DOTFILE_ROOT_DIR}" ~/.config
-elif [ -d ~/.config ]; then
-    echo "${HOME}/.config directory found. backup to ${BACKUP_DIR}/config"
-    mv ~/.config "${BACKUP_DIR}/config"
-    echo "Create symbolic link ${DOTFILE_ROOT_DIR} ~/.config"
-    ln -s "${DOTFILE_ROOT_DIR}" ~/.config
-else
-    echo "Create symbolic link ${DOTFILE_ROOT_DIR} ~/.config"
-    ln -s "${DOTFILE_ROOT_DIR}" ~/.config
-fi
+# Setup ~/.config symlink
+create_symlink "${DOTFILE_ROOT_DIR}" "${XDG_CONFIG_HOME}" "config"
 
 if [ -f ~/.zshenv ]; then
     echo "${HOME}/.zshenv found. backup to ${BACKUP_DIR}/zshenv"
@@ -46,23 +54,11 @@ else
     echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" >~/.zshenv
 fi
 
-if [ -L ~/tool-versions ]; then
-    echo "${HOME}/tool-versions symbolic link found. unlink ~/tool-versions."
-    unlink ~/tool-versions
-    echo "Create symbolic link ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions"
-    ln -s "${DOTFILE_ROOT_DIR}/asdf/tool-versions" ~/tool-versions
-else
-    echo "Create symbolic link ${DOTFILE_ROOT_DIR}/asdf/tool-versions ~/tool-versions"
-    ln -s "${DOTFILE_ROOT_DIR}/asdf/tool-versions" ~/tool-versions
-fi
+# Setup ~/tool-versions symlink
+create_symlink "${DOTFILE_ROOT_DIR}/asdf/tool-versions" "${HOME}/tool-versions" "tool-versions"
 
-if [ -L "${HOME}/.tflint.hcl" ]; then
-    echo "${HOME}/.tflint.hcl symbolic link found. unlink ~/.tflint.hcl."
-    unlink ~/.tflint.hcl
-fi
-
-echo "Create symbolic link ${DOTFILE_ROOT_DIR}/tflint/.tflint.hcl ~/.tflint.hcl"
-ln -s "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl"
+# Setup ~/.tflint.hcl symlink
+create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tflint.hcl"
 
 if [ ! -d ~/.local/share/zsh ]; then
     echo "Create ~/.local/share/zsh"
