@@ -66,5 +66,5 @@ fi
 echo "Finish setup!"
 echo ""
 
-"${DOTFILE_ROOT_DIR}/script/bootstrap"
+zsh --login
 
