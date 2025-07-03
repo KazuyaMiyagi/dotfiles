@@ -32,7 +32,7 @@ function create_symlink() {
     echo -e "==> Symbolic link created successfully!\n"
 }
 
-echo "Start setup"
+echo "Starting initialization..."
 
 if [ ! -d "${BACKUP_DIR}" ]; then
     echo "Creating ${BACKUP_DIR}"
@@ -60,7 +60,7 @@ if [ ! -d "${XDG_DATA_HOME}/zsh" ]; then
     mkdir -p "${XDG_DATA_HOME}/zsh"
 fi
 
-echo "Finish setup!"
+echo "Initialization finished!"
 echo ""
 
 echo "Starting new zsh session with updated configuration..."
