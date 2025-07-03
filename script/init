@@ -10,6 +10,7 @@ readonly DOTFILE_ROOT_DIR
 BACKUP_DIR="${DOTFILE_ROOT_DIR}/backup"
 readonly BACKUP_DIR
 
+# shellcheck disable=SC1091
 source "${DOTFILE_ROOT_DIR}/zsh/autoload/100-xdg.zsh"
 
 function create_symlink() {
