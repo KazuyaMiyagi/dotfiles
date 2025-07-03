@@ -66,6 +66,4 @@ if [ ! -d "${XDG_DATA_HOME}/zsh" ]; then
 fi
 
 echo "Initialization finished!"
-echo "Starting new zsh session with updated configuration..."
-zsh --login
 
