@@ -7,7 +7,8 @@ cd "$(dirname "${0}")/.."
 
 DOTFILE_ROOT_DIR="$(pwd)"
 readonly DOTFILE_ROOT_DIR
-readonly BACKUP_DIR="${DOTFILE_ROOT_DIR}/backup"
+BACKUP_DIR="${DOTFILE_ROOT_DIR}/backup"
+readonly BACKUP_DIR
 
 source "${DOTFILE_ROOT_DIR}/zsh/autoload/100-xdg.zsh"
 
