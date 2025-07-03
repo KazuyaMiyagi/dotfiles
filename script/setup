@@ -35,22 +35,19 @@ function create_symlink() {
 echo "Start setup"
 
 if [ ! -d "${BACKUP_DIR}" ]; then
-    echo "Create ${BACKUP_DIR}"
+    echo "Creating ${BACKUP_DIR}"
     mkdir "${BACKUP_DIR}"
 fi
 
 # Setup ~/.config symlink
 create_symlink "${DOTFILE_ROOT_DIR}" "${XDG_CONFIG_HOME}" "config"
 
-if [ -f ~/.zshenv ]; then
-    echo "${HOME}/.zshenv found. backup to ${BACKUP_DIR}/zshenv"
-    mv ~/.zshenv "${BACKUP_DIR}/zshenv"
-    echo "Create ~/.zshenv"
-    echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" >~/.zshenv
-else
-    echo "Create ~/.zshenv"
-    echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" >~/.zshenv
+if [ -f "${HOME}/.zshenv" ]; then
+    echo "${HOME}/.zshenv found. Backing up to ${BACKUP_DIR}/zshenv"
+    mv "${HOME}/.zshenv" "${BACKUP_DIR}/zshenv"
 fi
+echo "Creating ${HOME}/.zshenv"
+echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" >"${HOME}/.zshenv"
 
 # Setup ~/tool-versions symlink
 create_symlink "${DOTFILE_ROOT_DIR}/asdf/tool-versions" "${HOME}/tool-versions" "tool-versions"
@@ -59,12 +56,13 @@ create_symlink "${DOTFILE_ROOT_DIR}/asdf/tool-versions" "${HOME}/tool-versions" 
 create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tflint.hcl"
 
 if [ ! -d "${XDG_DATA_HOME}/zsh" ]; then
-    echo "Create ${XDG_DATA_HOME}/zsh"
+    echo "Creating ${XDG_DATA_HOME}/zsh"
     mkdir -p "${XDG_DATA_HOME}/zsh"
 fi
 
 echo "Finish setup!"
 echo ""
 
+echo "Starting new zsh session with updated configuration..."
 zsh --login
 

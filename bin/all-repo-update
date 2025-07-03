@@ -5,13 +5,13 @@ set -o pipefail
 
 for REPO_PATH in $(ghq list --full-path); do
     SHORT_PATH="$(echo "${REPO_PATH}" | rev | cut -d '/' -f '1-3' | rev)"
-    echo -e "\n==> Updating ${SHORT_PATH}\n"
+    echo -e "\n==> Updating ${SHORT_PATH}...\n"
     pushd "${REPO_PATH}" >/dev/null 2>&1
     git pull --prune --recurse-submodules --jobs=10
     git branch
     git status --short --branch
     git stash list
     popd >/dev/null 2>&1
-    echo -e "\n<== Done ${SHORT_PATH}\n"
+    echo -e "\n==> ${SHORT_PATH} update completed.\n"
 done
 

@@ -11,7 +11,7 @@ function __validate() {
     check-required-tools >/dev/null
 
     if [ -z "${AWS_PROFILE:=""}" ]; then
-        echo "Error: AWS_PROFILE is not export" >&2
+        echo "Error: AWS_PROFILE is not exported" >&2
         exit 1
     fi
 
@@ -41,7 +41,7 @@ function __validate() {
 }
 
 function check-required-tools() {
-    echo "==> Start checking required tools..."
+    echo "==> Checking required tools..."
     local REQUIRED_TOOLS=(aws jq)
 
     if [ "$(uname)" == "Darwin" ]; then

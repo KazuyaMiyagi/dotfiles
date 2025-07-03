@@ -11,8 +11,8 @@ function execute() {
     local rewrite_cmd=""
     if [ -n "${CONFIRM:-""}" ]; then
         echo "$ ${cmd}" >&2
-        echo "To execute the above command, press the Enter key." >&2
-        echo "To rewrite the command, enter the command and press Enter key." >&2
+        echo "To execute the above command, press Enter." >&2
+        echo "To rewrite the command, enter the new command and press Enter." >&2
         read -r rewrite_cmd
     fi
     echo "$ ${rewrite_cmd:-$cmd}"

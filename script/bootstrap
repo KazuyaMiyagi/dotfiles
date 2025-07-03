@@ -5,7 +5,7 @@ set -o pipefail
 
 cd "$(dirname "${0}")/.."
 
-# __is_installed checks install status the specified command
+# __is_installed checks if the specified command is installed
 function __is_installed() {
     type "${1}" &>/dev/null
 }
@@ -27,15 +27,15 @@ function homebrew_bundle_install() {
 }
 
 function homebrew_update() {
-    echo "==> Update Homebrew packages."
+    echo "==> Updating Homebrew packages..."
     brew update
     brew upgrade
     brew cleanup
-    echo "==> Finished Update Homebrew packages."
+    echo "==> Finished updating Homebrew packages."
 
-    echo "==> Update Homebrew cask packages."
+    echo "==> Updating Homebrew cask packages..."
     brew upgrade --cask
-    echo "==> Finished Update Homebrew cask packages."
+    echo "==> Finished updating Homebrew cask packages."
 
     brew doctor || true
     brew bundle dump --file=- | sort >Brewfile
@@ -63,17 +63,17 @@ function asdf_plugins_install() {
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
         asdf plugin add "${plugin}"
     done
-    echo "==> Finished install asdf plugins."
+    echo "==> Finished installing asdf plugins."
 }
 
 function asdf_plugins_update() {
     echo "==> Updating asdf plugins..."
     asdf plugin update --all
-    echo "==> Finished update asdf plugins."
+    echo "==> Finished updating asdf plugins."
 }
 
 function asdf_plugins_python_apply_path() {
-    echo "==> Applying to asdf Python plugin patch..."
+    echo "==> Applying asdf Python plugin patch..."
     pushd "${XDG_DATA_HOME}/asdf/plugins/python/" >/dev/null
     git reset --hard HEAD >/dev/null
     cat <<-'HEREDOC' | git apply
@@ -92,18 +92,18 @@ function asdf_plugins_python_apply_path() {
 	 list_all
 	HEREDOC
     popd >/dev/null
-    echo "==> Finished applying to asdf Python plugin patch."
+    echo "==> Finished applying asdf Python plugin patch."
 }
 
 function asdf_managed_tools_update() {
-    echo "==> Updating asdf managed tools version..."
+    echo "==> Updating asdf managed tools versions..."
     pushd asdf >/dev/null
     for plugin in $(cut -d ' ' -f1 ./tool-versions | tr '\n' ' '); do
         asdf install "${plugin}" latest
         asdf set "${plugin}" latest
     done
     popd >/dev/null
-    echo "==> Finished update asdf managed tools version."
+    echo "==> Finished updating asdf managed tools versions."
 }
 
 function tflint_init() {
@@ -113,12 +113,12 @@ function tflint_init() {
 }
 
 function gcloud_update() {
-    echo "==> Update gcloud components..."
+    echo "==> Updating gcloud components..."
     gcloud components update --quiet
-    echo "==> Finished Update gcloud components."
+    echo "==> Finished updating gcloud components."
 }
 
-echo "Start bootstrap"
+echo "Starting bootstrap..."
 
 homebrew_install
 homebrew_bundle_install
@@ -132,5 +132,5 @@ asdf_managed_tools_update
 tflint_init
 gcloud_update
 
-echo "Finish bootstrap!"
+echo "Bootstrap finished!"
 
