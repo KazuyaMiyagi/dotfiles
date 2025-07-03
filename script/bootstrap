@@ -3,9 +3,6 @@
 set -eu
 set -o pipefail
 
-# script/bootstrap: Resolve all dependencies that the application requires to
-#                   run.
-
 cd "$(dirname "${0}")/.."
 
 # __is_installed checks install status the specified command
