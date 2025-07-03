@@ -58,9 +58,9 @@ create_symlink "${DOTFILE_ROOT_DIR}/asdf/tool-versions" "${HOME}/tool-versions" 
 # Setup ~/.tflint.hcl symlink
 create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tflint.hcl"
 
-if [ ! -d ~/.local/share/zsh ]; then
-    echo "Create ~/.local/share/zsh"
-    mkdir -p ~/.local/share/zsh
+if [ ! -d "${XDG_DATA_HOME}/zsh" ]; then
+    echo "Create ${XDG_DATA_HOME}/zsh"
+    mkdir -p "${XDG_DATA_HOME}/zsh"
 fi
 
 echo "Finish setup!"
