@@ -1,0 +1,34 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq '.title // \"Claude Code\", .message // \"Default Message\"' | xargs printf $'\\e]777;notify;%s;%s\\e\\\\' >> /dev/tty"
+          },
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Blow.aiff"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf $'\\e]777;notify;%s;%s\\e\\\\' 'Claude Code' 'Stop' >> /dev/tty"
+          },
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Hero.aiff"
+          }
+        ]
+      }
+    ]
+  }
+}

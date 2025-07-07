@@ -52,6 +52,9 @@ create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tf
 # Setup ~/.aws/amazonq/mcp.json
 create_symlink "${DOTFILE_ROOT_DIR}/claude/mcp.json" "${HOME}/.aws/amazonq/mcp.json" "aws_amazonq_mcp.json"
 
+# Setup ~/.claude/settings.json
+create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/settings.json" "claude_settings.json"
+
 # Setup ~/.zshenv
 if [ -f "${HOME}/.zshenv" ]; then
     echo "${HOME}/.zshenv found. Backing up to ${BACKUP_DIR}/zshenv"
