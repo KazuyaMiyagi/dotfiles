@@ -1,0 +1,83 @@
+#! /usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+function __is_installed() {
+    type "${1}" &>/dev/null
+}
+
+function __validate() {
+    if ! __is_installed wezterm; then
+        echo "Error: wezterm is not installed" >&2
+        exit 1
+    fi
+
+    if ! __is_installed jq; then
+        echo "Error: jq is not installed" >&2
+        exit 1
+    fi
+
+    if [[ ${#} -ne 2 ]]; then
+        echo "Error: Invalid number of arguments" >&2
+        usage
+        exit 1
+    fi
+
+    local worker_pane_id="${1}"
+    if ! [[ "${worker_pane_id}" =~ ^[0-9]+$ ]]; then
+        echo "Error: WORKER_PANE_ID must be a number" >&2
+        exit 1
+    fi
+
+    if ! wezterm cli list --format json | jq -e ".[] | select(.pane_id == ${worker_pane_id})" >/dev/null 2>&1; then
+        echo "Error: パネルID ${worker_pane_id} が見つかりません" >&2
+        exit 1
+    fi
+}
+
+function send-text() {
+    __validate "$@"
+
+    local worker_pane_id="${1}"
+    local message="${2}"
+
+    echo "Sending message to worker ${worker_pane_id}..."
+    echo "Message: ${message}"
+
+    wezterm cli send-text --pane-id "${worker_pane_id}" "${message}"
+    sleep 0.1 # Wait for the message to be processed
+    wezterm cli send-text --pane-id "${worker_pane_id}" --no-paste $'\r'
+
+    echo "Message sent successfully"
+}
+
+function usage() {
+    local COMMAND="send-text"
+    readonly COMMAND
+    cat <<-HEREDOC
+		Usage: ${COMMAND} <WORKER_PANE_ID> <MESSAGE>
+
+		Arguments:
+		    WORKER_PANE_ID  Target worker pane ID
+		    MESSAGE         Message to send
+
+		Examples:
+		    ${COMMAND} 15 'terraform/dir1 ディレクトリで aws_iam_policy_document を jsonencode に書き直してください'
+		    ${COMMAND} 16 'terraform/dir2 ディレクトリで aws_iam_policy_document を jsonencode に書き直してください'
+	HEREDOC
+}
+
+WORKER_PANE_ID="${1:-""}"
+readonly WORKER_PANE_ID
+
+MESSAGE="${2:-""}"
+readonly MESSAGE
+
+if [[ ${#} -eq 0 ]]; then
+    usage
+    exit 1
+fi
+
+send-text "${WORKER_PANE_ID}" "${MESSAGE}"
+
