@@ -3,6 +3,7 @@
 @commitlint/config-conventional
 @google/gemini-cli
 @openai/codex
+ccusage
 eslint
 markdownlint-cli2
 prettier
