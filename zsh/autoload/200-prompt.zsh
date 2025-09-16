@@ -17,17 +17,29 @@ zstyle ":vcs_info:*" unstagedstr "${GIT_UNSTAGED_SYMBOL}"
 zstyle ":vcs_info:*" formats "%s(%b[%u%c])"
 zstyle ":vcs_info:*" actionformats "%s(%b|%a[%u%c])"
 
-_vcs_info_precmd() {
-    vcs_info
+_init_psvar_precmd() {
     psvar=()
-    [[ -n ${vcs_info_msg_0_} ]] && psvar[1]=${vcs_info_msg_0_}
-    [[ -n ${vcs_info_msg_1_} ]] && psvar[2]=${vcs_info_msg_1_}
-    [[ -n ${AWS_PROFILE} ]] && psvar[3]=${AWS_PROFILE}
-    [[ -n ${AWS_SESSION_EXPIRATION} ]] && psvar[4]=${AWS_SESSION_EXPIRATION}
-    [[ -n ${TF_WORKSPACE} ]] && psvar[5]=${TF_WORKSPACE}
 }
 
+_vcs_info_precmd() {
+    vcs_info
+    [[ -n "${vcs_info_msg_0_}" ]] && psvar[1]="${vcs_info_msg_0_}"
+    [[ -n "${vcs_info_msg_1_}" ]] && psvar[2]="${vcs_info_msg_1_}"
+}
+
+_set_aws_info_precmd() {
+    [[ -n "${AWS_PROFILE}" ]] && psvar[3]="${AWS_PROFILE}"
+    [[ -n "${AWS_SESSION_EXPIRATION}" ]] && psvar[4]="${AWS_SESSION_EXPIRATION}"
+}
+
+_set_terraform_info_precmd() {
+    [[ -n "${TF_WORKSPACE}" ]] && psvar[5]="${TF_WORKSPACE}"
+}
+
+add-zsh-hook precmd _init_psvar_precmd
 add-zsh-hook precmd _vcs_info_precmd
+add-zsh-hook precmd _set_aws_info_precmd
+add-zsh-hook precmd _set_terraform_info_precmd
 
 # https://github.com/zsh-users/zsh/blob/f702e17b14d75aa21bff014168fa9048124db286/Misc/vcs_info-examples#L155-L170
 
