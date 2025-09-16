@@ -28,12 +28,73 @@ _vcs_info_precmd() {
 }
 
 _set_aws_info_precmd() {
-    [[ -n "${AWS_PROFILE}" ]] && psvar[3]="${AWS_PROFILE}"
-    [[ -n "${AWS_SESSION_EXPIRATION}" ]] && psvar[4]="${AWS_SESSION_EXPIRATION}"
+    if [[ -n "${AWS_PROFILE}" ]]; then
+        # アカウントの色を取得（取得できない場合は空）
+        local cache_dir="${XDG_CACHE_HOME:-${HOME}/.cache}"
+        local cache_file="${cache_dir}/aws_profile_colors"
+        local account_color=""
+
+        # キャッシュファイルから読み込み
+        if [[ -f "${cache_file}" ]]; then
+            local cached_line
+            cached_line=$(grep "^${AWS_PROFILE}=" "${cache_file}" 2>/dev/null)
+            if [[ -n "${cached_line}" ]]; then
+                account_color="${cached_line#*=}"
+            fi
+        fi
+
+        # キャッシュにない場合はAPIから取得
+        if [[ -z "${account_color}" ]]; then
+            local aws_env_vars color_response
+            aws_env_vars=$(aws configure export-credentials --profile "${AWS_PROFILE}" --format env 2>/dev/null)
+
+            if [[ $? -eq 0 && -n "${aws_env_vars}" ]]; then
+                color_response=$(eval "${aws_env_vars}" && \
+                                curl -s "https://uxc.us-east-1.api.aws/v1/account-color" \
+                                --aws-sigv4 "aws:amz" \
+                                --user "${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}" \
+                                -H "X-Amz-Security-Token: ${AWS_SESSION_TOKEN}" 2>/dev/null)
+
+                if [[ ${?} -eq 0 && -n "${color_response}" ]]; then
+                    local color_name
+                    color_name=$(echo "${color_response}" | jq -r '.color // empty' 2>/dev/null)
+
+                    if [[ -n "${color_name}" && "${color_name}" != "null" && "${color_name}" != "none" ]]; then
+                        # 色名をzsh色番号に変換（256色対応）
+                        # https://docs.aws.amazon.com/ja_jp/awsconsolehelpdocs/latest/gsg/GetAccountColor.html#GetAccountColor-response-elements
+                        case "${color_name}" in
+                            "pink") account_color="213" ;;      # ピンク
+                            "purple") account_color="129" ;;    # 紫
+                            "darkBlue") account_color="21" ;;   # 濃い青
+                            "lightBlue") account_color="117" ;; # 薄い青
+                            "teal") account_color="37" ;;       # ティール
+                            "green") account_color="46" ;;      # 緑
+                            "yellow") account_color="226" ;;    # 黄
+                            "orange") account_color="208" ;;    # オレンジ
+                            "red") account_color="196" ;;       # 赤
+                        esac
+
+                        # キャッシュファイルに保存
+                        if [[ -n "${account_color}" ]]; then
+                            echo "${AWS_PROFILE}=${account_color}" >> "${cache_file}"
+                        fi
+                    fi
+                fi
+            fi
+        fi
+
+        psvar[3]="${account_color}"
+        psvar[4]="${AWS_PROFILE}"
+    else
+        psvar[3]=""
+        psvar[4]=""
+    fi
+
+    [[ -n "${AWS_SESSION_EXPIRATION}" ]] && psvar[5]="${AWS_SESSION_EXPIRATION}"
 }
 
 _set_terraform_info_precmd() {
-    [[ -n "${TF_WORKSPACE}" ]] && psvar[5]="${TF_WORKSPACE}"
+    [[ -n "${TF_WORKSPACE}" ]] && psvar[6]="${TF_WORKSPACE}"
 }
 
 add-zsh-hook precmd _init_psvar_precmd
@@ -62,6 +123,6 @@ zstyle ":vcs_info:git*+set-message:*" hooks git-untracked
 
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html
 export PROMPT="
-[%n@%m %3~] %1(V.${GIT_SYMBOL}%1v %2v.)%3(V.${AWS_SYMBOL}AWS_PROFILE(%3v%) .)%4(V.${AWS_SESSION_EXPIRATION_SYMBOL}AWS_SESSION_EXPIRATION(%4v%) .)%5(V.${TF_WORKSPACE_SYMBOL}TF_WORKSPACE(%5v%) .)%(?..%F{red}EXIT_CODE(%?%)%f)
+[%n@%m %3~] %1(V.${GIT_SYMBOL}%1v %2v.)%4(V.${AWS_SYMBOL}AWS_PROFILE(%3(V.%F{%3v}.)%4v%3(V.%f.)) .)%5(V.${AWS_SESSION_EXPIRATION_SYMBOL}AWS_SESSION_EXPIRATION(%5v%) .)%6(V.${TF_WORKSPACE_SYMBOL}TF_WORKSPACE(%6v%) .)%(?..%F{red}EXIT_CODE(%?%)%f)
 %(?.%F{green}.%F{red})%(#.#.$)%f "
 export RPROMPT=
