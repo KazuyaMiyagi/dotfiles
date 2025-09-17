@@ -64,15 +64,15 @@ _set_aws_info_precmd() {
                         # 色名をzsh色番号に変換（256色対応）
                         # https://docs.aws.amazon.com/ja_jp/awsconsolehelpdocs/latest/gsg/GetAccountColor.html#GetAccountColor-response-elements
                         case "${color_name}" in
-                            "pink") account_color="213" ;;      # ピンク
-                            "purple") account_color="129" ;;    # 紫
-                            "darkBlue") account_color="21" ;;   # 濃い青
-                            "lightBlue") account_color="117" ;; # 薄い青
-                            "teal") account_color="37" ;;       # ティール
-                            "green") account_color="46" ;;      # 緑
-                            "yellow") account_color="226" ;;    # 黄
-                            "orange") account_color="208" ;;    # オレンジ
-                            "red") account_color="196" ;;       # 赤
+                            "pink") account_color="213" ;;
+                            "purple") account_color="129" ;;
+                            "darkBlue") account_color="21" ;;
+                            "lightBlue") account_color="117" ;;
+                            "teal") account_color="37" ;;
+                            "green") account_color="46" ;;
+                            "yellow") account_color="226" ;;
+                            "orange") account_color="208" ;;
+                            "red") account_color="196" ;;
                         esac
 
                         # キャッシュファイルに保存
