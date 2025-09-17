@@ -3,7 +3,8 @@ autoload -Uz vcs_info
 
 # https://nerdfonts.com/
 readonly AWS_SYMBOL="%F{#D86613} %f"
-readonly AWS_SESSION_EXPIRATION_SYMBOL="%F{#D6242D} %f"
+readonly AWS_SESSION_EXPIRATION_SYMBOL="%F{#D6242D} %f"
+readonly AWS_CREDENTIAL_EXPIRATION_SYMBOL="%F{#D6242D} %f"
 readonly TF_WORKSPACE_SYMBOL="%F{#844FBA} %f"
 readonly GIT_SYMBOL="%F{#f64d27}󰊢 %f"
 readonly GIT_STAGED_SYMBOL="✔︎"
@@ -91,10 +92,11 @@ _set_aws_info_precmd() {
     fi
 
     [[ -n "${AWS_SESSION_EXPIRATION}" ]] && psvar[5]="${AWS_SESSION_EXPIRATION}"
+    [[ -n "${AWS_CREDENTIAL_EXPIRATION}" ]] && psvar[6]="${AWS_CREDENTIAL_EXPIRATION}"
 }
 
 _set_terraform_info_precmd() {
-    [[ -n "${TF_WORKSPACE}" ]] && psvar[6]="${TF_WORKSPACE}"
+    [[ -n "${TF_WORKSPACE}" ]] && psvar[7]="${TF_WORKSPACE}"
 }
 
 add-zsh-hook precmd _init_psvar_precmd
@@ -123,6 +125,6 @@ zstyle ":vcs_info:git*+set-message:*" hooks git-untracked
 
 # https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html
 export PROMPT="
-[%n@%m %3~] %1(V.${GIT_SYMBOL}%1v %2v.)%4(V.${AWS_SYMBOL}AWS_PROFILE(%3(V.%F{%3v}.)%4v%3(V.%f.)) .)%5(V.${AWS_SESSION_EXPIRATION_SYMBOL}AWS_SESSION_EXPIRATION(%5v%) .)%6(V.${TF_WORKSPACE_SYMBOL}TF_WORKSPACE(%6v%) .)%(?..%F{red}EXIT_CODE(%?%)%f)
+[%n@%m %3~] %1(V.${GIT_SYMBOL}%1v %2v.)%4(V.${AWS_SYMBOL}AWS_PROFILE(%3(V.%F{%3v}.)%4v%3(V.%f.)) .)%5(V.${AWS_SESSION_EXPIRATION_SYMBOL}AWS_SESSION_EXPIRATION(%5v%) .)%6(V.${AWS_CREDENTIAL_EXPIRATION_SYMBOL}AWS_CREDENTIAL_EXPIRATION(%6v%) .)%7(V.${TF_WORKSPACE_SYMBOL}TF_WORKSPACE(%7v%) .)%(?..%F{red}EXIT_CODE(%?%)%f)
 %(?.%F{green}.%F{red})%(#.#.$)%f "
 export RPROMPT=
