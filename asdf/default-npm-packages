@@ -1,6 +1,7 @@
 @anthropic-ai/claude-code
 @commitlint/cli
 @commitlint/config-conventional
+@github/copilot
 @google/gemini-cli
 @openai/codex
 ccusage
