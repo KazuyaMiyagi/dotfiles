@@ -2,6 +2,7 @@
 	autoCRLF = false
 	editor = vim
 	pager = less -X -L
+	quotepath = false
 [color]
 	ui = true
 [alias]
