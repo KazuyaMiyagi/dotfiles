@@ -130,6 +130,28 @@ function tflint_init() {
     echo "==> TFLint initialization completed."
 }
 
+function session_manager_plugin_install() {
+    echo "==> Installing Session Manager Plugin..."
+
+    local arch
+    arch=$(uname -m)
+    local pkg_url
+    if [ "${arch}" = "arm64" ]; then
+        pkg_url="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac_arm64/session-manager-plugin.pkg"
+    else
+        pkg_url="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/session-manager-plugin.pkg"
+    fi
+
+    local tmp_pkg
+    tmp_pkg=$(mktemp /tmp/session-manager-plugin.XXXXXX.pkg)
+    curl --fail --location --output "${tmp_pkg}" "${pkg_url}"
+    sudo installer -pkg "${tmp_pkg}" -target /
+    sudo ln -sf /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/session-manager-plugin
+    rm -f "${tmp_pkg}"
+
+    echo "==> Finished installing Session Manager Plugin."
+}
+
 function gcloud_update() {
     echo "==> Updating gcloud components..."
     gcloud components update --quiet
@@ -150,6 +172,7 @@ asdf_plugins_python_apply_path
 asdf_managed_tools_update
 tflint_init
 gcloud_update
+session_manager_plugin_install
 
 echo "Bootstrap finished!"
 
