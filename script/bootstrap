@@ -13,7 +13,7 @@ function __is_installed() {
 function homebrew_install() {
     if ! __is_installed brew; then
         echo "==> Installing Homebrew."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        /bin/bash -c "$(curl --fail --silent --show-error --location https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
     else
         echo "==> Homebrew was already installed."
     fi
@@ -46,7 +46,7 @@ function vim_plug_install() {
         echo "==> vim-plug was already installed."
     else
         echo "==> Installing vim-plug"
-        curl --fail --location --create-dirs --output "${XDG_DATA_HOME}/vim/autoload/plug.vim" \
+        curl --fail --silent --show-error --location --create-dirs --output "${XDG_DATA_HOME}/vim/autoload/plug.vim" \
             https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     fi
 }
@@ -144,7 +144,7 @@ function session_manager_plugin_install() {
 
     local tmp_pkg
     tmp_pkg=$(mktemp /tmp/session-manager-plugin.XXXXXX.pkg)
-    curl --fail --location --output "${tmp_pkg}" "${pkg_url}"
+    curl --fail --silent --show-error --location --output "${tmp_pkg}" "${pkg_url}"
     sudo installer -pkg "${tmp_pkg}" -target /
     sudo ln -sf /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/session-manager-plugin
     rm -f "${tmp_pkg}"

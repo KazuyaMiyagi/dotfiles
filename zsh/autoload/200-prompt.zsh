@@ -51,7 +51,7 @@ _set_aws_info_precmd() {
 
             if [[ $? -eq 0 && -n "${aws_env_vars}" ]]; then
                 color_response=$(eval "${aws_env_vars}" && \
-                                curl -s "https://uxc.us-east-1.api.aws/v1/account-color" \
+                                curl --silent "https://uxc.us-east-1.api.aws/v1/account-color" \
                                 --aws-sigv4 "aws:amz" \
                                 --user "${AWS_ACCESS_KEY_ID}:${AWS_SECRET_ACCESS_KEY}" \
                                 -H "X-Amz-Security-Token: ${AWS_SESSION_TOKEN}" 2>/dev/null)
