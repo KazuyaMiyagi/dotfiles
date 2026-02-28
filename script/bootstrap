@@ -56,6 +56,26 @@ function vim_plug_package_install() {
     vim +PlugUpgrade +PlugUpdate +qa
 }
 
+function vim_lsp_settings_update() {
+    local servers_root="${XDG_DATA_HOME}/vim-lsp-settings/servers"
+    local installer_dir="${XDG_DATA_HOME}/vim/plugged/vim-lsp-settings/installer"
+
+    echo "==> Updating vim-lsp-settings servers..."
+    for server_dir in "${servers_root}"/*/; do
+        local server
+        server=$(basename "${server_dir}")
+        local script="${installer_dir}/install-${server}.sh"
+        if [ -f "${script}" ]; then
+            echo "==> Updating ${server}..."
+            rm -rf "${server_dir:?}"/*
+            (cd "${server_dir}" && sh "${script}" >/dev/null 2>&1)
+        else
+            echo "==> Skipping ${server}: installer not found."
+        fi
+    done
+    echo "==> Finished updating vim-lsp-settings servers."
+}
+
 function asdf_plugins_install() {
     echo "==> Installing asdf plugins..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
@@ -123,6 +143,7 @@ homebrew_bundle_install
 homebrew_update
 vim_plug_install
 vim_plug_package_install
+vim_lsp_settings_update
 asdf_plugins_install
 asdf_plugins_update
 asdf_plugins_python_apply_path
