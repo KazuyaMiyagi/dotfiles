@@ -66,5 +66,15 @@ if [ ! -d "${XDG_DATA_HOME}/zsh" ]; then
     mkdir -p "${XDG_DATA_HOME}/zsh"
 fi
 
+# Setup Touch ID for sudo
+if [ ! -f /etc/pam.d/sudo_local ]; then
+    echo "==> Enabling Touch ID for sudo..."
+    sudo cp /etc/pam.d/sudo_local.template /etc/pam.d/sudo_local
+    sudo sed -i '' 's/^#auth       sufficient     pam_tid.so/auth       sufficient     pam_tid.so/' /etc/pam.d/sudo_local
+    echo "==> Touch ID for sudo enabled."
+else
+    echo "==> Touch ID for sudo was already configured."
+fi
+
 echo "Initialization finished!"
 
