@@ -6,7 +6,11 @@ if [ -f "${ZPLUG_HOME}/init.zsh" ]; then
     zplug "mollifier/anyframe"
     if zplug check "mollifier/anyframe"; then
         bindkey "^r" anyframe-widget-put-history
-        alias j=anyframe-widget-cd-ghq-repository
+        function j() {
+            local selected
+            selected=$(ghq list | anyframe-selector-auto)
+            [[ -n "$selected" ]] && cd "$(ghq root)/$selected"
+        }
     fi
 
     zplug "zsh-users/zsh-autosuggestions"
