@@ -52,6 +52,9 @@ create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tf
 # Setup ~/.claude/settings.json
 create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/settings.json" "claude_settings.json"
 
+# Setup ~/.claude/CLAUDE.md
+create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
+
 # Setup ~/.zshenv
 if [ -f "${HOME}/.zshenv" ]; then
     echo "${HOME}/.zshenv found. Backing up to ${BACKUP_DIR}/zshenv"
