@@ -1,0 +1,126 @@
+#! /usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+input=$(cat)
+project_dir=$(jq -r '.workspace.project_dir // .cwd // empty' <<<"${input}")
+cwd=$(jq -r '.cwd // empty' <<<"${input}")
+model=$(jq -r '.model.display_name // empty' <<<"${input}")
+cost=$(jq -r 'if .cost.total_cost_usd then (.cost.total_cost_usd * 100 | round / 100 | tostring) else empty end' <<<"${input}")
+context=$(jq -r 'if .context_window.used_percentage then (.context_window.used_percentage | floor | tostring) else empty end' <<<"${input}")
+five_hour=$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<<"${input}")
+seven_day=$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<<"${input}")
+
+# Color palette
+BG_ORANGE="196,123,92" # claude salmon
+BG_GRAY1="80,78,76"    # gray (light)
+BG_GRAY2="68,66,64"    # gray
+BG_GRAY3="56,54,52"    # gray (dark)
+BG_GRAY4="46,44,42"    # gray (darker)
+BG_GRAY5="38,36,34"    # gray (darkest)
+FG_DARK="20,20,20"     # near black
+FG_LIGHT="220,218,214" # near white
+FG_GREEN="152,151,26"  # gruvbox green
+FG_YELLOW="215,153,33" # gruvbox yellow
+FG_RED="204,36,29"     # gruvbox red
+
+# Render format directives:
+#   Background=<color> -> set background color
+#   Foreground=<color> -> set foreground color
+#   Text=<text>        -> output text
+#   ResetAttributes    -> reset all
+_format() {
+    local rgb
+    for directive in "${@}"; do
+        case "${directive}" in
+        Background=*)
+            rgb="${directive#Background=}"
+            printf "\033[48;2;%sm" "${rgb//,/;}"
+            ;;
+        Foreground=*)
+            rgb="${directive#Foreground=}"
+            printf "\033[38;2;%sm" "${rgb//,/;}"
+            ;;
+        Text=*) printf "%s" "${directive#Text=}" ;;
+        ResetAttributes) printf "\033[0m" ;;
+        esac
+    done
+}
+
+# Pie chart icon by percentage: 󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥
+_pie_icon() {
+    local int_pct="${1%.*}"
+    local icons=(󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥)
+    local idx=$((int_pct * 8 / 100))
+    if [ "${idx}" -gt 8 ]; then idx=8; fi
+    printf "%s" "${icons[${idx}]}"
+}
+
+# Foreground color by percentage: green (<50%), yellow (50-80%), red (>80%)
+_pct_fg() {
+    local int_pct="${1%.*}"
+    if [ "${int_pct}" -ge 80 ]; then
+        printf "%s" "${FG_RED}"
+    elif [ "${int_pct}" -ge 50 ]; then
+        printf "%s" "${FG_YELLOW}"
+    else
+        printf "%s" "${FG_GREEN}"
+    fi
+}
+
+# --- Build segment texts ---
+
+project_text=""
+if [ -n "${project_dir}" ]; then
+    project_name=$(basename "${project_dir}")
+    if [ -n "${cwd}" ] && [ "${cwd}" != "${project_dir}" ]; then
+        rel_path="${cwd#"${project_dir}"/}"
+        IFS='/' read -ra cwd_parts <<<"${rel_path}"
+        if [ ${#cwd_parts[@]} -le 3 ]; then
+            short_cwd="${rel_path}"
+        else
+            short_cwd="$(
+                IFS='/'
+                echo "${cwd_parts[*]: -3:3}"
+            )"
+        fi
+        project_text="[${project_name}](${short_cwd}) "
+    else
+        project_text="[${project_name}]"
+    fi
+fi
+
+model_text=" ${model} "
+cost_text=" \$${cost} "
+
+context_fg="${FG_LIGHT}"
+context_text=""
+if [ -n "${context}" ]; then
+    context_fg=$(_pct_fg "${context}")
+    context_text=" $(_pie_icon "${context}") ctx ${context}% "
+fi
+
+five_fg="${FG_LIGHT}"
+five_text=""
+if [ -n "${five_hour}" ]; then
+    five_fg=$(_pct_fg "${five_hour}")
+    five_text=" $(_pie_icon "${five_hour}") 5h ${five_hour}% "
+fi
+
+seven_fg="${FG_LIGHT}"
+seven_text=""
+if [ -n "${seven_day}" ]; then
+    seven_fg=$(_pct_fg "${seven_day}")
+    seven_text=" $(_pie_icon "${seven_day}") 7d ${seven_day}% "
+fi
+
+# --- Format and output (reorder segments here) ---
+_format \
+    "Background=${BG_ORANGE}" "Foreground=${FG_DARK}" "Text=${project_text}" ResetAttributes \
+    "Background=${BG_GRAY1}" "Foreground=${FG_LIGHT}" "Text=${model_text}" ResetAttributes \
+    "Background=${BG_GRAY2}" "Foreground=${FG_LIGHT}" "Text=${cost_text}" ResetAttributes \
+    "Background=${BG_GRAY3}" "Foreground=${context_fg}" "Text=${context_text}" ResetAttributes \
+    "Background=${BG_GRAY4}" "Foreground=${five_fg}" "Text=${five_text}" ResetAttributes \
+    "Background=${BG_GRAY5}" "Foreground=${seven_fg}" "Text=${seven_text}" ResetAttributes
+
