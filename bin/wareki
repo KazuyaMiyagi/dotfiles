@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+y="${1:-$(date +%Y)}"
+
+bold="\033[1;32m"
+out="\033[31m"
+reset="\033[0m"
+
+# 各列の最大表示幅を計算
+start=$((y - 10))
+end=$((y + 10))
+
+max_w() {
+    local max=0 val
+    for year in $(seq "$start" "$end"); do
+        val=$(( year + $1 ))
+        len=${#val}
+        [ "$len" -gt "$max" ] && max=$len
+    done
+    echo "$max"
+}
+
+w_year=$(max_w 0)
+w_reiwa=$(max_w -2018)
+w_heisei=$(max_w -1988)
+w_showa=$(max_w -1925)
+
+# 最小幅を4に（ヘッダの全角文字分）
+[ "$w_year" -lt 4 ] && w_year=4
+[ "$w_reiwa" -lt 4 ] && w_reiwa=4
+[ "$w_heisei" -lt 4 ] && w_heisei=4
+[ "$w_showa" -lt 4 ] && w_showa=4
+
+pad_fmt() {
+    local val="$1" width="$2" highlight="$3" in_range="$4"
+    local padded
+    padded=$(printf "%-${width}s" "$val")
+    if [ "$highlight" = "1" ]; then
+        printf "${bold}${padded}${reset}"
+    elif [ "$in_range" = "0" ]; then
+        printf "${out}${padded}${reset}"
+    else
+        printf "%s" "$padded"
+    fi
+}
+
+# ヘッダ用の罫線を生成
+hr_year=$(printf '%0.s─' $(seq 1 $((w_year + 2))))
+hr_reiwa=$(printf '%0.s─' $(seq 1 $((w_reiwa + 2))))
+hr_heisei=$(printf '%0.s─' $(seq 1 $((w_heisei + 2))))
+hr_showa=$(printf '%0.s─' $(seq 1 $((w_showa + 2))))
+
+# ヘッダの全角文字パディング（全角2文字=表示4列）
+pad_header() {
+    local label="$1" width="$2"
+    local spaces=$((width - 4))
+    printf "%s%*s" "$label" "$spaces" ""
+}
+
+echo "┌${hr_year}┬${hr_reiwa}┬${hr_heisei}┬${hr_showa}┐"
+printf "│ %s │ %s │ %s │ %s │\n" \
+    "$(pad_header "西暦" "$w_year")" \
+    "$(pad_header "令和" "$w_reiwa")" \
+    "$(pad_header "平成" "$w_heisei")" \
+    "$(pad_header "昭和" "$w_showa")"
+echo "├${hr_year}┼${hr_reiwa}┼${hr_heisei}┼${hr_showa}┤"
+
+for year in $(seq "$start" "$end"); do
+    r=$((year - 2018))
+    h=$((year - 1988))
+    s=$((year - 1925))
+
+    is_current=0
+    [ "$year" -eq "$y" ] && is_current=1
+
+    # 実際の元号の範囲: 令和 2019~, 平成 1989~2019, 昭和 1926~1989
+    r_in=1; [ "$year" -lt 2019 ] && r_in=0
+    h_in=1; [ "$year" -lt 1989 ] || [ "$year" -gt 2019 ] && h_in=0
+    s_in=1; [ "$year" -lt 1926 ] || [ "$year" -gt 1989 ] && s_in=0
+
+    printf "│ %b │ %b │ %b │ %b │\n" \
+        "$(pad_fmt "$year" "$w_year" "$is_current" 1)" \
+        "$(pad_fmt "$r" "$w_reiwa" "$is_current" "$r_in")" \
+        "$(pad_fmt "$h" "$w_heisei" "$is_current" "$h_in")" \
+        "$(pad_fmt "$s" "$w_showa" "$is_current" "$s_in")"
+done
+
+echo "└${hr_year}┴${hr_reiwa}┴${hr_heisei}┴${hr_showa}┘"
