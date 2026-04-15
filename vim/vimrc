@@ -39,7 +39,7 @@ Plug 'morhetz/gruvbox'
 " Language server
 Plug 'prabirshrestha/vim-lsp'
 let g:lsp_preview_float = 1
-let g:lsp_popup_opacity = 60
+let g:lsp_popup_opacity = 0
 let g:lsp_popup_borderchars = ['─', '│', '─', '│', '╭', '╮', '╯', '╰']
 let g:lsp_diagnostics_float_cursor = 1
 let g:lsp_diagnostics_virtual_text_enabled = 0
@@ -156,4 +156,4 @@ let g:netrw_home = $XDG_DATA_HOME . '/vim'
 
 set updatetime=100 " vim-lsp の :LspHover の表示が自動的に消えないよう短くする
 
-set pumopt=opacity:60,border:round,margin,shadow
+set pumopt=opacity:0,border:round,margin,shadow
