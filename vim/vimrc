@@ -156,8 +156,4 @@ let g:netrw_home = $XDG_DATA_HOME . '/vim'
 
 set updatetime=100 " vim-lsp の :LspHover の表示が自動的に消えないよう短くする
 
-if exists('&pumopt')
-  set pumopt=opacity:60,border:round,margin,shadow
-else
-  set pumborder=round,margin,shadow
-endif
+set pumopt=opacity:60,border:round,margin,shadow
