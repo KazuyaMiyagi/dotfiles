@@ -1,14 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
+  "assignees": ["KazuyaMiyagi"],
   "minimumReleaseAge": "7 days",
   "automerge": true,
   "ignoreTests": true,
   "tflint-plugin": {
-    "managerFilePatterns": [
-      "/^tflint/tflint\\.hcl$/"
-    ]
+    "managerFilePatterns": ["/^tflint/tflint\.hcl$/"]
   }
 }
