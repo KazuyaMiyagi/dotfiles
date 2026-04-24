@@ -1,0 +1,49 @@
+#! /usr/bin/env bash
+
+set -u
+set -o pipefail
+
+for repo_path in $(ghq list --full-path); do
+    pushd "${repo_path}" >/dev/null 2>&1 || continue
+
+    header="<--- $(echo "${repo_path}" | rev | cut -d '/' -f '1,2' | rev) --->"
+    output=""
+
+    # Pop stash if any
+    stash_output=$(git stash pop 2>&1)
+    if [ "${stash_output}" != "No stash entries found." ]; then
+        output="${output}${stash_output}"$'\n'
+    fi
+
+    # Detect default branch
+    default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@') || default_branch=""
+    if [ -z "${default_branch}" ]; then
+        for candidate in main master; do
+            if git show-ref --verify --quiet "refs/heads/${candidate}" 2>/dev/null; then
+                default_branch="${candidate}"
+                break
+            fi
+        done
+    fi
+
+    # Extra branches
+    extra_branches=$(git branch | grep -v -e "^\* ${default_branch}$" -e "^  ${default_branch}$" || true)
+    if [ -n "${extra_branches}" ]; then
+        output="${output}${extra_branches}"$'\n'
+    fi
+
+    # Status (filter out clean default branch tracking line)
+    status_output=$(git status --short --branch)
+    filtered_status=$(echo "${status_output}" | grep -v "^## ${default_branch}\.\.\.origin/${default_branch}$" || true)
+    if [ -n "${filtered_status}" ]; then
+        output="${output}${filtered_status}"$'\n'
+    fi
+
+    # Only print repos with something notable
+    if [ -n "${output}" ]; then
+        echo "${header}"
+        printf '%s' "${output}"
+    fi
+
+    popd >/dev/null 2>&1 || true
+done

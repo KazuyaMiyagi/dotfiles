@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+org="${1:?Usage: org-repos-clone <org>}"
+limit="${2:-1000}"
+
+for repo in $(gh repo list "${org}" --limit "${limit}" --no-archived --json 'name' | jq -r '.[].name'); do
+    ghq get "${org}/${repo}"
+done
