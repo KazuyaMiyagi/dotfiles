@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+DOTFILES_DIR="$(ghq root)/github.com/KazuyaMiyagi/dotfiles"
+readonly DOTFILES_DIR
+
+echo -e "\n==> Updating all repos...\n"
+all-repo-update
+
+echo -e "\n==> Running bootstrap...\n"
+"${DOTFILES_DIR}/script/bootstrap"
+
+echo -e "\n==> Checking repos status...\n"
+repos-status
+
+echo -e "\n==> Daily routine completed!\n"
+
