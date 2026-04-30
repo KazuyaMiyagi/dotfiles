@@ -116,7 +116,16 @@ function vim_lsp_settings_update() {
         if [ -f "${script}" ]; then
             echo "==> Updating ${server}..."
             rm -rf "${server_dir:?}"/*
-            (cd "${server_dir}" && sh "${script}" >/dev/null 2>&1)
+            local retries=5
+            for i in $(seq 1 "${retries}"); do
+                (cd "${server_dir}" && sh "${script}" >/dev/null 2>&1) && break
+                if [ "${i}" -lt "${retries}" ]; then
+                    echo "==> Retrying ${server} (${i}/${retries})..."
+                else
+                    echo "==> Failed to update ${server} after ${retries} attempts."
+                    exit 1
+                fi
+            done
         else
             echo "==> Skipping ${server}: installer not found."
         fi
