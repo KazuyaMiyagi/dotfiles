@@ -151,12 +151,13 @@ function session_manager_plugin_install() {
         pkg_url="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/session-manager-plugin.pkg"
     fi
 
-    local tmp_pkg
-    tmp_pkg=$(mktemp /tmp/session-manager-plugin.XXXXXX.pkg)
+    local tmp_dir tmp_pkg
+    tmp_dir=$(mktemp -d /tmp/session-manager-plugin.XXXXXX)
+    tmp_pkg="${tmp_dir}/session-manager-plugin.pkg"
     curl --fail --silent --show-error --location --output "${tmp_pkg}" "${pkg_url}"
     sudo installer -pkg "${tmp_pkg}" -target /
     sudo ln -sf /usr/local/sessionmanagerplugin/bin/session-manager-plugin /usr/local/bin/session-manager-plugin
-    rm -f "${tmp_pkg}"
+    rm -rf "${tmp_dir}"
 
     echo "==> Finished installing Session Manager Plugin."
 }
