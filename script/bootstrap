@@ -171,8 +171,8 @@ function gcloud_update() {
 echo "Starting bootstrap..."
 
 homebrew_install
-homebrew_bundle_install
 homebrew_update
+homebrew_bundle_install
 vim_plug_install
 vim_plug_package_install
 asdf_plugins_install
