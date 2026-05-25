@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# ghq でクローン済みの ORG リポジトリを GitHub と照合し、
+# アーカイブ・削除・リネームを検知する。
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [OPTIONS] [ORG]
+
+ghq でクローン済みの GitHub リポジトリを照合し、
+アーカイブ・削除・リネームを検知する。
+
+ORG を省略すると、ghq に存在する github.com の全 owner を対象にする。
+
+Options:
+  -a, --all    active なリポジトリも含めて全件表示
+  -h, --help   このヘルプを表示
+
+Arguments:
+  ORG  対象の GitHub Organization または User（省略時は全 owner）
+EOF
+}
+
+show_all=0
+org=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -a|--all)
+            show_all=1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -*)
+            echo "Error: unknown option: $1" >&2
+            exit 1
+            ;;
+        *)
+            if [[ -n "${org}" ]]; then
+                echo "Error: unexpected argument: $1" >&2
+                exit 1
+            fi
+            org="$1"
+            shift
+            ;;
+    esac
+done
+
+# 1. 対象 owner 一覧を決定
+if [[ -n "${org}" ]]; then
+    orgs="${org}"
+else
+    orgs="$(ghq list | awk -F/ '$1 == "github.com" { print $2 }' | sort -u)"
+fi
+
+if [[ -z "${orgs}" ]]; then
+    echo "ローカルに github.com のクローンが見つかりません" >&2
+    exit 0
+fi
+
+# 2. 各 owner ごとに照合してテーブル行を蓄積
+rows=""
+while IFS= read -r owner; do
+    [[ -z "${owner}" ]] && continue
+
+    local_repos="$(ghq list | awk -F/ -v o="${owner}" '$1 == "github.com" && $2 == o { print $3 }' | sort -u)"
+    [[ -z "${local_repos}" ]] && continue
+
+    # リモート一覧（archived フラグ込み）。tab 区切りで保持
+    remote_list="$(gh repo list "${owner}" --limit 1000 --json name,isArchived \
+        | jq -r '.[] | "\(.name)\t\(.isArchived)"')"
+
+    while IFS= read -r name; do
+        [[ -z "${name}" ]] && continue
+
+        match="$(printf '%s\n' "${remote_list}" | awk -F'\t' -v n="${name}" '$1 == n { print $2; exit }')"
+
+        full="${owner}/${name}"
+        if [[ -n "${match}" ]]; then
+            if [[ "${match}" == "true" ]]; then
+                rows+="${full}"$'\t'"archived"$'\t'""$'\n'
+            elif [[ ${show_all} -eq 1 ]]; then
+                rows+="${full}"$'\t'"active"$'\t'""$'\n'
+            fi
+        else
+            # リモート一覧に無い → 個別に問い合わせて削除/リネームを判定
+            # GitHub API はリネームされたリポジトリにアクセスすると新しい
+            # full_name を返す。404 なら削除されている。
+            new_full="$(gh api "repos/${full}" --jq '.full_name' 2>/dev/null || true)"
+            if [[ -z "${new_full}" ]]; then
+                rows+="${full}"$'\t'"deleted"$'\t'""$'\n'
+            elif [[ "${new_full}" != "${full}" ]]; then
+                rows+="${full}"$'\t'"renamed"$'\t'"-> ${new_full}"$'\n'
+            else
+                # 一覧から漏れた active（limit 超過など）
+                [[ ${show_all} -eq 1 ]] && rows+="${full}"$'\t'"active"$'\t'""$'\n'
+            fi
+        fi
+    done <<< "${local_repos}"
+done <<< "${orgs}"
+
+if [[ -z "${rows}" ]]; then
+    echo "問題なし: ローカルクローンは全て active です"
+    exit 0
+fi
+
+# 4. テーブル出力
+{
+    printf 'REPOSITORY\tSTATUS\tNOTE\n'
+    printf '%s' "${rows}"
+} | awk -F'\t' '
+{
+    for (i = 1; i <= NF; i++) {
+        if (length($i) > w[i]) w[i] = length($i)
+        cell[NR, i] = $i
+    }
+    if (NF > cols) cols = NF
+}
+END {
+    rows = NR
+    draw_border("top")
+    draw_row(1)
+    draw_border("mid")
+    for (r = 2; r <= rows; r++) draw_row(r)
+    draw_border("bot")
+}
+function draw_border(kind,    i, j, l, m, r) {
+    if (kind == "top")      { l = "┌"; m = "┬"; r = "┐" }
+    else if (kind == "mid") { l = "├"; m = "┼"; r = "┤" }
+    else                    { l = "└"; m = "┴"; r = "┘" }
+    printf "%s", l
+    for (i = 1; i <= cols; i++) {
+        for (j = 0; j < w[i] + 2; j++) printf "─"
+        printf "%s", (i < cols ? m : r)
+    }
+    printf "\n"
+}
+function draw_row(r,    i) {
+    printf "│"
+    for (i = 1; i <= cols; i++) printf " %-*s │", w[i], cell[r, i]
+    printf "\n"
+}
+'
