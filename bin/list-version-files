@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [OPTIONS] [DIR]
+
+DIR 以下から各種バージョンファイル（anyenv が対応する各 *env の
+バージョンファイルと、nvm の .nvmrc・asdf の .tool-versions）を
+再帰的に探索し、ディレクトリ・ファイル・バージョンの一覧を出力する。
+
+Options:
+  -f, --format FORMAT  出力形式: table（デフォルト）または csv
+      --csv            --format csv のショートカット
+  -s, --summary        ファイル種別×バージョンで件数集計して出力
+  -h, --help           このヘルプを表示
+
+Arguments:
+  DIR  探索の起点ディレクトリ（デフォルト: カレントディレクトリ）
+EOF
+}
+
+format="table"
+summary=0
+root=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --csv)
+            format="csv"
+            shift
+            ;;
+        -f|--format)
+            [[ $# -lt 2 ]] && { echo "Error: --format requires an argument" >&2; exit 1; }
+            format="$2"
+            shift 2
+            ;;
+        -f=*|--format=*)
+            format="${1#*=}"
+            shift
+            ;;
+        -s|--summary)
+            summary=1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -*)
+            echo "Error: unknown option: $1" >&2
+            exit 1
+            ;;
+        *)
+            if [[ -n "${root}" ]]; then
+                echo "Error: unexpected argument: $1" >&2
+                exit 1
+            fi
+            root="$1"
+            shift
+            ;;
+    esac
+done
+
+case "${format}" in
+    table|csv) ;;
+    *) echo "Error: invalid format: ${format} (expected: table, csv)" >&2; exit 1 ;;
+esac
+
+root="${root:-.}"
+
+if [[ ! -d "${root}" ]]; then
+    echo "Error: directory not found: ${root}" >&2
+    exit 1
+fi
+
+root_abs="$(cd "${root}" && pwd)"
+
+# 探索対象のバージョンファイル
+#   anyenv が対応している *env のバージョンファイルを網羅し、
+#   加えて nvm の .nvmrc、asdf/mise の .tool-versions、
+#   RVM の .rvmrc も拾う。.ruby-version は rbenv/rvm/chruby/asdf 等で
+#   共通利用されるので別途追加しない。
+#   保険として .*-version 全般にもマッチさせる（未知の *env 用）。
+patterns=(
+    ".crystal-version"     # crenv
+    ".elixir-version"      # exenv
+    ".erlang-version"      # erlenv
+    ".go-version"          # goenv
+    ".java-version"        # jenv
+    ".lua-version"         # luaenv
+    ".node-version"        # nodenv
+    ".nvmrc"               # nvm
+    ".perl-version"        # plenv
+    ".php-version"         # phpenv
+    ".python-version"      # pyenv
+    ".ruby-version"        # rbenv / rvm / chruby / asdf
+    ".rvmrc"               # rvm（旧形式）
+    ".sbt-version"         # sbtenv
+    ".scala-version"       # scalaenv
+    ".swift-version"       # swiftenv
+    ".terraform-version"   # tfenv
+    ".tool-versions"       # asdf / mise
+    ".*-version"           # 上記以外の *env バージョンファイル
+)
+
+find_args=(-type f \()
+first=1
+for p in "${patterns[@]}"; do
+    if [[ ${first} -eq 1 ]]; then
+        find_args+=(-name "${p}")
+        first=0
+    else
+        find_args+=(-o -name "${p}")
+    fi
+done
+find_args+=(\))
+
+# 依存物・ビルド成果物・VCS のディレクトリは除外
+files_output="$(
+    find "${root_abs}" \
+        \( -name node_modules -o -name .git -o -name .terraform -o -name vendor -o -name .bundle \) -prune -o \
+        "${find_args[@]}" -print 2>/dev/null | sort
+)"
+
+if [[ -z "${files_output}" ]]; then
+    echo "No version files found under ${root_abs}" >&2
+    exit 0
+fi
+
+rows=""
+while IFS= read -r file; do
+    dir="$(dirname "${file}")"
+    rel_dir="${dir#"${root_abs}"}"
+    rel_dir="${rel_dir#/}"
+    [[ -z "${rel_dir}" ]] && rel_dir="."
+    name="$(basename "${file}")"
+
+    while IFS= read -r line; do
+        [[ -z "${line}" ]] && continue
+        rows+="${rel_dir}"$'\t'"${name}"$'\t'"${line}"$'\n'
+    done < "${file}"
+done <<< "${files_output}"
+
+if [[ ${summary} -eq 1 ]]; then
+    # ファイル種別×バージョンで件数集計
+    aggregated="$(printf '%s' "${rows}" | awk -F'\t' '
+{
+    key = $2 SUBSEP $3
+    count[key]++
+    file[key] = $2
+    ver[key] = $3
+}
+END {
+    for (k in count) printf "%s\t%s\t%d\n", file[k], ver[k], count[k]
+}' | sort -t $'\t' -k1,1 -k2,2V)"
+    input="$(printf 'FILE\tVERSION\tCOUNT\n%s' "${aggregated}")"
+else
+    input="$(printf 'DIRECTORY\tFILE\tVERSION\n%s' "${rows}")"
+fi
+
+case "${format}" in
+    table)
+        printf '%s\n' "${input}" | awk -F'\t' '
+{
+    for (i = 1; i <= NF; i++) {
+        if (length($i) > w[i]) w[i] = length($i)
+        cell[NR, i] = $i
+    }
+    if (NF > cols) cols = NF
+}
+END {
+    rows = NR
+    draw_border("top")
+    draw_row(1)
+    draw_border("mid")
+    for (r = 2; r <= rows; r++) draw_row(r)
+    draw_border("bot")
+}
+function draw_border(kind,    i, j, l, m, r) {
+    if (kind == "top")      { l = "┌"; m = "┬"; r = "┐" }
+    else if (kind == "mid") { l = "├"; m = "┼"; r = "┤" }
+    else                    { l = "└"; m = "┴"; r = "┘" }
+    printf "%s", l
+    for (i = 1; i <= cols; i++) {
+        for (j = 0; j < w[i] + 2; j++) printf "─"
+        printf "%s", (i < cols ? m : r)
+    }
+    printf "\n"
+}
+function draw_row(r,    i) {
+    printf "│"
+    for (i = 1; i <= cols; i++) printf " %-*s │", w[i], cell[r, i]
+    printf "\n"
+}
+'
+        ;;
+    csv)
+        printf '%s\n' "${input}" | awk -F'\t' '
+function csv_escape(s) {
+    if (s ~ /[",\r\n]/) {
+        gsub(/"/, "\"\"", s)
+        return "\"" s "\""
+    }
+    return s
+}
+{
+    out = ""
+    for (i = 1; i <= NF; i++) {
+        out = out (i > 1 ? "," : "") csv_escape($i)
+    }
+    print out
+}
+'
+        ;;
+esac
