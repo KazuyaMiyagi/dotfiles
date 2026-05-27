@@ -33,6 +33,34 @@ function create_symlink() {
     echo -e "==> Symbolic link created successfully!\n"
 }
 
+function merge_managed_block() {
+    local source_path="${1}"
+    local target_path="${2}"
+    local marker_label="${3}"
+    local marker_begin="# >>> dotfiles managed (${marker_label}) >>>"
+    local marker_end="# <<< dotfiles managed (${marker_label}) <<<"
+
+    echo "==> Merging ${source_path} into ${target_path}"
+
+    touch "${target_path}"
+
+    awk -v begin="${marker_begin}" -v end="${marker_end}" '
+        $0 == begin { skip = 1; next }
+        $0 == end   { skip = 0; next }
+        !skip       { print }
+    ' "${target_path}" >"${target_path}.tmp"
+
+    {
+        printf "%s\n" "${marker_begin}"
+        cat "${source_path}"
+        printf "%s\n" "${marker_end}"
+    } >>"${target_path}.tmp"
+
+    mv "${target_path}.tmp" "${target_path}"
+
+    echo -e "==> Managed block merged successfully!\n"
+}
+
 echo "Starting initialization..."
 
 if [ ! -d "${BACKUP_DIR}" ]; then
@@ -54,6 +82,13 @@ create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/setti
 
 # Setup ~/.claude/CLAUDE.md
 create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
+
+# Setup ~/.codex/config.toml
+if [ ! -d "${HOME}/.codex" ]; then
+    echo "Creating ${HOME}/.codex"
+    mkdir -p "${HOME}/.codex"
+fi
+merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
 
 # Setup ~/.zshenv
 if [ -f "${HOME}/.zshenv" ]; then
@@ -80,4 +115,3 @@ else
 fi
 
 echo "Initialization finished!"
-
