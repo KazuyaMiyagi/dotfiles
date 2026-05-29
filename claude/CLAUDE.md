@@ -33,6 +33,7 @@ Conventional Commits 形式を使用すること:
 - description の末尾にピリオドをつけない
 - description は 72 文字以内に収める
 - subject と body の間には空行を入れる
+- コミットメッセージに Issue や PR 番号を含めない
 
 ## Pull Request
 
