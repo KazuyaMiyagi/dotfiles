@@ -10,6 +10,7 @@ export HISTFILE="${XDG_DATA_HOME}/zsh/history"
 
 # go
 export GOPATH="${XDG_DATA_HOME}/git"
+export GOENV="${XDG_CONFIG_HOME}/go/env"
 
 # ghq
 export GHQ_ROOT="${XDG_DATA_HOME}/git/src"
