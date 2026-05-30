@@ -83,11 +83,16 @@ create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/setti
 # Setup ~/.claude/CLAUDE.md
 create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
 
-# Setup ~/.codex/config.toml
+# Setup ~/.codex
 if [ ! -d "${HOME}/.codex" ]; then
     echo "Creating ${HOME}/.codex"
     mkdir -p "${HOME}/.codex"
 fi
+
+# Setup ~/.codex/AGENTS.md
+create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.codex/AGENTS.md" "codex_AGENTS.md"
+
+# Setup ~/.codex/config.toml
 merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
 
 # Setup ~/.zshenv
