@@ -35,6 +35,11 @@ Conventional Commits 形式を使用すること:
 - subject と body の間には空行を入れる
 - コミットメッセージに Issue や PR 番号を含めない
 
+## Git コミット
+
+- コミットは意味のある単位に分ける
+- 各コミットはテストが通り、動作確認済みの状態にする
+
 ## Pull Request
 
 - PR は必ずドラフトで作成すること（`gh pr create --draft`）
