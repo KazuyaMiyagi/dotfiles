@@ -10,7 +10,7 @@ echo -e "\n==> Updating all repos...\n"
 all-repo-update
 
 echo -e "\n==> Running bootstrap...\n"
-"${DOTFILES_DIR}/script/bootstrap"
+"${DOTFILES_DIR}/scripts/bootstrap"
 
 echo -e "\n==> Checking repos status...\n"
 repos-status
