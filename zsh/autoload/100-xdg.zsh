@@ -25,6 +25,9 @@ export BUNDLE_USER_PLUGIN="${XDG_DATA_HOME}/bundle/plugin"
 # npm
 export NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME}/npm/npmrc"
 
+# Python#pip
+export PIP_CACHE_DIR="${XDG_CACHE_HOME}/pip"
+
 # tig
 export TIGRC_USER="${XDG_CONFIG_HOME}/tig/tigrc"
 
