@@ -3,7 +3,6 @@
 @github/copilot
 @google/gemini-cli
 @openai/codex
-ccusage
 eslint
 markdownlint-cli2
 prettier
