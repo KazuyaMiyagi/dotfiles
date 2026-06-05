@@ -3,6 +3,11 @@
 set -eu
 set -o pipefail
 
+case "$(uname)" in
+Darwin) realpath_cmd=grealpath ;;
+*) realpath_cmd=realpath ;;
+esac
+
 input=$(cat)
 project_dir=$(jq -r '.workspace.project_dir // .cwd // empty' <<<"${input}")
 cwd=$(jq -r '.cwd // empty' <<<"${input}")
@@ -75,17 +80,9 @@ project_text=""
 if [ -n "${project_dir}" ]; then
     project_name=$(basename "${project_dir}")
     if [ -n "${cwd}" ] && [ "${cwd}" != "${project_dir}" ]; then
-        rel_path="${cwd#"${project_dir}"/}"
-        IFS='/' read -ra cwd_parts <<<"${rel_path}"
-        if [ ${#cwd_parts[@]} -le 3 ]; then
-            short_cwd="${rel_path}"
-        else
-            short_cwd="$(
-                IFS='/'
-                echo "${cwd_parts[*]: -3:3}"
-            )"
-        fi
-        project_text="[${project_name}](${short_cwd}) "
+        rel=$("${realpath_cmd}" -m -s --relative-to="${project_dir}" "${cwd}")
+        [[ "${rel}" == ..* ]] || rel="./${rel}"
+        project_text="[${project_name}](${rel}/) "
     else
         project_text="[${project_name}]"
     fi
