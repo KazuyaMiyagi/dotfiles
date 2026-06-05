@@ -92,7 +92,11 @@ if [ -n "${project_dir}" ]; then
 fi
 
 model_text=" ${model} "
-cost_text=" \$${cost} "
+
+cost_text=""
+if [ -n "${cost}" ]; then
+    cost_text=" \$${cost} "
+fi
 
 context_fg="${FG_LIGHT}"
 context_text=""
