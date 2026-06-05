@@ -7,7 +7,7 @@ input=$(cat)
 project_dir=$(jq -r '.workspace.project_dir // .cwd // empty' <<<"${input}")
 cwd=$(jq -r '.cwd // empty' <<<"${input}")
 model=$(jq -r '.model.display_name // empty' <<<"${input}")
-cost=$(jq -r 'if .cost.total_cost_usd then (.cost.total_cost_usd * 100 | round / 100 | tostring) else empty end' <<<"${input}")
+cost=$(jq -r '.cost.total_cost_usd // empty' <<<"${input}")
 context=$(jq -r 'if .context_window.used_percentage then (.context_window.used_percentage | floor | tostring) else empty end' <<<"${input}")
 five_hour=$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<<"${input}")
 seven_day=$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<<"${input}")
@@ -95,7 +95,7 @@ model_text=" ${model} "
 
 cost_text=""
 if [ -n "${cost}" ]; then
-    cost_text=" \$${cost} "
+    cost_text=$(printf ' $%.1f ' "${cost}")
 fi
 
 context_fg="${FG_LIGHT}"
