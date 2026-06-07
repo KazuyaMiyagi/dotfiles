@@ -1,0 +1,12 @@
+{
+  "trustedformulae": [
+    "fujiwara/tap/cfft",
+    "fujiwara/tap/tfstate-lookup",
+    "k1low/tap/octocov",
+    "kayac/tap/ecspresso",
+    "kdash-rs/kdash/kdash"
+  ],
+  "trustedcasks": [
+    "terraform-linters/tap/tflint"
+  ]
+}
