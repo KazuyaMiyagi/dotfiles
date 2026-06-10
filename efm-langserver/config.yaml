@@ -95,7 +95,7 @@ tools:
 
   commitlint: &commitlint
     prefix: commitlint
-    lint-command: 'commitlint --config ~/.config/commitlint/config.mjs | grep -E "^(⚠|✖)[[:space:]]+" | grep -vE "^[⚠✖][[:space:]]+found [0-9]+ problems" | sed -E -e "s/^⚠[[:space:]]+/W:1:1: /" -e "s/^✖[[:space:]]+/E:1:1: /"'
+    lint-command: 'sed "/^# -* >8 -*$/,\$d" | commitlint --config ~/.config/commitlint/config.mjs | grep -E "^(⚠|✖)[[:space:]]+" | grep -vE "^[⚠✖][[:space:]]+found [0-9]+ problems" | sed -E -e "s/^⚠[[:space:]]+/W:1:1: /" -e "s/^✖[[:space:]]+/E:1:1: /"'
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
