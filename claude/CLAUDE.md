@@ -43,3 +43,7 @@ Conventional Commits 形式を使用すること:
 ## Pull Request
 
 - PR は必ずドラフトで作成すること（`gh pr create --draft`）
+- Shared repository model（同一リポジトリのブランチから出す PR）の場合:
+  - PR 本文は変更内容の説明（Summary / Test plan など）のみを記載し、「マージしてください」「ご確認お願いします」などのレビュアーへの依頼文は書かない
+  - PR の作成者は自分自身であることを前提に、第三者にマージを依頼するような文体は使わず、作成者視点で客観的に書く
+- Fork and pull model（フォークから upstream へ出す PR）の場合は、upstream のメンテナにマージを依頼する立場になるため、依頼文や背景説明を含めて構わない
