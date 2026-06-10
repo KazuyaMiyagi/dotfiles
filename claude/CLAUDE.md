@@ -34,6 +34,12 @@ Conventional Commits 形式を使用すること:
 - description は 72 文字以内に収める
 - subject と body の間には空行を入れる
 - コミットメッセージに Issue や PR 番号を含めない
+- コミット作成前に commitlint でメッセージを検証する:
+  ```bash
+  commitlint --config ~/.config/commitlint/config.mjs <<'EOF'
+  <message>
+  EOF
+  ```
 
 ## Git コミット
 
