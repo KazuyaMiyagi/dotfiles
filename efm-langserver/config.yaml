@@ -95,12 +95,11 @@ tools:
 
   commitlint: &commitlint
     prefix: commitlint
-    lint-command: 'commitlint --config ~/.config/commitlint/config.mjs | grep -E "^(\s|⚠|✖)\s+.*" | sed -e "s/^⚠/W/" -e "s/^✖/E/" -e "s/^\s/N/g"'
+    lint-command: 'commitlint --config ~/.config/commitlint/config.mjs | grep -E "^(⚠|✖)[[:space:]]+" | grep -vE "^[⚠✖][[:space:]]+found [0-9]+ problems" | sed -E -e "s/^⚠[[:space:]]+/W:1:1: /" -e "s/^✖[[:space:]]+/E:1:1: /"'
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
-      - "%t   %m"
-      - "%m"
+      - "%t:%l:%c: %m"
 
   sqlfluff: &sqlfluff
     prefix: SQLFluff
