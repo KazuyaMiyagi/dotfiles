@@ -70,6 +70,21 @@ Conventional Commits 形式を使用すること:
 - コミットは意味のある単位に分ける
 - 各コミットはテストが通り、動作確認済みの状態にする
 
+## Git ブランチ運用
+
+- 作業は `main` から作業ブランチを切って行う。ブランチを切る前に `main` を最新化する:
+  ```bash
+  git switch main
+  git pull
+  git switch -c <branch>
+  ```
+- 作業ブランチはリモートに push する
+- 作業終了時は、`main` に戻ってからローカルの作業ブランチを削除する:
+  ```bash
+  git switch main
+  git branch -d <branch>
+  ```
+
 ## Pull Request
 
 - PR は必ずドラフトで作成すること（`gh pr create --draft`）
