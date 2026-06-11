@@ -1,5 +1,6 @@
 path=(
     ${ASDF_DATA_DIR}/shims(N-/)
+    ${HOME}/.local/bin(N-/)  # for Claude Code
     ${XDG_DATA_HOME}/bin(N-/)
     ${XDG_CONFIG_HOME}/bin(N-/)
     ${HOMEBREW_PREFIX}/bin(N-/)
