@@ -13,8 +13,8 @@ brew "curl"
 brew "detect-secrets"
 brew "efm-langserver"
 brew "eksctl"
-brew "fujiwara/tap/cfft"
-brew "fujiwara/tap/tfstate-lookup"
+brew "fujiwara/tap/cfft", trusted: true
+brew "fujiwara/tap/tfstate-lookup", trusted: true
 brew "gawk"
 brew "gd"
 brew "gdbm"
@@ -43,10 +43,10 @@ brew "jpeg"
 brew "jq"
 brew "jsonnet"
 brew "jvgrep"
-brew "k1low/tap/octocov"
+brew "k1low/tap/octocov", trusted: true
 brew "k6"
-brew "kayac/tap/ecspresso"
-brew "kdash-rs/kdash/kdash"
+brew "kayac/tap/ecspresso", trusted: true
+brew "kdash-rs/kdash/kdash", trusted: true
 brew "kind"
 brew "kubent"
 brew "libevent"
@@ -103,7 +103,7 @@ cask "google-chrome"
 cask "google-drive"
 cask "mysql-shell"
 cask "slack"
-cask "terraform-linters/tap/tflint"
+cask "terraform-linters/tap/tflint", trusted: true
 cask "wezterm"
 cask "xmind"
 tap "fujiwara/tap"
