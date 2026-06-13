@@ -33,6 +33,25 @@ function create_symlink() {
     echo -e "==> Symbolic link created successfully!\n"
 }
 
+function link_claude_rules() {
+    local source_dir="${1}"
+    local target_dir="${2}"
+    local backup_prefix="${3}"
+
+    if [ ! -d "${source_dir}" ]; then
+        echo "==> ${source_dir} not found. Skipping rule symlinks."
+        return
+    fi
+
+    mkdir -p "${target_dir}"
+    for rule in "${source_dir}"/*.md; do
+        [ -f "${rule}" ] || continue
+        local name
+        name="$(basename "${rule}")"
+        create_symlink "${rule}" "${target_dir}/${name}" "${backup_prefix}_${name}"
+    done
+}
+
 function merge_managed_block() {
     local source_path="${1}"
     local target_path="${2}"
@@ -83,6 +102,9 @@ create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/setti
 # Setup ~/.claude/CLAUDE.md
 create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
 
+# Setup ~/.claude/rules/*.md (言語別ルール)
+link_claude_rules "${DOTFILE_ROOT_DIR}/claude/rules" "${HOME}/.claude/rules" "claude_rules"
+
 # Setup ~/.codex
 if [ ! -d "${HOME}/.codex" ]; then
     echo "Creating ${HOME}/.codex"
@@ -90,7 +112,7 @@ if [ ! -d "${HOME}/.codex" ]; then
 fi
 
 # Setup ~/.codex/AGENTS.md
-create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.codex/AGENTS.md" "codex_AGENTS.md"
+create_symlink "${DOTFILE_ROOT_DIR}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md" "codex_AGENTS.md"
 
 # Setup ~/.codex/config.toml
 merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
