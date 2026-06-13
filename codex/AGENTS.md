@@ -109,6 +109,7 @@ Conventional Commits 形式を使用すること:
 - `rules/go.md` — Go（`gofmt` / `go vet` / `go test`、依存管理、テスト方針）
 - `rules/ruby.md` — Ruby（`rubocop`）
 - `rules/bash.md` — シェルスクリプト（`shellcheck` / `shfmt`）
+- `rules/terraform.md` — Terraform（`tf-linters` / `tf fmt`）
 
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ symlink している（`scripts/init` 参照）。他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
 
@@ -184,3 +185,17 @@ rubocop <path>      # lint + フォーマットチェック
 - 指摘が出たら `rubocop -a <path>`（安全な自動修正）で直す。`-a` で消えない違反だけ手で修正する。意味が変わり得る修正まで一括で当てたいときのみ `rubocop -A` を使う
 - `rubocop` は asdf の default gem（`asdf/default-gems-packages`）で導入されるため、プロジェクト側に bundler 経由の rubocop があればそちら（`bundle exec rubocop`）を優先する
 - プロジェクトに `.rubocop.yml` がある場合はそれに従い、グローバル設定で上書きしない
+
+
+# Terraform 規約
+
+## ファイル変更時のリンティング
+
+Terraform ファイル（`.tf`）を変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。
+
+```bash
+tf-linters 2>&1 | grep -v -e "INFO"
+tf fmt --recursive
+```
+
+警告が出た場合は修正してからコミットする（未使用の data source、カンマ抜けなど）。
