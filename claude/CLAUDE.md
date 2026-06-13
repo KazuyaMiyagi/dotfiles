@@ -108,5 +108,6 @@ Conventional Commits 形式を使用すること:
 
 - `rules/go.md` — Go（`gofmt` / `go vet` / `go test`、依存管理、テスト方針）
 - `rules/ruby.md` — Ruby（`rubocop`）
+- `rules/bash.md` — シェルスクリプト（`shellcheck` / `shfmt`）
 
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ symlink している（`scripts/init` 参照）。他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
