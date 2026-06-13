@@ -107,6 +107,7 @@ Conventional Commits 形式を使用すること:
 言語/ツール固有のコーディング規約は `~/.claude/rules/` に分離してある（`paths:` フロントマターでスコープし、該当ファイルを触ったときだけ読み込ませることで無関係セッションの context を節約する）。
 
 - `rules/go.md` — Go（`gofmt` / `go vet` / `go test`、依存管理、テスト方針）
+- `rules/ruby.md` — Ruby（`rubocop`）
 
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ symlink している（`scripts/init` 参照）。他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
 
@@ -149,3 +150,18 @@ go test ./...  # テスト
 - hermetic に保つ: ファイル I/O は `t.TempDir()`、外部ネットワークに依存しない。フィクスチャは固定入力をコードで生成する
 - 独立したテストには `t.Parallel()` を付ける
 - 期待値と実際値のメッセージは `got` / `want` の語彙で書く
+
+
+# Ruby コーディング規約
+
+## ファイル変更時のチェック
+
+Ruby ファイル（`.rb` / `Gemfile` / `Rakefile` など）を変更した場合、コミット前に以下を実行する。
+
+```bash
+rubocop <path>      # lint + フォーマットチェック
+```
+
+- 指摘が出たら `rubocop -a <path>`（安全な自動修正）で直す。`-a` で消えない違反だけ手で修正する。意味が変わり得る修正まで一括で当てたいときのみ `rubocop -A` を使う
+- `rubocop` は asdf の default gem（`asdf/default-gems-packages`）で導入されるため、プロジェクト側に bundler 経由の rubocop があればそちら（`bundle exec rubocop`）を優先する
+- プロジェクトに `.rubocop.yml` がある場合はそれに従い、グローバル設定で上書きしない
