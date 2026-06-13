@@ -106,4 +106,6 @@ Conventional Commits 形式を使用すること:
 
 言語/ツール固有のコーディング規約は `~/.claude/rules/` に分離してある（`paths:` フロントマターでスコープし、該当ファイルを触ったときだけ読み込ませることで無関係セッションの context を節約する）。
 
+- `rules/go.md` — Go（`gofmt` / `go vet` / `go test`、依存管理、テスト方針）
+
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ symlink している（`scripts/init` 参照）。他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
