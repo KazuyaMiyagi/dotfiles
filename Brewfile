@@ -106,6 +106,7 @@ cask "slack"
 cask "terraform-linters/tap/tflint", trusted: true
 cask "wezterm"
 cask "xmind"
+go "github.com/KazuyaMiyagi/list-versions/cmd/list-versions"
 tap "fujiwara/tap"
 tap "k1low/tap"
 tap "kayac/tap"
