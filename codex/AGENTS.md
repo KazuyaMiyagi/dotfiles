@@ -60,9 +60,9 @@ Conventional Commits 形式を使用すること:
 - コミットメッセージに Issue や PR 番号を含めない
 - コミット作成前に commitlint でメッセージを検証する:
   ```bash
-  commitlint --config ~/.config/commitlint/config.mjs <<'EOF'
+  commitlint --config ~/.config/commitlint/config.mjs <<'HEREDOC'
   <message>
-  EOF
+  HEREDOC
   ```
 
 ## Git コミット
