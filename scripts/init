@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -eu
 set -o pipefail
@@ -20,10 +20,10 @@ function create_symlink() {
 
     echo "==> Creating symbolic link ${source_path} -> ${target_path}"
 
-    if [ -L "${target_path}" ]; then
+    if [[ -L "${target_path}" ]]; then
         echo "${target_path} symbolic link found. Unlinking ${target_path}."
         unlink "${target_path}"
-    elif [ -e "${target_path}" ]; then
+    elif [[ -e "${target_path}" ]]; then
         echo "${target_path} found. Backing up to ${BACKUP_DIR}/${backup_name}"
         mv "${target_path}" "${BACKUP_DIR}/${backup_name}"
     fi
@@ -38,14 +38,14 @@ function link_claude_rules() {
     local target_dir="${2}"
     local backup_prefix="${3}"
 
-    if [ ! -d "${source_dir}" ]; then
+    if [[ ! -d "${source_dir}" ]]; then
         echo "==> ${source_dir} not found. Skipping rule symlinks."
         return
     fi
 
     mkdir -p "${target_dir}"
     for rule in "${source_dir}"/*.md; do
-        [ -f "${rule}" ] || continue
+        [[ -f "${rule}" ]] || continue
         local name
         name="$(basename "${rule}")"
         create_symlink "${rule}" "${target_dir}/${name}" "${backup_prefix}_${name}"
@@ -67,13 +67,13 @@ function merge_managed_block() {
         $0 == begin { skip = 1; next }
         $0 == end   { skip = 0; next }
         !skip       { print }
-    ' "${target_path}" >"${target_path}.tmp"
+    ' "${target_path}" > "${target_path}.tmp"
 
     {
         printf "%s\n" "${marker_begin}"
         cat "${source_path}"
         printf "%s\n" "${marker_end}"
-    } >>"${target_path}.tmp"
+    } >> "${target_path}.tmp"
 
     mv "${target_path}.tmp" "${target_path}"
 
@@ -82,7 +82,7 @@ function merge_managed_block() {
 
 echo "Starting initialization..."
 
-if [ ! -d "${BACKUP_DIR}" ]; then
+if [[ ! -d "${BACKUP_DIR}" ]]; then
     echo "Creating ${BACKUP_DIR}"
     mkdir "${BACKUP_DIR}"
 fi
@@ -106,7 +106,7 @@ create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md
 link_claude_rules "${DOTFILE_ROOT_DIR}/claude/rules" "${HOME}/.claude/rules" "claude_rules"
 
 # Setup ~/.codex
-if [ ! -d "${HOME}/.codex" ]; then
+if [[ ! -d "${HOME}/.codex" ]]; then
     echo "Creating ${HOME}/.codex"
     mkdir -p "${HOME}/.codex"
 fi
@@ -118,21 +118,21 @@ create_symlink "${DOTFILE_ROOT_DIR}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md" 
 merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
 
 # Setup ~/.zshenv
-if [ -f "${HOME}/.zshenv" ]; then
+if [[ -f "${HOME}/.zshenv" ]]; then
     echo "${HOME}/.zshenv found. Backing up to ${BACKUP_DIR}/zshenv"
     mv "${HOME}/.zshenv" "${BACKUP_DIR}/zshenv"
 fi
 echo "Creating ${HOME}/.zshenv"
-echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" >"${HOME}/.zshenv"
+echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" > "${HOME}/.zshenv"
 
 # Setup ~/.local/share/zsh
-if [ ! -d "${XDG_DATA_HOME}/zsh" ]; then
+if [[ ! -d "${XDG_DATA_HOME}/zsh" ]]; then
     echo "Creating ${XDG_DATA_HOME}/zsh"
     mkdir -p "${XDG_DATA_HOME}/zsh"
 fi
 
 # Setup Touch ID for sudo
-if [ ! -f /etc/pam.d/sudo_local ]; then
+if [[ ! -f /etc/pam.d/sudo_local ]]; then
     echo "==> Enabling Touch ID for sudo..."
     sudo cp /etc/pam.d/sudo_local.template /etc/pam.d/sudo_local
     sudo sed -i '' 's/^#auth       sufficient     pam_tid.so/auth       sufficient     pam_tid.so/' /etc/pam.d/sudo_local

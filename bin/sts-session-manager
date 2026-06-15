@@ -1,27 +1,27 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -eu
 set -o pipefail
 
 function __is_installed() {
-    type "${1}" &>/dev/null
+    type "${1}" &> /dev/null
 }
 
 function __validate() {
-    check-required-tools >/dev/null
+    check-required-tools > /dev/null
 
-    if [ -z "${AWS_PROFILE:=""}" ]; then
+    if [[ -z "${AWS_PROFILE:=""}" ]]; then
         echo "Error: AWS_PROFILE is not exported" >&2
         exit 1
     fi
 
-    if [ "${SUBCOMMAND}" == "get-session-token" ]; then
-        if [ -z "${BASE_AWS_PROFILE}" ]; then
+    if [[ "${SUBCOMMAND}" == "get-session-token" ]]; then
+        if [[ -z "${BASE_AWS_PROFILE}" ]]; then
             echo "Error: The second argument is required for the subcommand get-session-token" >&2
             exit 1
         fi
 
-        if [ -z "${MFA_TOKEN}" ]; then
+        if [[ -z "${MFA_TOKEN}" ]]; then
             echo "Error: The third argument is required for the subcommand get-session-token" >&2
             exit 1
         fi
@@ -32,8 +32,8 @@ function __validate() {
         fi
     fi
 
-    if [ "${SUBCOMMAND}" == "assume-role" ]; then
-        if [ -z "${BASE_AWS_PROFILE}" ]; then
+    if [[ "${SUBCOMMAND}" == "assume-role" ]]; then
+        if [[ -z "${BASE_AWS_PROFILE}" ]]; then
             echo "Error: The second argument is required for the subcommand assume-role" >&2
             exit 1
         fi
@@ -42,14 +42,14 @@ function __validate() {
 
 function check-required-tools() {
     echo "==> Checking required tools..."
-    local REQUIRED_TOOLS=(aws jq)
+    local required_tools=(aws jq)
 
-    if [ "$(uname)" == "Darwin" ]; then
-        REQUIRED_TOOLS+=(gdate)
+    if [[ "$(uname)" == "Darwin" ]]; then
+        required_tools+=(gdate)
     fi
 
     # shellcheck disable=SC2068
-    for tool in ${REQUIRED_TOOLS[@]}; do
+    for tool in ${required_tools[@]}; do
         if ! __is_installed "${tool}"; then
             echo "[Error] ${tool} not installed. Please install the ${tool}." >&2
             exit 1
@@ -63,91 +63,91 @@ function check-required-tools() {
 function get-session-token() {
     __validate
 
-    local GET_SESSION_TOKEN_CACHE_FILE
-    GET_SESSION_TOKEN_CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local get_session_token_cache_file
+    get_session_token_cache_file="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
-    local SESSION_NAME
-    SESSION_NAME="${SESSION_NAME:=$(whoami)}"
+    local session_name
+    session_name="${session_name:=$(whoami)}"
 
-    local DURATION_SECONDS
-    DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
+    local duration_seconds
+    duration_seconds="${duration_seconds:=$((60 * 60))}"
 
-    local STS_GET_SESSION_TOKEN_COMMAND
-    STS_GET_SESSION_TOKEN_COMMAND="aws --profile ${BASE_AWS_PROFILE} sts get-session-token --serial-number $(aws configure get mfa_serial) --token-code ${MFA_TOKEN} --duration-seconds ${DURATION_SECONDS}"
+    local sts_get_session_token_command
+    sts_get_session_token_command="aws --profile ${BASE_AWS_PROFILE} sts get-session-token --serial-number $(aws configure get mfa_serial) --token-code ${MFA_TOKEN} --duration-seconds ${duration_seconds}"
 
-    if [ ! -f "${GET_SESSION_TOKEN_CACHE_FILE}" ]; then
+    if [[ ! -f "${get_session_token_cache_file}" ]]; then
         echo "Create new AWS STS session token..." >&2
-        ${STS_GET_SESSION_TOKEN_COMMAND} >"${GET_SESSION_TOKEN_CACHE_FILE}"
+        ${sts_get_session_token_command} > "${get_session_token_cache_file}"
     fi
 
-    if [ "$(uname)" == "Darwin" ]; then
-        local DATE_CMD="gdate"
+    if [[ "$(uname)" == "Darwin" ]]; then
+        local date_cmd="gdate"
     else
-        local DATE_CMD="date"
+        local date_cmd="date"
     fi
 
-    local EXPIRATION
-    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${GET_SESSION_TOKEN_CACHE_FILE}")
+    local expiration
+    expiration=$(jq --raw-output --monochrome-output ".Credentials.Expiration" < "${get_session_token_cache_file}")
 
-    local EXPIRATION_UNIXTIME
-    EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
+    local expiration_unixtime
+    expiration_unixtime=$("${date_cmd}" -d "${expiration}" "+%s")
 
-    local NOW_UNIXTIME
-    NOW_UNIXTIME=$("${DATE_CMD}" "+%s")
+    local now_unixtime
+    now_unixtime=$("${date_cmd}" "+%s")
 
-    if [ "${EXPIRATION_UNIXTIME}" -lt "${NOW_UNIXTIME}" ]; then
+    if [[ "${expiration_unixtime}" -lt "${now_unixtime}" ]]; then
         echo "AWS STS session token is expired." >&2
         echo "Recreate AWS STS session token..." >&2
-        ${STS_GET_SESSION_TOKEN_COMMAND} >"${GET_SESSION_TOKEN_CACHE_FILE}"
+        ${sts_get_session_token_command} > "${get_session_token_cache_file}"
     fi
 
-    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${GET_SESSION_TOKEN_CACHE_FILE}"
+    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' < "${get_session_token_cache_file}"
 }
 
 function assume-role() {
     __validate
 
-    local ASSUME_ROLE_CACHE_FILE
-    ASSUME_ROLE_CACHE_FILE="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local assume_role_cache_file
+    assume_role_cache_file="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
-    local SESSION_NAME
-    SESSION_NAME="${SESSION_NAME:=$(whoami)}"
+    local session_name
+    session_name="${session_name:=$(whoami)}"
 
-    local DURATION_SECONDS
-    DURATION_SECONDS="${DURATION_SECONDS:=$((60 * 60))}"
+    local duration_seconds
+    duration_seconds="${duration_seconds:=$((60 * 60))}"
 
-    local STS_ASSUME_ROLE_COMMAND
-    STS_ASSUME_ROLE_COMMAND="aws --profile $(aws --profile "${BASE_AWS_PROFILE}" configure get source_profile) sts assume-role --role-arn $(aws --profile "${BASE_AWS_PROFILE}" configure get role_arn) --role-session-name ${SESSION_NAME} --duration-seconds ${DURATION_SECONDS}"
+    local sts_assume_role_command
+    sts_assume_role_command="aws --profile $(aws --profile "${BASE_AWS_PROFILE}" configure get source_profile) sts assume-role --role-arn $(aws --profile "${BASE_AWS_PROFILE}" configure get role_arn) --role-session-name ${session_name} --duration-seconds ${duration_seconds}"
 
-    if [ ! -f "${ASSUME_ROLE_CACHE_FILE}" ]; then
+    if [[ ! -f "${assume_role_cache_file}" ]]; then
         echo "Create new AWS STS session token..." >&2
         export AWS_PROFILE="${BASE_AWS_PROFILE}"
-        ${STS_ASSUME_ROLE_COMMAND} >"${ASSUME_ROLE_CACHE_FILE}"
+        ${sts_assume_role_command} > "${assume_role_cache_file}"
     fi
 
-    if [ "$(uname)" == "Darwin" ]; then
-        local DATE_CMD="gdate"
+    if [[ "$(uname)" == "Darwin" ]]; then
+        local date_cmd="gdate"
     else
-        local DATE_CMD="date"
+        local date_cmd="date"
     fi
 
-    local EXPIRATION
-    EXPIRATION=$(jq --raw-output --monochrome-output ".Credentials.Expiration" <"${ASSUME_ROLE_CACHE_FILE}")
+    local expiration
+    expiration=$(jq --raw-output --monochrome-output ".Credentials.Expiration" < "${assume_role_cache_file}")
 
-    local EXPIRATION_UNIXTIME
-    EXPIRATION_UNIXTIME=$("${DATE_CMD}" -d "${EXPIRATION}" "+%s")
+    local expiration_unixtime
+    expiration_unixtime=$("${date_cmd}" -d "${expiration}" "+%s")
 
-    local NOW_UNIXTIME
-    NOW_UNIXTIME=$("${DATE_CMD}" "+%s")
+    local now_unixtime
+    now_unixtime=$("${date_cmd}" "+%s")
 
-    if [ "${EXPIRATION_UNIXTIME}" -lt "${NOW_UNIXTIME}" ]; then
+    if [[ "${expiration_unixtime}" -lt "${now_unixtime}" ]]; then
         echo "AWS STS session token is expired." >&2
         echo "Recreate AWS STS session token..." >&2
         export AWS_PROFILE="${BASE_AWS_PROFILE}"
-        ${STS_ASSUME_ROLE_COMMAND} >"${ASSUME_ROLE_CACHE_FILE}"
+        ${sts_assume_role_command} > "${assume_role_cache_file}"
     fi
 
-    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' <"${ASSUME_ROLE_CACHE_FILE}"
+    jq --raw-output --monochrome-output '{Version: 1} + .Credentials' < "${assume_role_cache_file}"
 }
 
 function list() {
@@ -157,22 +157,22 @@ function list() {
 function show() {
     __validate
 
-    local GET_SESSION_TOKEN_CACHE_FILE
-    GET_SESSION_TOKEN_CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local get_session_token_cache_file
+    get_session_token_cache_file="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
-    if [ -f "${GET_SESSION_TOKEN_CACHE_FILE}" ]; then
-        echo "==> AWS STS session token cache file: ${GET_SESSION_TOKEN_CACHE_FILE}"
-        jq <"${GET_SESSION_TOKEN_CACHE_FILE}"
+    if [[ -f "${get_session_token_cache_file}" ]]; then
+        echo "==> AWS STS session token cache file: ${get_session_token_cache_file}"
+        jq < "${get_session_token_cache_file}"
     else
         echo "AWS STS session token cache file not found." >&2
     fi
 
-    local ASSUME_ROLE_CACHE_FILE
-    ASSUME_ROLE_CACHE_FILE="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local assume_role_cache_file
+    assume_role_cache_file="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
-    if [ -f "${ASSUME_ROLE_CACHE_FILE}" ]; then
-        echo "==> AWS STS assume role cache file: ${ASSUME_ROLE_CACHE_FILE}"
-        jq <"${ASSUME_ROLE_CACHE_FILE}"
+    if [[ -f "${assume_role_cache_file}" ]]; then
+        echo "==> AWS STS assume role cache file: ${assume_role_cache_file}"
+        jq < "${assume_role_cache_file}"
     else
         echo "AWS STS assume role cache file not found." >&2
     fi
@@ -181,22 +181,22 @@ function show() {
 function remove() {
     __validate
 
-    local GET_SESSION_TOKEN_CACHE_FILE
-    GET_SESSION_TOKEN_CACHE_FILE="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local get_session_token_cache_file
+    get_session_token_cache_file="${CACHE_DIR}/get-session-token-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
-    if [ -f "${GET_SESSION_TOKEN_CACHE_FILE}" ]; then
-        echo "Remove AWS STS session token cache file: ${GET_SESSION_TOKEN_CACHE_FILE}"
-        rm -i "${GET_SESSION_TOKEN_CACHE_FILE}"
+    if [[ -f "${get_session_token_cache_file}" ]]; then
+        echo "Remove AWS STS session token cache file: ${get_session_token_cache_file}"
+        rm -i "${get_session_token_cache_file}"
     else
         echo "AWS STS session token cache file not found." >&2
     fi
 
-    local ASSUME_ROLE_CACHE_FILE
-    ASSUME_ROLE_CACHE_FILE="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
+    local assume_role_cache_file
+    assume_role_cache_file="${CACHE_DIR}/assume-role-$(echo -n "${AWS_PROFILE}" | openssl sha1 | sed "s/^SHA1(stdin)=\ //").json"
 
-    if [ -f "${ASSUME_ROLE_CACHE_FILE}" ]; then
-        echo "Remove AWS STS assume role cache file: ${ASSUME_ROLE_CACHE_FILE}"
-        rm -i "${ASSUME_ROLE_CACHE_FILE}"
+    if [[ -f "${assume_role_cache_file}" ]]; then
+        echo "Remove AWS STS assume role cache file: ${assume_role_cache_file}"
+        rm -i "${assume_role_cache_file}"
     else
         echo "AWS STS assume role cache file not found." >&2
     fi
@@ -205,7 +205,7 @@ function remove() {
 function usage() {
     COMMAND="sts_session_manager"
     readonly COMMAND
-    cat <<-HEREDOC
+    cat <<- HEREDOC
 		Usage: ${COMMAND} <subcommand>
 		Subcommands:
 		    ${COMMAND} check-required-tools | check                     -- Check required tools
@@ -231,26 +231,25 @@ CACHE_DIR="${HOME}/.aws/cli/cache"
 readonly CACHE_DIR
 
 case "${SUBCOMMAND}" in
-check-required-tools | check)
-    check-required-tools
-    ;;
-get-session-token)
-    get-session-token
-    ;;
-assume-role)
-    assume-role
-    ;;
-list | ls)
-    list
-    ;;
-show)
-    show
-    ;;
-remove | rm)
-    remove
-    ;;
-*)
-    usage
-    ;;
+    check-required-tools | check)
+        check-required-tools
+        ;;
+    get-session-token)
+        get-session-token
+        ;;
+    assume-role)
+        assume-role
+        ;;
+    list | ls)
+        list
+        ;;
+    show)
+        show
+        ;;
+    remove | rm)
+        remove
+        ;;
+    *)
+        usage
+        ;;
 esac
-

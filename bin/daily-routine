@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -eu
 set -o pipefail
@@ -16,4 +16,3 @@ echo -e "\n==> Checking repos status...\n"
 repos-status
 
 echo -e "\n==> Daily routine completed!\n"
-

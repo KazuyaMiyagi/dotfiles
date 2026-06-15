@@ -1,21 +1,21 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -eu
 set -o pipefail
 
 case "$(uname)" in
-Darwin) realpath_cmd=grealpath ;;
-*) realpath_cmd=realpath ;;
+    Darwin) realpath_cmd=grealpath ;;
+    *) realpath_cmd=realpath ;;
 esac
 
 input=$(cat)
-project_dir=$(jq -r '.workspace.project_dir // .cwd // empty' <<<"${input}")
-cwd=$(jq -r '.cwd // empty' <<<"${input}")
-model=$(jq -r '.model.display_name // empty' <<<"${input}")
-cost=$(jq -r '.cost.total_cost_usd // empty' <<<"${input}")
-context=$(jq -r 'if .context_window.used_percentage then (.context_window.used_percentage | floor | tostring) else empty end' <<<"${input}")
-five_hour=$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<<"${input}")
-seven_day=$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<<"${input}")
+project_dir=$(jq -r '.workspace.project_dir // .cwd // empty' <<< "${input}")
+cwd=$(jq -r '.cwd // empty' <<< "${input}")
+model=$(jq -r '.model.display_name // empty' <<< "${input}")
+cost=$(jq -r '.cost.total_cost_usd // empty' <<< "${input}")
+context=$(jq -r 'if .context_window.used_percentage then (.context_window.used_percentage | floor | tostring) else empty end' <<< "${input}")
+five_hour=$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<< "${input}")
+seven_day=$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<< "${input}")
 
 # Color palette
 BG_ORANGE="196,123,92" # claude salmon
@@ -35,39 +35,39 @@ FG_RED="204,36,29"     # gruvbox red
 #   Foreground=<color> -> set foreground color
 #   Text=<text>        -> output text
 #   ResetAttributes    -> reset all
-_format() {
+function _format() {
     local rgb
     for directive in "${@}"; do
         case "${directive}" in
-        Background=*)
-            rgb="${directive#Background=}"
-            printf "\033[48;2;%sm" "${rgb//,/;}"
-            ;;
-        Foreground=*)
-            rgb="${directive#Foreground=}"
-            printf "\033[38;2;%sm" "${rgb//,/;}"
-            ;;
-        Text=*) printf "%s" "${directive#Text=}" ;;
-        ResetAttributes) printf "\033[0m" ;;
+            Background=*)
+                rgb="${directive#Background=}"
+                printf "\033[48;2;%sm" "${rgb//,/;}"
+                ;;
+            Foreground=*)
+                rgb="${directive#Foreground=}"
+                printf "\033[38;2;%sm" "${rgb//,/;}"
+                ;;
+            Text=*) printf "%s" "${directive#Text=}" ;;
+            ResetAttributes) printf "\033[0m" ;;
         esac
     done
 }
 
 # Pie chart icon by percentage: 󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥
-_pie_icon() {
+function _pie_icon() {
     local int_pct="${1%.*}"
     local icons=(󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥)
     local idx=$((int_pct * 8 / 100))
-    if [ "${idx}" -gt 8 ]; then idx=8; fi
+    if [[ "${idx}" -gt 8 ]]; then idx=8; fi
     printf "%s" "${icons[${idx}]}"
 }
 
 # Foreground color by percentage: green (<50%), yellow (50-80%), red (>80%)
-_pct_fg() {
+function _pct_fg() {
     local int_pct="${1%.*}"
-    if [ "${int_pct}" -ge 80 ]; then
+    if [[ "${int_pct}" -ge 80 ]]; then
         printf "%s" "${FG_RED}"
-    elif [ "${int_pct}" -ge 50 ]; then
+    elif [[ "${int_pct}" -ge 50 ]]; then
         printf "%s" "${FG_YELLOW}"
     else
         printf "%s" "${FG_GREEN}"
@@ -77,9 +77,9 @@ _pct_fg() {
 # --- Build segment texts ---
 
 project_text=""
-if [ -n "${project_dir}" ]; then
+if [[ -n "${project_dir}" ]]; then
     project_name=$(basename "${project_dir}")
-    if [ -n "${cwd}" ] && [ "${cwd}" != "${project_dir}" ]; then
+    if [[ -n "${cwd}" ]] && [[ "${cwd}" != "${project_dir}" ]]; then
         rel=$("${realpath_cmd}" -m -s --relative-to="${project_dir}" "${cwd}")
         [[ "${rel}" == ..* ]] || rel="./${rel}"
         project_text="[${project_name}](${rel}/) "
@@ -91,27 +91,27 @@ fi
 model_text=" ${model} "
 
 cost_text=""
-if [ -n "${cost}" ]; then
+if [[ -n "${cost}" ]]; then
     cost_text=$(printf ' $%.1f ' "${cost}")
 fi
 
 context_fg="${FG_LIGHT}"
 context_text=""
-if [ -n "${context}" ]; then
+if [[ -n "${context}" ]]; then
     context_fg=$(_pct_fg "${context}")
     context_text=" $(_pie_icon "${context}") ctx ${context}% "
 fi
 
 five_fg="${FG_LIGHT}"
 five_text=""
-if [ -n "${five_hour}" ]; then
+if [[ -n "${five_hour}" ]]; then
     five_fg=$(_pct_fg "${five_hour}")
     five_text=" $(_pie_icon "${five_hour}") 5h ${five_hour}% "
 fi
 
 seven_fg="${FG_LIGHT}"
 seven_text=""
-if [ -n "${seven_day}" ]; then
+if [[ -n "${seven_day}" ]]; then
     seven_fg=$(_pct_fg "${seven_day}")
     seven_text=" $(_pie_icon "${seven_day}") 7d ${seven_day}% "
 fi
@@ -124,4 +124,3 @@ _format \
     "Background=${BG_GRAY3}" "Foreground=${context_fg}" "Text=${context_text}" ResetAttributes \
     "Background=${BG_GRAY4}" "Foreground=${five_fg}" "Text=${five_text}" ResetAttributes \
     "Background=${BG_GRAY5}" "Foreground=${seven_fg}" "Text=${seven_text}" ResetAttributes
-

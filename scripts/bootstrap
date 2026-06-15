@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -eu
 set -o pipefail
@@ -7,7 +7,7 @@ cd "$(dirname "${0}")/.."
 
 # __is_installed checks if the specified command is installed
 function __is_installed() {
-    type "${1}" &>/dev/null
+    type "${1}" &> /dev/null
 }
 
 function homebrew_install() {
@@ -20,7 +20,7 @@ function homebrew_install() {
 }
 
 function homebrew_bundle_install() {
-    brew bundle check >/dev/null 2>&1 || {
+    brew bundle check > /dev/null 2>&1 || {
         echo "==> Installing Homebrew dependencies…"
         brew bundle install
     }
@@ -38,11 +38,11 @@ function homebrew_update() {
     echo "==> Finished updating Homebrew cask packages."
 
     brew doctor || true
-    brew bundle dump --no-describe --file=- | sort --uniq >Brewfile
+    brew bundle dump --no-describe --file=- | sort --uniq > Brewfile
 }
 
 function vim_plug_install() {
-    if [ -f "${XDG_DATA_HOME}/vim/autoload/plug.vim" ]; then
+    if [[ -f "${XDG_DATA_HOME}/vim/autoload/plug.vim" ]]; then
         echo "==> vim-plug was already installed."
     else
         echo "==> Installing vim-plug"
@@ -72,9 +72,9 @@ function asdf_plugins_update() {
 
 function asdf_plugins_python_apply_path() {
     echo "==> Applying asdf Python plugin patch..."
-    pushd "${XDG_DATA_HOME}/asdf/plugins/python/" >/dev/null
-    git reset --hard HEAD >/dev/null
-    cat <<-'HEREDOC' | git apply
+    pushd "${XDG_DATA_HOME}/asdf/plugins/python/" > /dev/null
+    git reset --hard HEAD > /dev/null
+    cat <<- 'HEREDOC' | git apply
 	diff --git a/bin/list-all b/bin/list-all
 	index c0ecb83..e934faa 100755
 	--- a/bin/list-all
@@ -89,18 +89,18 @@ function asdf_plugins_python_apply_path() {
 	
 	 list_all
 	HEREDOC
-    popd >/dev/null
+    popd > /dev/null
     echo "==> Finished applying asdf Python plugin patch."
 }
 
 function asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools versions..."
-    pushd asdf >/dev/null
+    pushd asdf > /dev/null
     for plugin in $(cut -d ' ' -f1 ./tool-versions | tr '\n' ' '); do
         asdf install "${plugin}" latest
         asdf set "${plugin}" latest
     done
-    popd >/dev/null
+    popd > /dev/null
     echo "==> Finished updating asdf managed tools versions."
 }
 
@@ -113,13 +113,13 @@ function vim_lsp_settings_update() {
         local server
         server=$(basename "${server_dir}")
         local script="${installer_dir}/install-${server}.sh"
-        if [ -f "${script}" ]; then
+        if [[ -f "${script}" ]]; then
             echo "==> Updating ${server}..."
             rm -rf "${server_dir:?}"/*
             local retries=5
             for i in $(seq 1 "${retries}"); do
-                (cd "${server_dir}" && sh "${script}" >/dev/null 2>&1) && break
-                if [ "${i}" -lt "${retries}" ]; then
+                (cd "${server_dir}" && sh "${script}" > /dev/null 2>&1) && break
+                if [[ "${i}" -lt "${retries}" ]]; then
                     echo "==> Retrying ${server} (${i}/${retries})..."
                 else
                     echo "==> Failed to update ${server} after ${retries} attempts."
@@ -145,7 +145,7 @@ function session_manager_plugin_install() {
     local arch
     arch=$(uname -m)
     local pkg_url
-    if [ "${arch}" = "arm64" ]; then
+    if [[ "${arch}" = "arm64" ]]; then
         pkg_url="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac_arm64/session-manager-plugin.pkg"
     else
         pkg_url="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/session-manager-plugin.pkg"
@@ -185,4 +185,3 @@ gcloud_update
 session_manager_plugin_install
 
 echo "Bootstrap finished!"
-

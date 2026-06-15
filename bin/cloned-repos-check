@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eu
+set -o pipefail
 
 # ghq でクローン済みの ORG リポジトリを GitHub と照合し、
 # アーカイブ・削除・リネームを検知する。
 
-usage() {
-    cat <<EOF
+function usage() {
+    cat << HEREDOC
 Usage: $(basename "$0") [OPTIONS] [ORG]
 
 ghq でクローン済みの GitHub リポジトリを照合し、
@@ -20,7 +21,7 @@ Options:
 
 Arguments:
   ORG  対象の GitHub Organization または User（省略時は全 owner）
-EOF
+HEREDOC
 }
 
 show_all=0
@@ -28,11 +29,11 @@ org=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        -h|--help)
+        -h | --help)
             usage
             exit 0
             ;;
-        -a|--all)
+        -a | --all)
             show_all=1
             shift
             ;;
@@ -95,7 +96,7 @@ while IFS= read -r owner; do
             # リモート一覧に無い → 個別に問い合わせて削除/リネームを判定
             # GitHub API はリネームされたリポジトリにアクセスすると新しい
             # full_name を返す。404 なら削除されている。
-            new_full="$(gh api "repos/${full}" --jq '.full_name' 2>/dev/null || true)"
+            new_full="$(gh api "repos/${full}" --jq '.full_name' 2> /dev/null || true)"
             if [[ -z "${new_full}" ]]; then
                 rows+="${full}"$'\t'"deleted"$'\t'""$'\n'
             elif [[ "${new_full}" != "${full}" ]]; then

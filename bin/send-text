@@ -1,10 +1,10 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -eu
 set -o pipefail
 
 function __is_installed() {
-    type "${1}" &>/dev/null
+    type "${1}" &> /dev/null
 }
 
 function __validate() {
@@ -30,7 +30,7 @@ function __validate() {
         exit 1
     fi
 
-    if ! wezterm cli list --format json | jq -e ".[] | select(.pane_id == ${worker_pane_id})" >/dev/null 2>&1; then
+    if ! wezterm cli list --format json | jq -e ".[] | select(.pane_id == ${worker_pane_id})" > /dev/null 2>&1; then
         echo "Error: パネルID ${worker_pane_id} が見つかりません" >&2
         exit 1
     fi
@@ -55,7 +55,7 @@ function send-text() {
 function usage() {
     local COMMAND="send-text"
     readonly COMMAND
-    cat <<-HEREDOC
+    cat <<- HEREDOC
 		Usage: ${COMMAND} <WORKER_PANE_ID> <MESSAGE>
 
 		Arguments:
@@ -80,4 +80,3 @@ if [[ ${#} -eq 0 ]]; then
 fi
 
 send-text "${WORKER_PANE_ID}" "${MESSAGE}"
-

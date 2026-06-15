@@ -1,11 +1,11 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
 set -eu
 set -o pipefail
 
-INPUT_FILE="${1:-/dev/stdin}"
+input_file="${1:-/dev/stdin}"
 
-if [[ "$INPUT_FILE" == "/dev/stdin" && ! -s "$INPUT_FILE" ]]; then
+if [[ "$input_file" == "/dev/stdin" && ! -s "$input_file" ]]; then
     echo 'usage: $ grep -n "word" > list'
     echo '       $ vim list'
     echo "       $ ${0} < list"
@@ -14,17 +14,16 @@ fi
 
 IFS=$'\n'
 
-if [ "$(uname)" == 'Darwin' ]; then
-    SED_COMMAND='gsed'
+if [[ "$(uname)" == 'Darwin' ]]; then
+    sed_command='gsed'
 else
-    SED_COMMAND='sed'
+    sed_command='sed'
 fi
 
-while read -r LINE; do
-    FILE_NAME=$(echo "$LINE" | cut -d ':' -f 1)
-    LINE_NUMBER=$(echo "$LINE" | cut -d ':' -f 2)
-    NEW_CONTENT=$(echo "$LINE" | cut -d ':' -f 3-)
-    ESCAPED_CONTENT=$(echo "${NEW_CONTENT}" | sed 's/[\\&/]/\\&/g')
-    "${SED_COMMAND}" -i "${LINE_NUMBER}s/.*/${ESCAPED_CONTENT}/" "${FILE_NAME}"
-done <"${INPUT_FILE}"
-
+while read -r line; do
+    file_name=$(echo "$line" | cut -d ':' -f 1)
+    line_number=$(echo "$line" | cut -d ':' -f 2)
+    new_content=$(echo "$line" | cut -d ':' -f 3-)
+    escaped_content=$(echo "${new_content}" | sed 's/[\\&/]/\\&/g')
+    "${sed_command}" -i "${line_number}s/.*/${escaped_content}/" "${file_name}"
+done < "${input_file}"
