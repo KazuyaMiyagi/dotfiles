@@ -110,6 +110,7 @@ Conventional Commits 形式を使用すること:
 - `rules/ruby.md` — Ruby（`rubocop`）
 - `rules/bash.md` — シェルスクリプト（`shellcheck` / `shfmt`）
 - `rules/terraform.md` — Terraform（`tf-linters` / `terraform fmt`）
+- `rules/github-actions.md` — GitHub Actions（`actionlint`）
 
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ symlink している（`scripts/init` 参照）。他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
 
@@ -199,3 +200,22 @@ terraform fmt -recursive
 ```
 
 警告が出た場合は修正してからコミットする（未使用の data source、カンマ抜けなど）。
+
+
+# GitHub Actions 規約
+
+## ファイル変更時のリンティング
+
+GitHub Actions 関連のファイル（`.github/workflows/` 配下のワークフロー、`.github/` 配下に置いた composite action の `action.yml` など）を変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。
+
+```bash
+actionlint
+```
+
+引数なしの場合は `.github/workflows/` 配下のみ走査する。`.github/workflows/` の外に置いたファイルはパスを明示して渡す。
+
+```bash
+actionlint .github/composite/<file>.yml
+```
+
+指摘が出たら修正してからコミットする（未定義の式、シェルスクリプトの不備、無効なイベント名、シェル `run` 内の `shellcheck` 指摘など）。
