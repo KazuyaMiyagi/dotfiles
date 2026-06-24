@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+set -eu
+set -o pipefail
+
+# OSC 777 のデスクトップ通知を、呼び出し元プロセスが繋がっている端末 (pty) へ送る。
+#
+# Claude Code のフックなどから呼ばれた場合、そのプロセスは制御端末を失っており
+# /dev/tty を開けない (Device not configured) ことがある。そこで祖先プロセスを
+# たどって実際の pty (例: /dev/ttys000) を特定し、そこへ直接シーケンスを書き込む。
+#
+# WezTerm / Ghostty いずれも OSC 777 通知に対応している。
+
+function __is_installed() {
+    type "${1}" &> /dev/null
+}
+
+# 祖先プロセスをたどって最初に見つかった pty デバイスのパスを返す。
+# 見つからなければ /dev/tty にフォールバックし、それも無ければ何も返さない。
+function __resolve_tty() {
+    local pid tty
+    pid="${PPID}"
+    while [[ -n "${pid}" ]] && [[ "${pid}" -gt 1 ]] 2> /dev/null; do
+        tty="$(ps -o tty= -p "${pid}" 2> /dev/null | tr -d ' ')"
+        case "${tty}" in
+            ttys*)
+                printf '/dev/%s\n' "${tty}"
+                return 0
+                ;;
+        esac
+        pid="$(ps -o ppid= -p "${pid}" 2> /dev/null | tr -d ' ')"
+    done
+
+    if [[ -w /dev/tty ]]; then
+        printf '/dev/tty\n'
+        return 0
+    fi
+
+    return 1
+}
+
+function claude-osc-notify() {
+    local title body device
+
+    if [[ ${#} -ge 2 ]]; then
+        title="${1}"
+        body="${2}"
+    elif [[ ! -t 0 ]]; then
+        # 引数が無い場合は stdin の JSON (Claude Code フックのペイロード) から取得する。
+        if ! __is_installed jq; then
+            echo "Error: jq is not installed" >&2
+            exit 1
+        fi
+        local input
+        input="$(cat)"
+        title="$(printf '%s' "${input}" | jq -r '.title // "Claude Code"')"
+        body="$(printf '%s' "${input}" | jq -r '.message // "Default Message"')"
+    else
+        usage >&2
+        exit 1
+    fi
+
+    # 端末が特定できない (headless / cron など) 場合は通知できないので静かに終了する。
+    if ! device="$(__resolve_tty)"; then
+        exit 0
+    fi
+
+    printf '\e]777;notify;%s;%s\a' "${title}" "${body}" > "${device}"
+}
+
+function usage() {
+    local COMMAND="claude-osc-notify"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} <TITLE> <BODY>
+		       ${COMMAND}   (引数なし: stdin の JSON から .title / .message を読む)
+
+		呼び出し元の端末 (pty) へ OSC 777 のデスクトップ通知を送る。
+
+		Examples:
+		    ${COMMAND} 'Claude Code' 'Stop'
+		    echo '{"title":"Claude Code","message":"完了"}' | ${COMMAND}
+	HEREDOC
+}
+
+claude-osc-notify "$@"

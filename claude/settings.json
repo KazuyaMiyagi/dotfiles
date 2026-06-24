@@ -9,7 +9,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq '.title // \"Claude Code\", .message // \"Default Message\"' | xargs printf $'\\e]777;notify;%s;%s\\e\\\\' >> /dev/tty"
+            "command": "claude-osc-notify"
           },
           {
             "type": "command",
@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "printf $'\\e]777;notify;%s;%s\\e\\\\' 'Claude Code' 'Stop' >> /dev/tty"
+            "command": "claude-osc-notify 'Claude Code' 'Stop'"
           },
           {
             "type": "command",
