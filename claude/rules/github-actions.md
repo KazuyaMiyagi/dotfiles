@@ -24,3 +24,13 @@ actionlint .github/composite/<file>.yml
 ```
 
 指摘が出たら修正してからコミットする（未定義の式、シェルスクリプトの不備、無効なイベント名、シェル `run` 内の `shellcheck` 指摘など）。
+
+## アクションのバージョン固定
+
+`uses:` で参照するアクションはコミット SHA でピン留めする。GitHub Actions 関連のファイルを書いたら、必ず `pinact run -u` を実行し、各アクションを最新版のコミット SHA へ固定する。
+
+```bash
+pinact run -u
+```
+
+`-u` は参照先を最新版へ更新した上でピン留めする。`uses: owner/repo@v1` のようなタグ参照や古い SHA が残っていないことを確認してからコミットする。
