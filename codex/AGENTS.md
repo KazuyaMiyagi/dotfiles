@@ -137,6 +137,10 @@ Conventional Commits 形式を使用する。
 - `rules/terraform.md` — Terraform（`tf-linters`/`terraform fmt`）
 - `rules/github-actions.md` — GitHub Actions（`actionlint`）
 - `rules/markdown.md` — Markdown（`prettier`/`markdownlint-cli2`/`textlint`）
+- `rules/vim.md` — Vim script（`vint`）
+- `rules/dockerfile.md` — Dockerfile（`hadolint`/`docker build --check`/`trivy`）
+- `rules/sql.md` — SQL（`sqlfluff`/`sqlfmt`）
+- `rules/json.md` — JSON（`prettier`）
 
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ
 symlink している（`scripts/init` 参照）。
@@ -293,3 +297,58 @@ textlint --config ~/.config/textlint/textlintrc --format compact <file>
   自動修正できるものは `--fix` を付けて直す
 - `textlint` の指摘（表記ゆれ、冗長表現、二重助詞など）も修正してからコミットする。
   自動修正できるものは `--fix` を付けて直す
+
+## Vim script 規約
+
+### ファイル変更時のチェック
+
+Vim script（`.vim`/vimrc など）を変更した場合、コミット前に以下を実行する。
+
+```bash
+vint <file>
+```
+
+- `vint` の指摘（未定義変数・非推奨の記法・`set` の誤りなど）は修正してからコミットする
+
+## Dockerfile 規約
+
+### ファイル変更時のチェック
+
+Dockerfile を変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。
+
+```bash
+hadolint <file>
+docker build --check -f <file> .
+trivy config <file>
+```
+
+- `hadolint` の指摘（バージョン固定漏れ・`ADD` と `COPY` の使い分けなど）は修正してからコミットする
+- `docker build --check` は BuildKit のビルド前チェックで、非推奨構文や警告を検出する
+- `trivy config` は設定ミスや既知の危険な記述を検出する
+
+## SQL 規約
+
+### ファイル変更時のチェック
+
+SQL ファイル（`.sql`）を変更した場合、コミット前に以下を実行する。
+
+```bash
+sqlfluff lint --dialect bigquery <file>
+sqlfmt <file>
+```
+
+- `sqlfluff` の指摘（予約語の大文字小文字・インデント・末尾カンマなど）は修正してからコミットする。
+  自動修正できるものは `sqlfluff fix --dialect bigquery <file>` で直す
+- `sqlfmt` で整形差分が出たら整形してからコミットする
+
+## JSON 規約
+
+### ファイル変更時のチェック
+
+JSON ファイル（`.json`）を変更した場合、コミット前に以下を実行する。
+
+```bash
+prettier --check <file>
+```
+
+- 差分が出たら `prettier --write <file>` で整形してからコミットする

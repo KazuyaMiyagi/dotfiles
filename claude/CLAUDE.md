@@ -137,6 +137,10 @@ Conventional Commits 形式を使用する。
 - `rules/terraform.md` — Terraform（`tf-linters`/`terraform fmt`）
 - `rules/github-actions.md` — GitHub Actions（`actionlint`）
 - `rules/markdown.md` — Markdown（`prettier`/`markdownlint-cli2`/`textlint`）
+- `rules/vim.md` — Vim script（`vint`）
+- `rules/dockerfile.md` — Dockerfile（`hadolint`/`docker build --check`/`trivy`）
+- `rules/sql.md` — SQL（`sqlfluff`/`sqlfmt`）
+- `rules/json.md` — JSON（`prettier`）
 
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ
 symlink している（`scripts/init` 参照）。
