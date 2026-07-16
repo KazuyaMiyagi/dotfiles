@@ -249,20 +249,15 @@ terraform fmt -recursive
 
 ### ファイル変更時のリンティング
 
-GitHub Actions 関連のファイルを変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。
-対象には `.github/workflows/` 配下のワークフローや、
-`.github/` 配下に置いた composite action の `action.yml` などが含まれる。
+ワークフロー（`.github/workflows/` 配下）を変更した場合、コミット前に actionlint を実行してエラー・警告がないことを確認する。
 
 ```bash
 actionlint
 ```
 
-引数なしの場合は `.github/workflows/` 配下のみ走査する。
-`.github/workflows/` の外に置いたファイルはパスを明示して渡す。
-
-```bash
-actionlint .github/composite/<file>.yml
-```
+引数なしで `.github/workflows/` 配下を走査する。
+actionlint はワークフロー専用のため、composite action の `action.yml` など
+ワークフロー以外のファイルには実行しない（ワークフローとして解釈され誤検知になる）。
 
 指摘が出たら修正してからコミットする（未定義の式、シェルスクリプトの不備、無効なイベント名、シェル `run` 内の `shellcheck` 指摘など）。
 
