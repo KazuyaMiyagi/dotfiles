@@ -11,7 +11,7 @@ paths:
 
 ## ファイル変更時のリンティング
 
-GitHub Actions 関連のファイル（`.github/workflows/` 配下のワークフロー、`.github/` 配下に置いた composite action の `action.yml` など）を変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。
+GitHub Actions 関連のファイルを変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。対象には `.github/workflows/` 配下のワークフローや、`.github/` 配下に置いた composite action の `action.yml` などが含まれる。
 
 ```bash
 actionlint

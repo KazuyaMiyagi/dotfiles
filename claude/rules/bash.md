@@ -18,5 +18,5 @@ shfmt -d -ln bash -i 4 -bn -ci -sr -kp <file>                                  #
 ```
 
 - `shellcheck` の指摘（未クォート変数 `SC2086`、`[ ]` vs `[[ ]]` など）は修正してからコミットする
-- `shfmt -d` で差分が出たら `shfmt -w -ln bash -i 4 -bn -ci -sr -kp <file>` で整形する。フラグは efm-langserver の設定（`--indent 4 --binary-next-line --case-indent --space-redirects --keep-padding`）に揃えてあるので、エディタ保存時の整形と CLI の結果が一致する
+- `shfmt -d` で差分が出たら `shfmt -w -ln bash -i 4 -bn -ci -sr -kp <file>` で整形する。efm-langserver の設定値は `--indent 4 --binary-next-line --case-indent --space-redirects --keep-padding`。フラグを揃えてあるので、エディタ保存時の整形と CLI の結果が一致する
 - 変数は基本ダブルクォートで囲む。`set -euo pipefail` を冒頭に置く
