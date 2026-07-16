@@ -88,7 +88,7 @@ tools:
 
   actionlint: &actionlint
     prefix: actionlint
-    lint-command: "actionlint -oneline ${INPUT}"
+    lint-command: 'case "${INPUT}" in */.github/workflows/*) actionlint -oneline "${INPUT}" ;; esac'
     lint-stdin: true
     lint-formats:
       - "%f:%l:%c: %m"
