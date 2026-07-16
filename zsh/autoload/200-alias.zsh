@@ -15,5 +15,6 @@ alias k8s_dashbord_stop="kubectl delete -f https://raw.githubusercontent.com/kub
 alias jwt-decode="jq -R 'split(\".\") | .[1] | @base64d | fromjson'"
 alias youtube-dl="youtube-dl -f bestvideo+bestaudio --merge-output-format mp4"
 alias flake8="flake8 --config \${XDG_CONFIG_HOME}/flake8"
+alias markdownlint-cli2="markdownlint-cli2 --config \${XDG_CONFIG_HOME}/markdownlint-cli2/config.jsonc"
 alias todo="todo.sh"
 alias claude="claude --mcp-config \${XDG_CONFIG_HOME}/claude/mcp.json"

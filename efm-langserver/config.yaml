@@ -18,7 +18,7 @@ tools:
 
   markdownlint-cli2: &markdownlint-cli2
     prefix: "markdownlint-cli2"
-    lint-command: "markdownlint-cli2 ${INPUT}"
+    lint-command: "markdownlint-cli2 --config ~/.config/markdownlint-cli2/config.jsonc ${INPUT}"
     lint-stdin: true
     lint-formats:
       - "%f:%l %m"
