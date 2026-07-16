@@ -34,7 +34,7 @@ tools:
 
   tflint: &tflint
     prefix: "tflint"
-    lint-command: "tflint --format compact --recursive --call-module-type all"
+    lint-command: "tflint --format compact --recursive --call-module-type=local"
     lint-stdin: true
     lint-ignore-exit-code: true
     lint-formats:
