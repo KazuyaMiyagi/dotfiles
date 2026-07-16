@@ -2,7 +2,8 @@
 
 ## 応答スタイル
 
-中身のない前置き・相槌・追従の枕詞を使わない。回答は本題から始める。
+中身のない前置き・相槌・追従の枕詞を使わない。
+回答は本題から始める。
 
 具体的に避ける言い回しを以下に挙げる（これらに類するものも含む）。
 
@@ -90,7 +91,8 @@ Conventional Commits 形式を使用する。
 
 ## Git ブランチ運用
 
-- 作業は `main` から作業ブランチを切って行う。ブランチを切る前に `main` を最新化する：
+- 作業は `main` から作業ブランチを切って行う。
+  ブランチを切る前に `main` を最新化する：
 
   ```bash
   git switch main
@@ -126,7 +128,8 @@ Conventional Commits 形式を使用する。
 
 ## 言語・ツール別ルール
 
-言語/ツール固有のコーディング規約は `~/.claude/rules/` に分離してある。`paths:` フロントマターでスコープし、該当ファイルを触ったときだけ読み込ませることで、無関係セッションの context を節約する。
+言語/ツール固有のコーディング規約は `~/.claude/rules/` に分離してある。
+`paths:` フロントマターでスコープし、該当ファイルを触ったときだけ読み込ませることで、無関係セッションの context を節約する。
 
 - `rules/go.md` — Go（`gofmt`/`go vet`/`go test`、依存管理、テスト方針）
 - `rules/ruby.md` — Ruby（`rubocop`）
@@ -135,4 +138,6 @@ Conventional Commits 形式を使用する。
 - `rules/github-actions.md` — GitHub Actions（`actionlint`）
 - `rules/markdown.md` — Markdown（`prettier`/`markdownlint-cli2`/`textlint`）
 
-これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ symlink している（`scripts/init` 参照）。他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
+これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ
+symlink している（`scripts/init` 参照）。
+他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。

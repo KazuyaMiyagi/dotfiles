@@ -11,13 +11,16 @@ paths:
 
 ## ファイル変更時のリンティング
 
-GitHub Actions 関連のファイルを変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。対象には `.github/workflows/` 配下のワークフローや、`.github/` 配下に置いた composite action の `action.yml` などが含まれる。
+GitHub Actions 関連のファイルを変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。
+対象には `.github/workflows/` 配下のワークフローや、
+`.github/` 配下に置いた composite action の `action.yml` などが含まれる。
 
 ```bash
 actionlint
 ```
 
-引数なしの場合は `.github/workflows/` 配下のみ走査する。`.github/workflows/` の外に置いたファイルはパスを明示して渡す。
+引数なしの場合は `.github/workflows/` 配下のみ走査する。
+`.github/workflows/` の外に置いたファイルはパスを明示して渡す。
 
 ```bash
 actionlint .github/composite/<file>.yml
@@ -27,10 +30,12 @@ actionlint .github/composite/<file>.yml
 
 ## アクションのバージョン固定
 
-`uses:` で参照するアクションはコミット SHA でピン留めする。GitHub Actions 関連のファイルを書いたら、必ず `pinact run -u` を実行し、各アクションを最新版のコミット SHA へ固定する。
+`uses:` で参照するアクションはコミット SHA でピン留めする。
+GitHub Actions 関連のファイルを書いたら、必ず `pinact run -u` を実行し、各アクションを最新版のコミット SHA へ固定する。
 
 ```bash
 pinact run -u
 ```
 
-`-u` は参照先を最新版へ更新した上でピン留めする。`uses: owner/repo@v1` のようなタグ参照や古い SHA が残っていないことを確認してからコミットする。
+`-u` は参照先を最新版へ更新した上でピン留めする。
+`uses: owner/repo@v1` のようなタグ参照や古い SHA が残っていないことを確認してからコミットする。
