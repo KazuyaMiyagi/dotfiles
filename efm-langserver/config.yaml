@@ -122,6 +122,7 @@ languages:
   markdown:
     - <<: *markdownlint-cli2
     - <<: *textlint
+    - <<: *prettier
 
   terraform:
     - <<: *tflint
