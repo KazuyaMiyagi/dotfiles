@@ -126,5 +126,6 @@ Conventional Commits 形式を使用すること:
 - `rules/bash.md` — シェルスクリプト（`shellcheck` / `shfmt`）
 - `rules/terraform.md` — Terraform（`tf-linters` / `terraform fmt`）
 - `rules/github-actions.md` — GitHub Actions（`actionlint`）
+- `rules/markdown.md` — Markdown（`prettier` / `markdownlint-cli2` / `textlint`）
 
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ symlink している（`scripts/init` 参照）。他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
