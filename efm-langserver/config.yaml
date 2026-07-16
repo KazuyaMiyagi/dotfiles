@@ -56,6 +56,10 @@ tools:
       - '%f:%l-%e:%c-%k:%tARNING:"%m"'
       - '%f:%l-%e:%c-%k:%tRROR:"%m"'
 
+  terraform-fmt: &terraform-fmt
+    format-command: "terraform fmt -"
+    format-stdin: true
+
   docker-check: &docker-check
     prefix: "docker-check"
     lint-command: docker build --call 'check,format=json' -f "${INPUT}" . | jq --raw-output '[.warnings[] | .location.ranges[].start.line, .location.ranges[].end.line, "[" + .ruleName + "] " + .description] | @csv'
@@ -127,6 +131,7 @@ languages:
   terraform:
     - <<: *tflint
     - <<: *trivy-config
+    - <<: *terraform-fmt
 
   dockerfile:
     - <<: *docker-check
