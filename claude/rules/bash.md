@@ -10,7 +10,7 @@ paths:
 
 ## ファイル変更時のチェック
 
-シェルスクリプト（`.sh` / `.bash` や shebang が bash/sh のファイル）を変更した場合、コミット前に以下を実行する。
+シェルスクリプト（`.sh`/`.bash` や shebang が bash/sh のファイル）を変更した場合、コミット前に以下を実行する。
 
 ```bash
 shellcheck <file>                                                              # 静的解析

@@ -12,7 +12,7 @@ paths:
 
 ## ファイル変更時のチェック
 
-Ruby ファイル（`.rb` / `Gemfile` / `Rakefile` など）を変更した場合、コミット前に以下を実行する。
+Ruby ファイル（`.rb`/`Gemfile`/`Rakefile` など）を変更した場合、コミット前に以下を実行する。
 
 ```bash
 rubocop <path>      # lint + フォーマットチェック

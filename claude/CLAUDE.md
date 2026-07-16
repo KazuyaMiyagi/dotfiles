@@ -17,7 +17,7 @@
 
 ## 実装方針（Red/Green/Refactor TDD）
 
-コードの実装は、原則として Red/Green/Refactor の TDD サイクルで進める:
+コードの実装は、原則として Red/Green/Refactor の TDD サイクルで進める：
 
 1. **Red**: まず失敗するテストを書き、実際にテストを実行して期待どおり失敗することを確認する
 2. **Green**: テストを通すための最小限の実装を行い、テストが通ることを確認する
@@ -27,13 +27,13 @@
 
 - テストを書く前に実装を始めない
 - 実装の都合に合わせてテストを歪めない（テストが仕様、実装が従う）
-- 一度に書くテストは1つに絞り、小さく進める（仮実装 → 三角測量 → 明白な実装）
+- 一度に書くテストは 1 つに絞り、小さく進める（仮実装 → 三角測量 → 明白な実装）
 - Red フェーズの失敗を必ず確認してから実装に入る
 
 ### 適用の判断
 
 - 「必ず TDD」ではなく、あくまでデフォルトの進め方とする
-- 以下のようなケースでは TDD を省略してよい:
+- 以下のようなケースでは TDD を省略してよい：
   - 自明・軽微な変更（typo 修正、設定値の変更など）
   - テストが馴染まない作業（ドキュメント、フォーマット、調査）
   - 既存テストの範囲で十分に守られているリファクタリング
@@ -41,9 +41,9 @@
 
 ## Git コミットメッセージ
 
-Conventional Commits 形式を使用すること:
+Conventional Commits 形式を使用すること：
 
-```
+```text
 <type>[optional scope]: <description>
 
 [optional body]
@@ -73,7 +73,8 @@ Conventional Commits 形式を使用すること:
 - description は 72 文字以内に収める
 - subject と body の間には空行を入れる
 - コミットメッセージに Issue や PR 番号を含めない
-- コミット作成前に commitlint でメッセージを検証する:
+- コミット作成前に commitlint でメッセージを検証する：
+
   ```bash
   commitlint --config ~/.config/commitlint/config.mjs <<'HEREDOC'
   <message>
@@ -87,14 +88,17 @@ Conventional Commits 形式を使用すること:
 
 ## Git ブランチ運用
 
-- 作業は `main` から作業ブランチを切って行う。ブランチを切る前に `main` を最新化する:
+- 作業は `main` から作業ブランチを切って行う。ブランチを切る前に `main` を最新化する：
+
   ```bash
   git switch main
   git pull
   git switch -c <branch>
   ```
+
 - 作業ブランチはリモートに push する
-- 作業終了時は、`main` に戻ってからローカルの作業ブランチを削除する:
+- 作業終了時は、`main` に戻ってからローカルの作業ブランチを削除する：
+
   ```bash
   git switch main
   git branch -d <branch>
@@ -103,15 +107,16 @@ Conventional Commits 形式を使用すること:
 ## Pull Request
 
 - PR は必ずドラフトで作成すること（`gh pr create --draft`）
-- Shared repository model（同一リポジトリのブランチから出す PR）の場合:
-  - PR 本文は変更内容の説明（Summary / Test plan など）のみを記載し、「マージしてください」「ご確認お願いします」などのレビュアーへの依頼文は書かない
+- Shared repository model（同一リポジトリのブランチから出す PR）の場合：
+  - PR 本文は変更内容の説明（Summary/Test plan など）のみを記載し、「マージしてください」「ご確認お願いします」などのレビュアーへの依頼文は書かない
   - PR の作成者は自分自身であることを前提に、第三者にマージを依頼するような文体は使わず、作成者視点で客観的に書く
 - Fork and pull model（フォークから upstream へ出す PR）の場合は、upstream のメンテナにマージを依頼する立場になるため、依頼文や背景説明を含めて構わない
 
 ### PR 作成済みのコミットを amend してフォースプッシュした場合
 
 - コミット内容が変わったら、PR 本文も最新の変更内容に合わせて修正する
-- 修正する際は、PR 本文が Web から編集されている可能性があるため、**必ず最新の本文を取得してから**書き換える:
+- 修正する際は、PR 本文が Web から編集されている可能性があるため、**必ず最新の本文を取得してから**書き換える：
+
   ```bash
   gh pr view --json body --jq .body   # 最新の本文を取得して内容を確認する
   gh pr edit --body "<更新後の本文>"
@@ -121,11 +126,11 @@ Conventional Commits 形式を使用すること:
 
 言語/ツール固有のコーディング規約は `~/.claude/rules/` に分離してある（`paths:` フロントマターでスコープし、該当ファイルを触ったときだけ読み込ませることで無関係セッションの context を節約する）。
 
-- `rules/go.md` — Go（`gofmt` / `go vet` / `go test`、依存管理、テスト方針）
+- `rules/go.md` — Go（`gofmt`/`go vet`/`go test`、依存管理、テスト方針）
 - `rules/ruby.md` — Ruby（`rubocop`）
-- `rules/bash.md` — シェルスクリプト（`shellcheck` / `shfmt`）
-- `rules/terraform.md` — Terraform（`tf-linters` / `terraform fmt`）
+- `rules/bash.md` — シェルスクリプト（`shellcheck`/`shfmt`）
+- `rules/terraform.md` — Terraform（`tf-linters`/`terraform fmt`）
 - `rules/github-actions.md` — GitHub Actions（`actionlint`）
-- `rules/markdown.md` — Markdown（`prettier` / `markdownlint-cli2` / `textlint`）
+- `rules/markdown.md` — Markdown（`prettier`/`markdownlint-cli2`/`textlint`）
 
 これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ symlink している（`scripts/init` 参照）。他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
