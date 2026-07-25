@@ -1,0 +1,81 @@
+name: tflint plugin update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 10 * * 1-5"
+      timezone: "Asia/Tokyo"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Configure git
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Update tflint plugins
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          hcl_file="tflint/tflint.hcl"
+
+          plugins=$(awk '
+            /^plugin "/{ name=$2; gsub(/"/, "", name); inblock=1; version=""; source="" }
+            inblock && /^[[:space:]]*version[[:space:]]*=/{ gsub(/"/, "", $3); version=$3 }
+            inblock && /^[[:space:]]*source[[:space:]]*=/{ gsub(/"/, "", $3); source=$3 }
+            inblock && /^}/{ print name"|"version"|"source; inblock=0 }
+          ' "${hcl_file}")
+
+          while IFS='|' read -r name current_version source; do
+            repo=${source#github.com/}
+            latest_tag=$(gh api "repos/${repo}/releases/latest" --jq '.tag_name')
+            latest_version=${latest_tag#v}
+
+            if [ "${current_version}" = "${latest_version}" ]; then
+              echo "${name}: already up-to-date (${current_version})"
+              continue
+            fi
+
+            branch="deps/tflint-plugin-${name}-${latest_version}"
+            if git ls-remote --exit-code --heads origin "${branch}" >/dev/null 2>&1; then
+              echo "${name}: branch ${branch} already exists, skipping"
+              continue
+            fi
+
+            echo "${name}: ${current_version} -> ${latest_version}"
+
+            git switch -c "${branch}"
+            awk -v plugin="${name}" -v new_ver="${latest_version}" '
+              $0 ~ "^plugin \""plugin"\"" { inblock=1 }
+              inblock && /^[[:space:]]*version[[:space:]]*=/ { sub(/"[^"]*"/, "\""new_ver"\"") }
+              /^}/ { inblock=0 }
+              { print }
+            ' "${hcl_file}" > "${hcl_file}.tmp"
+            mv "${hcl_file}.tmp" "${hcl_file}"
+
+            git add "${hcl_file}"
+            git commit -m "chore(deps): update tflint plugin ${name} to v${latest_version}"
+            git push origin "${branch}"
+
+            gh pr create \
+              --base main \
+              --head "${branch}" \
+              --assignee KazuyaMiyagi \
+              --title "chore(deps): update tflint plugin ${name} to v${latest_version}" \
+              --body "tflint プラグイン \`${name}\` を \`${current_version}\` から \`${latest_version}\` に更新します。
+
+          リリースノート: https://github.com/${repo}/releases/tag/${latest_tag}"
+
+            git switch main
+          done <<< "${plugins}"
