@@ -104,6 +104,8 @@ return {
 
         { key = "n",     mods = "LEADER", action = wezterm.action.ActivateTabRelative(1) },
         { key = "p",     mods = "LEADER", action = wezterm.action.ActivateTabRelative(-1) },
+        { key = "N",     mods = "LEADER|SHIFT", action = wezterm.action.MoveTabRelative(1) },
+        { key = "P",     mods = "LEADER|SHIFT", action = wezterm.action.MoveTabRelative(-1) },
         { key = "c",     mods = "LEADER", action = wezterm.action.SpawnTab "CurrentPaneDomain" },
         { key = "s",     mods = "LEADER", action = wezterm.action.SplitVertical { domain = "CurrentPaneDomain" } },
         { key = "v",     mods = "LEADER", action = wezterm.action.SplitHorizontal { domain = "CurrentPaneDomain" } },
