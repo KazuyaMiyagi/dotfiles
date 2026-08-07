@@ -3,6 +3,7 @@
     "aws-service-name": true,
     "no-dead-link": true,
     "no-todo": true,
+    "one-sentence-per-line": true,
     "preset-ja-spacing": {
       "ja-space-around-code": {
         "before": true,

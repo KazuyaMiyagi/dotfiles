@@ -10,6 +10,7 @@ textlint
 textlint-rule-aws-service-name
 textlint-rule-no-dead-link
 textlint-rule-no-todo
+textlint-rule-one-sentence-per-line
 textlint-rule-preset-ja-spacing
 textlint-rule-preset-ja-technical-writing
 textlint-rule-preset-japanese
