@@ -1,5 +1,6 @@
 {
   "rules": {
+    "@textlint-ja/preset-ai-writing": true,
     "aws-service-name": true,
     "no-dead-link": true,
     "no-todo": true,

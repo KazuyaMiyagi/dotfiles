@@ -3,6 +3,7 @@
 @github/copilot
 @google/gemini-cli
 @openai/codex
+@textlint-ja/textlint-rule-preset-ai-writing
 eslint
 markdownlint-cli2
 prettier
