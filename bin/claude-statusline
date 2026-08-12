@@ -54,17 +54,19 @@ function _format() {
 }
 
 # Pie chart icon by percentage: 󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥
+# Rounds to the nearest eighth so the empty and full icons cover
+# symmetric ranges (0-6% and 94-100%).
 function _pie_icon() {
-    local int_pct="${1%.*}"
+    local int_pct="${1}"
     local icons=(󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥)
-    local idx=$((int_pct * 8 / 100))
+    local idx=$(((int_pct * 8 + 50) / 100))
     if [[ "${idx}" -gt 8 ]]; then idx=8; fi
     printf "%s" "${icons[${idx}]}"
 }
 
-# Foreground color by percentage: green (<50%), yellow (50-80%), red (>80%)
+# Foreground color by percentage: green (<50%), yellow (50-79%), red (>=80%)
 function _pct_fg() {
-    local int_pct="${1%.*}"
+    local int_pct="${1}"
     if [[ "${int_pct}" -ge 80 ]]; then
         printf "%s" "${FG_RED}"
     elif [[ "${int_pct}" -ge 50 ]]; then
