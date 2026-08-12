@@ -84,9 +84,9 @@ if [[ -n "${project_dir}" ]]; then
     if [[ -n "${cwd}" ]] && [[ "${cwd}" != "${project_dir}" ]]; then
         rel=$("${realpath_cmd}" -m -s --relative-to="${project_dir}" "${cwd}")
         [[ "${rel}" == ..* ]] || rel="./${rel}"
-        project_text="[${project_name}](${rel}/) "
+        project_text=" [${project_name}](${rel}/) "
     else
-        project_text="[${project_name}]"
+        project_text=" [${project_name}] "
     fi
 fi
 
