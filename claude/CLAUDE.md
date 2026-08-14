@@ -94,6 +94,7 @@ Conventional Commits 形式を使用する。
 - description の末尾にピリオドをつけない
 - description は 72 文字以内に収める
 - subject と body の間には空行を入れる
+- body には Why、つまり「なぜその変更が必要だったのか」を書く
 - コミットメッセージに Issue や PR 番号を含めない
 - コミット作成前に commitlint でメッセージを検証する：
 
