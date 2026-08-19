@@ -29,12 +29,12 @@ function homebrew_bundle_install() {
 function homebrew_update() {
     echo "==> Updating Homebrew packages..."
     brew update
-    brew upgrade
+    brew upgrade --yes
     brew cleanup
     echo "==> Finished updating Homebrew packages."
 
     echo "==> Updating Homebrew cask packages..."
-    brew upgrade --cask
+    brew upgrade --cask --yes
     echo "==> Finished updating Homebrew cask packages."
 
     brew doctor || true
