@@ -8,7 +8,7 @@ paths:
 
 ## ファイル変更時のチェック
 
-Markdown ファイル（`.md`/`.markdown`）を変更した場合、コミット前に以下を必ず実行してエラー・警告がないことを確認する。
+Markdown ファイル（`.md`/`.markdown`）を変更した場合、コミット前に以下を実行してエラー・警告がないことを確認する。
 
 ```bash
 prettier --parser markdown --check <file>
