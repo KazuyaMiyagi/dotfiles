@@ -172,27 +172,9 @@ readyfor/readyfor-issues#15333
 
 ## 言語・ツール別ルール
 
-言語/ツール固有のコーディング規約は `~/.claude/rules/` に分離してある。
-`paths:` フロントマターでスコープし、該当ファイルを触ったときだけ読み込ませることで、無関係セッションの context を節約する。
-
-- `rules/go.md` — Go（`gofmt`/`go vet`/`go test`、依存管理、テスト方針）
-- `rules/ruby.md` — Ruby（`rubocop`）
-- `rules/bash.md` — シェルスクリプト（`shellcheck`/`shfmt`）
-- `rules/terraform.md` — Terraform（`tf-linters`/`terraform fmt`）
-- `rules/github-actions.md` — GitHub Actions（`actionlint`）
-- `rules/markdown.md` — Markdown（`prettier`/`markdownlint-cli2`/`textlint`）
-- `rules/vim.md` — Vim script（`vint`）
-- `rules/dockerfile.md` — Dockerfile（`hadolint`/`docker build --check`/`trivy`）
-- `rules/sql.md` — SQL（`sqlfluff`/`sqlfmt`）
-- `rules/json.md` — JSON（`prettier`）
-
-これらは dotfiles の `claude/rules/*.md` を `~/.claude/rules/` へ
-symlink している（`scripts/init` 参照）。
-他のリポジトリやプラグインが提供する rules も同じ `~/.claude/rules/` に置けば共存する。
+言語/ツール固有のコーディング規約を以下にまとめる。
 
 ## Bash / シェルスクリプト規約
-
-拡張子の無い shebang スクリプト（`#!/usr/bin/env bash` 等）はこの paths glob に一致しないので、その場合はこのルールを明示的に参照すること。
 
 ### ファイル変更時のチェック
 
