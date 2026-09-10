@@ -129,12 +129,15 @@ Conventional Commits 形式を使用する。
   ```
 
 - 作業ブランチはリモートに push する
-- 作業終了時は、`main` に戻ってからローカルの作業ブランチを削除する：
+- push したら `main` に戻り、ローカルの作業ブランチを削除する：
 
   ```bash
   git switch main
   git branch -d <branch>
   ```
+
+  upstream へ push 済みであれば `-d` で削除できる（`main` へのマージ前でもよい）。
+  追加の作業が必要になったら `git switch <branch>` でリモートから復元する
 
 ## Pull Request
 
