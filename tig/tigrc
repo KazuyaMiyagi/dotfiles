@@ -1,1 +1,8 @@
 set wrap-lines = yes
+set ignore-space = all
+set diff-highlight = /opt/homebrew/share/git-core/contrib/diff-highlight/diff-highlight
+set ignore-case = smart-case
+set line-graphics = utf-8
+set main-view-date = custom
+set main-view-date-format = "%Y-%m-%d %H:%M"
+set main-view-commit-title = yes,graph,refs
