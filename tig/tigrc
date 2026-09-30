@@ -1,6 +1,7 @@
 set wrap-lines = yes
 set ignore-space = all
 set diff-highlight = /opt/homebrew/share/git-core/contrib/diff-highlight/diff-highlight
+set diff-indicator = no
 set ignore-case = smart-case
 set line-graphics = utf-8
 set main-view-date = custom
