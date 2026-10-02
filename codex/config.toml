@@ -3,7 +3,7 @@ command = "docker"
 args = ["run", "-i", "--rm", "hashicorp/terraform-mcp-server"]
 
 [mcp_servers.datadog]
-url = "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp"
+url = "https://mcp.datadoghq.com/v1/mcp"
 
 [mcp_servers.aws-mcp]
 command = "uvx"
