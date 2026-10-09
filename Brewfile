@@ -66,7 +66,7 @@ brew "nettle"
 brew "nkf"
 brew "oniguruma"
 brew "openjdk"
-brew "openssl@3", link: true
+brew "openssl@4"
 brew "pandoc"
 brew "pango"
 brew "peco"

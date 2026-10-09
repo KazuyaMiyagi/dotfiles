@@ -8,7 +8,7 @@ if [[ "$(/usr/bin/uname)" == "Darwin" ]]; then
 
     # for ruby-build
     # https://github.com/rbenv/ruby-build/wiki#macos
-    OPENSSL_PREFIX=$(brew --prefix openssl@3)
+    OPENSSL_PREFIX=$(brew --prefix openssl@4)
     export RUBY_CONFIGURE_OPTS="--with-openssl-dir=${OPENSSL_PREFIX}"
 
     # for mysql gem
