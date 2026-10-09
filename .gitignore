@@ -29,3 +29,6 @@
 
 # google-cloud-sdk
 /gcloud
+
+# Homebrew
+/homebrew/trust.json.lock
