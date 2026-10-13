@@ -11,6 +11,7 @@
 # git
 /git/local/*
 !/git/local/config.example
+!/git/local/octo-org.inc.example
 
 # textlint
 /textlint/ignore-urls.local.json
