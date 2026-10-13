@@ -166,7 +166,7 @@ PR 本文・Issue 本文・コメントで Issue や PR を参照するときは
 同一リポジトリかどうかにかかわらず、常に `owner/repo#123` 形式で書く。
 
 ```text
-readyfor/readyfor-issues#15333
+octo-org/octo-repo#123
 ```
 
 - `#123` は「そのテキストが置かれたリポジトリ」の番号として解決される。
