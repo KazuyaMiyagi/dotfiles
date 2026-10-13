@@ -1,4 +1,4 @@
-! *.gitkeep
+!*.gitkeep
 
 # zsh
 /zsh/.zcompdump*
@@ -10,7 +10,7 @@
 
 # git
 /git/local/*
-! /git/local/config.example
+!/git/local/config.example
 
 # textlint
 /textlint/ignore-urls.local.json
