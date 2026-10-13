@@ -1,26 +1,38 @@
-{
-  "rules": {
+const fs = require("node:fs");
+const path = require("node:path");
+
+// 認証が必要な URL（社内 org のリポジトリなど）は公開リポジトリに書けないため、
+// git 管理外のファイルから読み込む（ignore-urls.local.json.example をコピーして作る）
+const localIgnoreUrlsPath = path.join(__dirname, "ignore-urls.local.json");
+const localIgnoreUrls = fs.existsSync(localIgnoreUrlsPath)
+  ? JSON.parse(fs.readFileSync(localIgnoreUrlsPath, "utf8"))
+  : [];
+
+module.exports = {
+  rules: {
     "@textlint-ja/preset-ai-writing": true,
     "aws-service-name": true,
-    "no-dead-link": true,
+    "no-dead-link": {
+      ignore: localIgnoreUrls,
+    },
     "no-todo": true,
     "one-sentence-per-line": true,
     "preset-ja-spacing": {
       "ja-space-around-code": {
-        "before": true,
-        "after": true
+        before: true,
+        after: true,
       },
       "ja-space-between-half-and-full-width": {
-        "space": "always"
-      }
+        space: "always",
+      },
     },
     "preset-ja-technical-writing": true,
     "preset-japanese": true,
     "preset-jtf-style": {
-      "3.1.1.全角文字と半角文字の間": false
+      "3.1.1.全角文字と半角文字の間": false,
     },
     "report-node-types": {
-      "nodeTypes": ["Strong"]
-    }
-  }
-}
+      nodeTypes: ["Strong"],
+    },
+  },
+};
