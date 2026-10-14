@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+# Claude Code の PreToolUse hook。
+# 次の Bash コマンドのときだけ承認ダイアログを出し、それ以外は何も返さずに通す。
+#   - gh api でのコメント・レビューの投稿（読むだけの gh api は通す）
+#   - レビュー依頼済みの PR のブランチでの rebase / amend / force push
+
+set -euo pipefail
+
+input=$(cat)
+command=$(jq -r '.tool_input.command // empty' <<< "${input}")
+cwd=$(jq -r '.cwd // empty' <<< "${input}")
+
+ask() {
+    jq -n --arg reason "$1" '{
+        hookSpecificOutput: {
+            hookEventName: "PreToolUse",
+            permissionDecision: "ask",
+            permissionDecisionReason: $reason
+        }
+    }'
+    exit 0
+}
+
+# gh api は読み取りにも使うので、本文を送るか POST/PATCH するものだけを投稿とみなす
+if grep -Eq '(^|[;&|(][[:space:]]*)gh[[:space:]]+api[[:space:]]' <<< "${command}" \
+    && grep -Eq '(comments|reviews|replies)' <<< "${command}" \
+    && grep -Eq '((-f|-F|--field|--raw-field)[[:space:]=]+body=|(-X|--method)[[:space:]=]*(POST|PATCH))' <<< "${command}"; then
+    ask "gh api でコメントかレビューを投稿しようとしています"
+fi
+
+git_command='(^|[;&|(][[:space:]]*)git[[:space:]]+'
+if ! grep -Eq "${git_command}(rebase|commit[[:space:]].*--amend|push[[:space:]].*(--force|[[:space:]]-f([[:space:]]|$)|[[:space:]]\+))" <<< "${command}"; then
+    exit 0
+fi
+
+if [[ -n "${cwd}" ]]; then
+    cd "${cwd}"
+fi
+
+# PR が無いブランチは依頼前なので通す。それ以外の取得失敗は判断できないので確認に回す
+if ! pr=$(gh pr view --json isDraft,reviewRequests,reviews 2>&1); then
+    if grep -qi 'no pull requests found' <<< "${pr}"; then
+        exit 0
+    fi
+    ask "PR の状態を取得できませんでした。履歴を書き換えてよいか確認してください"
+fi
+
+# draft 中に付く Copilot や bot のレビューは、レビュー依頼とはみなさない
+requested=$(jq -r '
+    (.isDraft | not) and (
+        (.reviewRequests | length > 0)
+        or ([.reviews[] | select(.author.login | test("copilot|\\[bot\\]$") | not)] | length > 0)
+    )
+' <<< "${pr}")
+
+if [[ "${requested}" == "true" ]]; then
+    ask "レビュー依頼済みの PR のブランチで、コミット履歴を書き換えようとしています"
+fi
