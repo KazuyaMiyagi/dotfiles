@@ -176,6 +176,32 @@ Conventional Commits 形式を使用する。
   - PR の作成者は自分自身であることを前提に、第三者にマージを依頼するような文体は使わず、作成者視点で客観的に書く
 - Fork and pull model（フォークから upstream へ出す PR）の場合は、upstream のメンテナにマージを依頼する立場になるため、依頼文や背景説明を含めて構わない
 
+### PR のコメントを読む
+
+- PR をレビューするとき・PR の状況を答えるとき・レビューの指摘を直すときは、差分だけでなくコメントをすべて全文で読む
+  - 対象はレビュースレッド（解決済み・outdated も含む）、会話コメント、レビュー本文
+  - 本文を途中で切って読まない
+  - 前に読んでいても、答える直前・直す直前に取り直す
+- レビュースレッドは GraphQL の `reviewThreads` で取ると、解決状態と返信をまとめて読める：
+
+  ```bash
+  gh api graphql -F o=<owner> -F r=<repo> -F n=<PR> -f query='
+    query($o: String!, $r: String!, $n: Int!) {
+      repository(owner: $o, name: $r) {
+        pullRequest(number: $n) {
+          reviewThreads(first: 100) {
+            nodes {
+              isResolved isOutdated path line
+              comments(first: 50) { nodes { author { login } body } }
+            }
+          }
+          comments(first: 100) { nodes { author { login } body } }
+          reviews(first: 100) { nodes { author { login } state body } }
+        }
+      }
+    }'
+  ```
+
 ### PR 作成済みのコミットを amend してフォースプッシュした場合
 
 - コミット内容が変わったら、PR 本文も最新の変更内容に合わせて修正する
