@@ -58,7 +58,8 @@
     "command": "claude-statusline"
   },
   "enabledPlugins": {
-    "ruby-lsp@claude-plugins-official": true
+    "ruby-lsp@claude-plugins-official": true,
+    "claude-security@claude-plugins-official": true
   },
   "pluginConfigs": {
     "cc-plugin-agents-md@builtin": {
