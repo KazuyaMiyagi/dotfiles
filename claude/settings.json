@@ -68,5 +68,6 @@
       }
     }
   },
-  "autoMemoryEnabled": false
+  "autoMemoryEnabled": false,
+  "skipWorkflowUsageWarning": true
 }
