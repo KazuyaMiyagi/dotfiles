@@ -36,3 +36,9 @@
 
 # Homebrew
 /homebrew/trust.json.lock
+
+# 1Password
+/1Password
+
+# cagent
+/cagent
