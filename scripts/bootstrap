@@ -53,6 +53,38 @@ function go_packages_update() {
     echo "==> Finished updating Go packages."
 }
 
+function github_web_flow_key_import() {
+    # Pinned instead of trusting whatever the URL serves, so a key rotation is noticed
+    # (new web commits show "No public key") and the new fingerprint is checked by hand.
+    local fingerprint="968479A1AFF927E37D1A566BB5690EEEBB952194"
+    local key
+
+    # Fetching on every run would make an offline run or a GitHub outage abort the whole
+    # bootstrap under set -e, for a key that changes once in several years.
+    if gpg --list-keys "${fingerprint}" &> /dev/null; then
+        echo "==> GitHub web-flow GPG key was already imported."
+        return
+    fi
+
+    echo "==> Importing GitHub web-flow GPG key..."
+    if ! key=$(curl --fail --silent --show-error --location https://github.com/web-flow.gpg); then
+        echo "==> Skipping GitHub web-flow GPG key: download failed."
+        return
+    fi
+    if ! gpg --show-keys --with-colons <<< "${key}" 2> /dev/null \
+        | awk -F: '$1 == "fpr" { print $10 }' | grep -qxF "${fingerprint}"; then
+        echo "==> Skipping GitHub web-flow GPG key: ${fingerprint} is not in the downloaded keys."
+        return
+    fi
+    # No ownertrust is set: ultimate trust would also validate any key GitHub's key signs,
+    # and lsign needs a GPG secret key that SSH-based commit signing never creates.
+    if ! gpg --import <<< "${key}"; then
+        echo "==> Skipping GitHub web-flow GPG key: gpg --import failed."
+        return
+    fi
+    echo "==> Finished importing GitHub web-flow GPG key."
+}
+
 function gh_extensions_install() {
     local extensions=(
         github/gh-actions-lock
@@ -290,6 +322,7 @@ homebrew_install
 homebrew_update
 homebrew_bundle_install
 go_packages_update
+github_web_flow_key_import
 gh_extensions_install
 vim_plug_install
 vim_plug_package_install
