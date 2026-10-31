@@ -34,7 +34,7 @@ function homebrew_update() {
     echo "==> Finished updating Homebrew packages."
 
     echo "==> Updating Homebrew cask packages..."
-    brew upgrade --cask --yes
+    brew upgrade --cask --greedy-latest --yes
     echo "==> Finished updating Homebrew cask packages."
 
     brew doctor || true
