@@ -34,7 +34,7 @@ go test ./...  # テスト
 
 - Effective Go/Go Code Review Comments に従う。
   命名は短く Go 流（`ID`/`URL`/`HTTP` などの頭字語は全大文字、`getX` ではなく `X`）
-- エクスポートする識別子には doc コメントを付け、**対象の名前で始める**（`// Foo は ...`）
+- エクスポートする識別子には doc コメントを付け、対象の名前で始める（`// Foo は ...`）
 - エラーは握りつぶさない。
   文脈を足すときは `fmt.Errorf("...: %w", err)` で wrap し、
   呼び出し側で `errors.Is`/`errors.As` 判定できるようにする
