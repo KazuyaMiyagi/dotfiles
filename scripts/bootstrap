@@ -41,6 +41,18 @@ function homebrew_update() {
     brew bundle dump --no-describe --file=- | sort --uniq > Brewfile
 }
 
+function go_packages_update() {
+    local package
+
+    echo "==> Updating Go packages..."
+    # brew bundle installs a missing Go package but never moves an installed one forward,
+    # so reinstall every Brewfile entry at its latest release.
+    while read -r package; do
+        go install "${package}@latest"
+    done < <(sed -n -E 's/^go "([^"]+)".*/\1/p' Brewfile)
+    echo "==> Finished updating Go packages."
+}
+
 function gh_extensions_install() {
     local extensions=(
         github/gh-actions-lock
@@ -277,6 +289,7 @@ echo "Starting bootstrap..."
 homebrew_install
 homebrew_update
 homebrew_bundle_install
+go_packages_update
 gh_extensions_install
 vim_plug_install
 vim_plug_package_install
