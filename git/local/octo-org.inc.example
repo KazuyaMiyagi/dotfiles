@@ -1,2 +1,6 @@
 [user]
 	email = you@example.com
+# The shared allowed_signers only lists the public email, so point this org at
+# a local copy that also lists the email above.
+[gpg "ssh"]
+	allowedSignersFile = ~/.config/git/local/octo-org.allowed_signers
