@@ -106,7 +106,7 @@ cask "google-drive"
 cask "mysql-shell"
 cask "slack"
 cask "terraform-linters/tap/tflint", trusted: true
-cask "wezterm"
+cask "wezterm@nightly"
 cask "xmind"
 go "github.com/KazuyaMiyagi/list-versions/cmd/list-versions"
 tap "fujiwara/tap"
