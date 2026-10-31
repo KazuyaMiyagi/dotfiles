@@ -41,6 +41,26 @@ function homebrew_update() {
     brew bundle dump --no-describe --file=- | sort --uniq > Brewfile
 }
 
+function gh_extensions_install() {
+    local extensions=(
+        github/gh-actions-lock
+        github/gh-stack
+    )
+    local installed extension
+
+    echo "==> Installing gh extensions..."
+    # gh extension install fails on an extension that is already installed, so skip those.
+    installed=$(gh extension list | cut -f2)
+    for extension in "${extensions[@]}"; do
+        if grep -qxF "${extension}" <<< "${installed}"; then
+            continue
+        fi
+        gh extension install "${extension}"
+    done
+    gh extension upgrade --all
+    echo "==> Finished installing gh extensions."
+}
+
 function vim_plug_install() {
     if [[ -f "${XDG_DATA_HOME}/vim/autoload/plug.vim" ]]; then
         echo "==> vim-plug was already installed."
@@ -257,6 +277,7 @@ echo "Starting bootstrap..."
 homebrew_install
 homebrew_update
 homebrew_bundle_install
+gh_extensions_install
 vim_plug_install
 vim_plug_package_install
 asdf_plugins_install
