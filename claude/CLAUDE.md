@@ -259,7 +259,7 @@ octo-org/octo-repo#123
 - `rules/bash.md` — シェルスクリプト（`shellcheck`/`shfmt`）。
   拡張子の無い shebang スクリプト（`bin/` 配下など）を触るときは明示的に読む
 - `rules/terraform.md` — Terraform（`tf-linters`/`terraform fmt`）
-- `rules/github-actions.md` — GitHub Actions（`actionlint`）
+- `rules/github-actions.md` — GitHub Actions（`actionlint`/`gh actions-lock`/`pinact`）
 - `rules/markdown.md` — Markdown（`prettier`/`markdownlint-cli2`/`textlint`）
 - `rules/vim.md` — Vim script（`vint`）
 - `rules/dockerfile.md` — Dockerfile（`hadolint`/`docker build --check`/`trivy`）
