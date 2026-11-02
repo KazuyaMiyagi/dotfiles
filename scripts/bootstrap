@@ -38,7 +38,7 @@ function homebrew_update() {
     echo "==> Finished updating Homebrew cask packages."
 
     brew doctor || true
-    brew bundle dump --no-describe --file=- | sort --uniq > Brewfile
+    brew bundle dump --no-describe --no-npm --file=- | sort --uniq > Brewfile
 }
 
 function go_packages_update() {
