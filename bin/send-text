@@ -36,7 +36,7 @@ function __validate() {
 }
 
 function send-text() {
-    __validate "$@"
+    __validate "${@}"
 
     local worker_pane_id="${1}"
     local message="${2}"

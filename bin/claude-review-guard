@@ -12,7 +12,7 @@ command=$(jq -r '.tool_input.command // empty' <<< "${input}")
 cwd=$(jq -r '.cwd // empty' <<< "${input}")
 
 ask() {
-    jq -n --arg reason "$1" '{
+    jq -n --arg reason "${1}" '{
         hookSpecificOutput: {
             hookEventName: "PreToolUse",
             permissionDecision: "ask",

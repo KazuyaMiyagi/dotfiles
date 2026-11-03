@@ -14,8 +14,8 @@ function execute() {
         echo "To rewrite the command, enter the new command and press Enter." >&2
         read -r rewrite_cmd
     fi
-    echo "$ ${rewrite_cmd:-$cmd}"
-    ${rewrite_cmd:-$cmd} | tee "${output}"
+    echo "$ ${rewrite_cmd:-${cmd}}"
+    ${rewrite_cmd:-${cmd}} | tee "${output}"
 }
 
 execute "${@}"

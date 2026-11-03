@@ -82,4 +82,4 @@ function usage() {
 	HEREDOC
 }
 
-claude-osc-notify "$@"
+claude-osc-notify "${@}"
