@@ -10,7 +10,7 @@ readonly BACKUP_DIR
 # shellcheck disable=SC1091
 source "${DOTFILE_ROOT_DIR}/zsh/autoload/100-xdg.zsh"
 
-function create_symlink() {
+function __create_symlink() {
     local source_path="${1}"
     local target_path="${2}"
     local backup_name="${3}"
@@ -30,7 +30,7 @@ function create_symlink() {
     echo -e "==> Symbolic link created successfully!\n"
 }
 
-function link_claude_rules() {
+function __link_claude_rules() {
     local source_dir="${1}"
     local target_dir="${2}"
     local backup_prefix="${3}"
@@ -45,11 +45,11 @@ function link_claude_rules() {
         [[ -f "${rule}" ]] || continue
         local name
         name="$(basename "${rule}")"
-        create_symlink "${rule}" "${target_dir}/${name}" "${backup_prefix}_${name}"
+        __create_symlink "${rule}" "${target_dir}/${name}" "${backup_prefix}_${name}"
     done
 }
 
-function merge_managed_block() {
+function __merge_managed_block() {
     local source_path="${1}"
     local target_path="${2}"
     local marker_label="${3}"
@@ -88,22 +88,22 @@ function init() {
     fi
 
     # ~/.config のシンボリックリンクを張る
-    create_symlink "${DOTFILE_ROOT_DIR}" "${XDG_CONFIG_HOME}" "config"
+    __create_symlink "${DOTFILE_ROOT_DIR}" "${XDG_CONFIG_HOME}" "config"
 
     # ~/tool-versions のシンボリックリンクを張る
-    create_symlink "${DOTFILE_ROOT_DIR}/asdf/tool-versions" "${HOME}/tool-versions" "tool-versions"
+    __create_symlink "${DOTFILE_ROOT_DIR}/asdf/tool-versions" "${HOME}/tool-versions" "tool-versions"
 
     # ~/.tflint.hcl のシンボリックリンクを張る
-    create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tflint.hcl"
+    __create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tflint.hcl"
 
     # ~/.claude/settings.json を用意する
-    create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/settings.json" "claude_settings.json"
+    __create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/settings.json" "claude_settings.json"
 
     # ~/.claude/CLAUDE.md を用意する
-    create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
+    __create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
 
     # ~/.claude/rules/*.md（言語別ルール）を用意する
-    link_claude_rules "${DOTFILE_ROOT_DIR}/claude/rules" "${HOME}/.claude/rules" "claude_rules"
+    __link_claude_rules "${DOTFILE_ROOT_DIR}/claude/rules" "${HOME}/.claude/rules" "claude_rules"
 
     # ~/.codex を用意する
     if [[ ! -d "${HOME}/.codex" ]]; then
@@ -112,10 +112,10 @@ function init() {
     fi
 
     # ~/.codex/AGENTS.md を用意する
-    create_symlink "${DOTFILE_ROOT_DIR}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md" "codex_AGENTS.md"
+    __create_symlink "${DOTFILE_ROOT_DIR}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md" "codex_AGENTS.md"
 
     # ~/.codex/config.toml を用意する
-    merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
+    __merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
 
     # ~/.zshenv を用意する
     if [[ -f "${HOME}/.zshenv" ]]; then

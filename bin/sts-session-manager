@@ -7,7 +7,7 @@ function __is_installed() {
 }
 
 function __validate() {
-    check_required_tools > /dev/null
+    __check_required_tools > /dev/null
 
     if [[ -z "${AWS_PROFILE:=""}" ]]; then
         echo "Error: AWS_PROFILE is not exported" >&2
@@ -39,7 +39,7 @@ function __validate() {
     fi
 }
 
-function check_required_tools() {
+function __check_required_tools() {
     echo "==> Checking required tools..."
     local required_tools=(aws jq)
 
@@ -58,7 +58,7 @@ function check_required_tools() {
     echo -e "<== End checking required tools.\n"
 }
 
-function get_session_token() {
+function __get_session_token() {
     __validate
 
     local get_session_token_cache_file
@@ -102,7 +102,7 @@ function get_session_token() {
     jq --raw-output --monochrome-output '{Version: 1} + .Credentials' < "${get_session_token_cache_file}"
 }
 
-function assume_role() {
+function __assume_role() {
     __validate
 
     local assume_role_cache_file
@@ -148,11 +148,11 @@ function assume_role() {
     jq --raw-output --monochrome-output '{Version: 1} + .Credentials' < "${assume_role_cache_file}"
 }
 
-function list() {
+function __list() {
     ls -1 "${CACHE_DIR}"
 }
 
-function show() {
+function __show() {
     __validate
 
     local get_session_token_cache_file
@@ -176,7 +176,7 @@ function show() {
     fi
 }
 
-function remove() {
+function __remove() {
     __validate
 
     local get_session_token_cache_file
@@ -219,22 +219,22 @@ function usage() {
 function sts_session_manager() {
     case "${SUBCOMMAND}" in
         check-required-tools | check)
-            check_required_tools
+            __check_required_tools
             ;;
         get-session-token)
-            get_session_token
+            __get_session_token
             ;;
         assume-role)
-            assume_role
+            __assume_role
             ;;
         list | ls)
-            list
+            __list
             ;;
         show)
-            show
+            __show
             ;;
         remove | rm)
-            remove
+            __remove
             ;;
         *)
             usage

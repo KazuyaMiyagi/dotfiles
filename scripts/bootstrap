@@ -7,7 +7,7 @@ function __is_installed() {
     type "${1}" &> /dev/null
 }
 
-function homebrew_install() {
+function __homebrew_install() {
     if ! __is_installed brew; then
         echo "==> Installing Homebrew."
         /bin/bash -c "$(curl --fail --silent --show-error --location https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -16,14 +16,14 @@ function homebrew_install() {
     fi
 }
 
-function homebrew_bundle_install() {
+function __homebrew_bundle_install() {
     brew bundle check &> /dev/null || {
         echo "==> Installing Homebrew dependencies…"
         brew bundle install
     }
 }
 
-function homebrew_update() {
+function __homebrew_update() {
     echo "==> Updating Homebrew packages..."
     brew update
     brew upgrade --yes
@@ -38,7 +38,7 @@ function homebrew_update() {
     brew bundle dump --no-describe --no-npm --file=- | sort --uniq > Brewfile
 }
 
-function go_packages_update() {
+function __go_packages_update() {
     local package
 
     echo "==> Updating Go packages..."
@@ -50,7 +50,7 @@ function go_packages_update() {
     echo "==> Finished updating Go packages."
 }
 
-function github_web_flow_key_import() {
+function __github_web_flow_key_import() {
     # URL が返すものをそのまま信用せず固定しておくと、鍵が変わったときに気づけて
     # （新しい Web 上のコミットが "No public key" になる）、新しい指紋を手で確かめられる。
     local fingerprint="968479A1AFF927E37D1A566BB5690EEEBB952194"
@@ -82,7 +82,7 @@ function github_web_flow_key_import() {
     echo "==> Finished importing GitHub web-flow GPG key."
 }
 
-function gh_extensions_install() {
+function __gh_extensions_install() {
     local extensions=(
         github/gh-actions-lock
         github/gh-stack
@@ -102,7 +102,7 @@ function gh_extensions_install() {
     echo "==> Finished installing gh extensions."
 }
 
-function vim_plug_install() {
+function __vim_plug_install() {
     if [[ -f "${XDG_DATA_HOME}/vim/autoload/plug.vim" ]]; then
         echo "==> vim-plug was already installed."
     else
@@ -112,12 +112,12 @@ function vim_plug_install() {
     fi
 }
 
-function vim_plug_package_install() {
+function __vim_plug_package_install() {
     echo "==> Installing vim-plug packages."
     vim +PlugUpgrade +PlugUpdate +qa
 }
 
-function asdf_plugins_install() {
+function __asdf_plugins_install() {
     echo "==> Installing asdf plugins..."
     for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
         asdf plugin add "${plugin}"
@@ -125,13 +125,13 @@ function asdf_plugins_install() {
     echo "==> Finished installing asdf plugins."
 }
 
-function asdf_plugins_update() {
+function __asdf_plugins_update() {
     echo "==> Updating asdf plugins..."
     asdf plugin update --all
     echo "==> Finished updating asdf plugins."
 }
 
-function asdf_plugins_python_apply_path() {
+function __asdf_plugins_python_apply_path() {
     echo "==> Applying asdf Python plugin patch..."
     pushd "${XDG_DATA_HOME}/asdf/plugins/python/" > /dev/null
     git reset --hard HEAD > /dev/null
@@ -154,7 +154,7 @@ function asdf_plugins_python_apply_path() {
     echo "==> Finished applying asdf Python plugin patch."
 }
 
-function asdf_managed_tools_update() {
+function __asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools versions..."
     pushd asdf > /dev/null
     for plugin in $(cut -d ' ' -f1 ./tool-versions | tr '\n' ' '); do
@@ -242,7 +242,7 @@ function __vim_lsp_server_is_current() {
     fi
 }
 
-function vim_lsp_settings_update() {
+function __vim_lsp_settings_update() {
     local servers_root="${XDG_DATA_HOME}/vim-lsp-settings/servers"
     local installer_dir="${XDG_DATA_HOME}/vim/plugged/vim-lsp-settings/installer"
     local server_dir server script retries i
@@ -278,13 +278,13 @@ function vim_lsp_settings_update() {
     echo "==> Finished updating vim-lsp-settings servers."
 }
 
-function tflint_init() {
+function __tflint_init() {
     echo "==> Starting TFLint initialization..."
     tflint --init
     echo "==> TFLint initialization completed."
 }
 
-function session_manager_plugin_install() {
+function __session_manager_plugin_install() {
     echo "==> Installing Session Manager Plugin..."
 
     local arch
@@ -307,7 +307,7 @@ function session_manager_plugin_install() {
     echo "==> Finished installing Session Manager Plugin."
 }
 
-function gcloud_update() {
+function __gcloud_update() {
     echo "==> Updating gcloud components..."
     gcloud components update --quiet
     echo "==> Finished updating gcloud components."
@@ -318,22 +318,22 @@ function bootstrap() {
 
     echo "Starting bootstrap..."
 
-    homebrew_install
-    homebrew_update
-    homebrew_bundle_install
-    go_packages_update
-    github_web_flow_key_import
-    gh_extensions_install
-    vim_plug_install
-    vim_plug_package_install
-    asdf_plugins_install
-    asdf_plugins_update
-    asdf_plugins_python_apply_path
-    asdf_managed_tools_update
-    vim_lsp_settings_update
-    tflint_init
-    gcloud_update
-    session_manager_plugin_install
+    __homebrew_install
+    __homebrew_update
+    __homebrew_bundle_install
+    __go_packages_update
+    __github_web_flow_key_import
+    __gh_extensions_install
+    __vim_plug_install
+    __vim_plug_package_install
+    __asdf_plugins_install
+    __asdf_plugins_update
+    __asdf_plugins_python_apply_path
+    __asdf_managed_tools_update
+    __vim_lsp_settings_update
+    __tflint_init
+    __gcloud_update
+    __session_manager_plugin_install
 
     echo "Bootstrap finished!"
 }
