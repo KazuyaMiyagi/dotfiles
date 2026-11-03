@@ -7,14 +7,14 @@ case "$(uname)" in
     *) realpath_cmd=realpath ;;
 esac
 
-input=$(cat)
-project_dir=$(jq -r '.workspace.project_dir // .cwd // empty' <<< "${input}")
-cwd=$(jq -r '.cwd // empty' <<< "${input}")
-model=$(jq -r '.model.display_name // empty' <<< "${input}")
-cost=$(jq -r '.cost.total_cost_usd // empty' <<< "${input}")
-context=$(jq -r 'if .context_window.used_percentage then (.context_window.used_percentage | floor | tostring) else empty end' <<< "${input}")
-five_hour=$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<< "${input}")
-seven_day=$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<< "${input}")
+input="$(cat)"
+project_dir="$(jq -r '.workspace.project_dir // .cwd // empty' <<< "${input}")"
+cwd="$(jq -r '.cwd // empty' <<< "${input}")"
+model="$(jq -r '.model.display_name // empty' <<< "${input}")"
+cost="$(jq -r '.cost.total_cost_usd // empty' <<< "${input}")"
+context="$(jq -r 'if .context_window.used_percentage then (.context_window.used_percentage | floor | tostring) else empty end' <<< "${input}")"
+five_hour="$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<< "${input}")"
+seven_day="$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<< "${input}")"
 
 # Color palette
 BG_ORANGE="196,123,92" # claude salmon
@@ -79,9 +79,9 @@ function _pct_fg() {
 
 project_text=""
 if [[ -n "${project_dir}" ]]; then
-    project_name=$(basename "${project_dir}")
+    project_name="$(basename "${project_dir}")"
     if [[ -n "${cwd}" ]] && [[ "${cwd}" != "${project_dir}" ]]; then
-        rel=$("${realpath_cmd}" -m -s --relative-to="${project_dir}" "${cwd}")
+        rel="$("${realpath_cmd}" -m -s --relative-to="${project_dir}" "${cwd}")"
         [[ "${rel}" == ..* ]] || rel="./${rel}"
         project_text=" [${project_name}](${rel}/) "
     else
@@ -93,27 +93,27 @@ model_text=" ${model} "
 
 cost_text=""
 if [[ -n "${cost}" ]]; then
-    cost_text=$(printf ' $%.1f ' "${cost}")
+    cost_text="$(printf ' $%.1f ' "${cost}")"
 fi
 
 context_fg="${FG_LIGHT}"
 context_text=""
 if [[ -n "${context}" ]]; then
-    context_fg=$(_pct_fg "${context}")
+    context_fg="$(_pct_fg "${context}")"
     context_text=" $(_pie_icon "${context}") ctx ${context}% "
 fi
 
 five_fg="${FG_LIGHT}"
 five_text=""
 if [[ -n "${five_hour}" ]]; then
-    five_fg=$(_pct_fg "${five_hour}")
+    five_fg="$(_pct_fg "${five_hour}")"
     five_text=" $(_pie_icon "${five_hour}") 5h ${five_hour}% "
 fi
 
 seven_fg="${FG_LIGHT}"
 seven_text=""
 if [[ -n "${seven_day}" ]]; then
-    seven_fg=$(_pct_fg "${seven_day}")
+    seven_fg="$(_pct_fg "${seven_day}")"
     seven_text=" $(_pie_icon "${seven_day}") 7d ${seven_day}% "
 fi
 

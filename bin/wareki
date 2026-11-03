@@ -22,10 +22,10 @@ function max_w() {
     echo "${max}"
 }
 
-w_year=$(max_w 0)
-w_reiwa=$(max_w -2018)
-w_heisei=$(max_w -1988)
-w_showa=$(max_w -1925)
+w_year="$(max_w 0)"
+w_reiwa="$(max_w -2018)"
+w_heisei="$(max_w -1988)"
+w_showa="$(max_w -1925)"
 
 # 最小幅を4に（ヘッダの全角文字分）
 [[ "${w_year}" -lt 4 ]] && w_year=4
@@ -36,7 +36,7 @@ w_showa=$(max_w -1925)
 function pad_fmt() {
     local val="${1}" width="${2}" highlight="${3}" in_range="${4}"
     local padded
-    padded=$(printf "%-${width}s" "${val}")
+    padded="$(printf "%-${width}s" "${val}")"
     if [[ "${highlight}" = "1" ]]; then
         printf '%b%s%b' "${bold}" "${padded}" "${reset}"
     elif [[ "${in_range}" = "0" ]]; then
@@ -47,10 +47,10 @@ function pad_fmt() {
 }
 
 # ヘッダ用の罫線を生成
-hr_year=$(printf '%0.s─' $(seq 1 $((w_year + 2))))
-hr_reiwa=$(printf '%0.s─' $(seq 1 $((w_reiwa + 2))))
-hr_heisei=$(printf '%0.s─' $(seq 1 $((w_heisei + 2))))
-hr_showa=$(printf '%0.s─' $(seq 1 $((w_showa + 2))))
+hr_year="$(printf '%0.s─' $(seq 1 $((w_year + 2))))"
+hr_reiwa="$(printf '%0.s─' $(seq 1 $((w_reiwa + 2))))"
+hr_heisei="$(printf '%0.s─' $(seq 1 $((w_heisei + 2))))"
+hr_showa="$(printf '%0.s─' $(seq 1 $((w_showa + 2))))"
 
 # ヘッダの全角文字パディング（全角2文字=表示4列）
 function pad_header() {

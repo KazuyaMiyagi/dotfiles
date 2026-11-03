@@ -66,7 +66,7 @@ function github_web_flow_key_import() {
     fi
 
     echo "==> Importing GitHub web-flow GPG key..."
-    if ! key=$(curl --fail --silent --show-error --location https://github.com/web-flow.gpg); then
+    if ! key="$(curl --fail --silent --show-error --location https://github.com/web-flow.gpg)"; then
         echo "==> Skipping GitHub web-flow GPG key: download failed."
         return
     fi
@@ -93,7 +93,7 @@ function gh_extensions_install() {
 
     echo "==> Installing gh extensions..."
     # gh extension install fails on an extension that is already installed, so skip those.
-    installed=$(gh extension list | cut -f2)
+    installed="$(gh extension list | cut -f2)"
     for extension in "${extensions[@]}"; do
         if grep -qxF "${extension}" <<< "${installed}"; then
             continue
@@ -177,13 +177,13 @@ function __npm_server_is_current() {
     # against its newest release would mark those outdated forever. Read the installer's own
     # specs instead, so each package is compared against what a reinstall would actually fetch.
     # Some installers reach for npm directly rather than the helper, so collect both forms.
-    specs=$(awk '/npm_install\.sh/ || /^[[:space:]]*npm install / { print $NF }' "${script}" | tr -d "\"'")
+    specs="$(awk '/npm_install\.sh/ || /^[[:space:]]*npm install / { print $NF }' "${script}" | tr -d "\"'")"
     [[ -n "${specs}" ]] || return 1
 
     # npm outdated exits non-zero both when updates exist and when the registry is unreachable,
     # so the exit status says nothing. Validate the report instead, and let an unparseable one
     # fall through to a reinstall rather than read as "nothing to do".
-    report=$(cd "${server_dir}" && npm outdated --json 2> /dev/null) || true
+    report="$(cd "${server_dir}" && npm outdated --json 2> /dev/null)" || true
     jq -e . > /dev/null 2>&1 <<< "${report}" || return 1
 
     for spec in ${specs}; do
@@ -196,18 +196,18 @@ function __npm_server_is_current() {
             version="${spec#"${name}@"}"
         fi
 
-        current=$(jq -r --arg n "${name}" '.[$n].current // empty' <<< "${report}")
+        current="$(jq -r --arg n "${name}" '.[$n].current // empty' <<< "${report}")"
         # npm outdated omits packages that are fully current.
         [[ -n "${current}" ]] || continue
 
         if [[ -z "${version}" ]]; then
-            expected=$(jq -r --arg n "${name}" '.[$n].latest // empty' <<< "${report}")
+            expected="$(jq -r --arg n "${name}" '.[$n].latest // empty' <<< "${report}")"
         elif [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             # Pinned to one release, so a reinstall can only ever produce that same version.
             expected="${version}"
         else
             # Pinned to a range, so a reinstall stays within the recorded package.json range.
-            expected=$(jq -r --arg n "${name}" '.[$n].wanted // empty' <<< "${report}")
+            expected="$(jq -r --arg n "${name}" '.[$n].wanted // empty' <<< "${report}")"
         fi
         [[ "${current}" == "${expected}" ]] || return 1
     done
@@ -231,8 +231,8 @@ function __vim_lsp_server_is_current() {
         # Extras such as python-lsp-server[all] cap dependencies below their newest release,
         # so pip list --outdated never empties out. Narrow it to the explicitly requested
         # packages, which are the only ones a reinstall can actually move forward.
-        requested=$("${pip3}" inspect 2> /dev/null | jq -r '.installed[] | select(.requested) | .metadata.name' | sort) || return 1
-        outdated=$("${pip3}" list --outdated --format=json 2> /dev/null | jq -r '.[].name' | sort) || return 1
+        requested="$("${pip3}" inspect 2> /dev/null | jq -r '.installed[] | select(.requested) | .metadata.name' | sort)" || return 1
+        outdated="$("${pip3}" list --outdated --format=json 2> /dev/null | jq -r '.[].name' | sort)" || return 1
         # No requested packages means pip could not report what the installer asked for,
         # which must not read as "nothing to do".
         [[ -n "${requested}" ]] || return 1
@@ -251,7 +251,7 @@ function vim_lsp_settings_update() {
 
     echo "==> Updating vim-lsp-settings servers..."
     for server_dir in "${servers_root}"/*/; do
-        server=$(basename "${server_dir}")
+        server="$(basename "${server_dir}")"
         script="${installer_dir}/install-${server}.sh"
         if [[ ! -f "${script}" ]]; then
             echo "==> Skipping ${server}: installer not found."
@@ -290,7 +290,7 @@ function session_manager_plugin_install() {
     echo "==> Installing Session Manager Plugin..."
 
     local arch
-    arch=$(uname -m)
+    arch="$(uname -m)"
     local pkg_url
     if [[ "${arch}" = "arm64" ]]; then
         pkg_url="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac_arm64/session-manager-plugin.pkg"
@@ -299,7 +299,7 @@ function session_manager_plugin_install() {
     fi
 
     local tmp_dir tmp_pkg
-    tmp_dir=$(mktemp -d /tmp/session-manager-plugin.XXXXXX)
+    tmp_dir="$(mktemp -d /tmp/session-manager-plugin.XXXXXX)"
     tmp_pkg="${tmp_dir}/session-manager-plugin.pkg"
     curl --fail --silent --show-error --location --output "${tmp_pkg}" "${pkg_url}"
     sudo installer -pkg "${tmp_pkg}" -target /

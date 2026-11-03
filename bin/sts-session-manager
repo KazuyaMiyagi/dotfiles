@@ -86,13 +86,13 @@ function get-session-token() {
     fi
 
     local expiration
-    expiration=$(jq --raw-output --monochrome-output ".Credentials.Expiration" < "${get_session_token_cache_file}")
+    expiration="$(jq --raw-output --monochrome-output ".Credentials.Expiration" < "${get_session_token_cache_file}")"
 
     local expiration_unixtime
-    expiration_unixtime=$("${date_cmd}" -d "${expiration}" "+%s")
+    expiration_unixtime="$("${date_cmd}" -d "${expiration}" "+%s")"
 
     local now_unixtime
-    now_unixtime=$("${date_cmd}" "+%s")
+    now_unixtime="$("${date_cmd}" "+%s")"
 
     if [[ "${expiration_unixtime}" -lt "${now_unixtime}" ]]; then
         echo "AWS STS session token is expired." >&2
@@ -131,13 +131,13 @@ function assume-role() {
     fi
 
     local expiration
-    expiration=$(jq --raw-output --monochrome-output ".Credentials.Expiration" < "${assume_role_cache_file}")
+    expiration="$(jq --raw-output --monochrome-output ".Credentials.Expiration" < "${assume_role_cache_file}")"
 
     local expiration_unixtime
-    expiration_unixtime=$("${date_cmd}" -d "${expiration}" "+%s")
+    expiration_unixtime="$("${date_cmd}" -d "${expiration}" "+%s")"
 
     local now_unixtime
-    now_unixtime=$("${date_cmd}" "+%s")
+    now_unixtime="$("${date_cmd}" "+%s")"
 
     if [[ "${expiration_unixtime}" -lt "${now_unixtime}" ]]; then
         echo "AWS STS session token is expired." >&2

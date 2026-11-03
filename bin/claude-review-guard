@@ -7,9 +7,9 @@
 
 set -e -u -o pipefail
 
-input=$(cat)
-command=$(jq -r '.tool_input.command // empty' <<< "${input}")
-cwd=$(jq -r '.cwd // empty' <<< "${input}")
+input="$(cat)"
+command="$(jq -r '.tool_input.command // empty' <<< "${input}")"
+cwd="$(jq -r '.cwd // empty' <<< "${input}")"
 
 ask() {
     jq -n --arg reason "${1}" '{
@@ -39,7 +39,7 @@ if [[ -n "${cwd}" ]]; then
 fi
 
 # PR が無いブランチは依頼前なので通す。それ以外の取得失敗は判断できないので確認に回す
-if ! pr=$(gh pr view --json isDraft,reviewRequests,reviews 2>&1); then
+if ! pr="$(gh pr view --json isDraft,reviewRequests,reviews 2>&1)"; then
     if grep -qi 'no pull requests found' <<< "${pr}"; then
         exit 0
     fi
@@ -47,12 +47,12 @@ if ! pr=$(gh pr view --json isDraft,reviewRequests,reviews 2>&1); then
 fi
 
 # draft 中に付く Copilot や bot のレビューは、レビュー依頼とはみなさない
-requested=$(jq -r '
+requested="$(jq -r '
     (.isDraft | not) and (
         (.reviewRequests | length > 0)
         or ([.reviews[] | select(.author.login | test("copilot|\\[bot\\]$") | not)] | length > 0)
     )
-' <<< "${pr}")
+' <<< "${pr}")"
 
 if [[ "${requested}" == "true" ]]; then
     ask "レビュー依頼済みの PR のブランチで、コミット履歴を書き換えようとしています"
