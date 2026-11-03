@@ -203,7 +203,7 @@ function __remove() {
 }
 
 function usage() {
-    local COMMAND="sts_session_manager"
+    local COMMAND="sts-session-manager"
     readonly COMMAND
     cat <<- HEREDOC
 		Usage: ${COMMAND} <subcommand>
@@ -215,7 +215,6 @@ function usage() {
 		    ${COMMAND} show                                             -- Show sts cache file detail
 		    ${COMMAND} remove | rm                                      -- Remove sts cache file
 	HEREDOC
-    exit 1
 }
 
 function sts_session_manager() {
@@ -239,7 +238,8 @@ function sts_session_manager() {
             __remove
             ;;
         *)
-            usage
+            usage >&2
+            exit 1
             ;;
     esac
 }

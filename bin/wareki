@@ -43,7 +43,22 @@ function __pad_header() {
     printf '%s%*s' "${label}" "${spaces}" ""
 }
 
+function usage() {
+    local COMMAND="wareki"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} [YEAR]
+
+		Show the Japanese eras for ten years before and after YEAR (default: this year).
+	HEREDOC
+}
+
 function wareki() {
+    if ! [[ "${YEAR}" =~ ^[0-9]+$ ]]; then
+        usage >&2
+        exit 1
+    fi
+
     # 各列の最大表示幅を計算
     local start=$((YEAR - 10))
     local end=$((YEAR + 10))

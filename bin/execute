@@ -5,8 +5,27 @@ set -e -u -o pipefail
 # コマンドを表示してから実行し、出力をファイルにも残す。
 # CONFIRM を付けると、実行の前に確認し、コマンドを書き換えられる。
 
-# 使い方: `CONFIRM=yes execute command.log ls |& tee evidence.log`
+function usage() {
+    local COMMAND="execute"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} <OUTPUT> <COMMAND>...
+
+		Print COMMAND, run it and write its output to OUTPUT as well.
+		With CONFIRM set, confirm the command before running it and allow rewriting it.
+
+		Examples:
+		    ${COMMAND} command.log ls
+		    CONFIRM=yes ${COMMAND} command.log ls |& tee evidence.log
+	HEREDOC
+}
+
 function execute() {
+    if [[ ${#} -lt 2 ]]; then
+        usage >&2
+        exit 1
+    fi
+
     local output="${1}"
     shift
     local cmd="${*}"

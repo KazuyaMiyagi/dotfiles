@@ -4,14 +4,33 @@ set -e -u -o pipefail
 
 # GitHub の Organization にある、アーカイブされていないリポジトリをすべて ghq でクローンする。
 
+function usage() {
+    local COMMAND="org-repos-clone"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} <ORG> [LIMIT]
+
+		Clone every non-archived repository of ORG with ghq.
+
+		Arguments:
+		    ORG    GitHub organization or user
+		    LIMIT  Maximum number of repositories to list (default: 1000)
+	HEREDOC
+}
+
 function org_repos_clone() {
+    if [[ -z "${ORG}" ]]; then
+        usage >&2
+        exit 1
+    fi
+
     local repo
     for repo in $(gh repo list "${ORG}" --limit "${LIMIT}" --no-archived --json 'name' | jq -r '.[].name'); do
         ghq get "${ORG}/${repo}"
     done
 }
 
-ORG="${1:?Usage: org-repos-clone <org>}"
+ORG="${1:-""}"
 readonly ORG
 
 LIMIT="${2:-1000}"

@@ -11,11 +11,25 @@ else
 fi
 readonly SED_COMMAND
 
+function usage() {
+    local COMMAND="grepped-line-replacer"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} [FILE]
+
+		Read lines in the grep -n format (PATH:LINE:CONTENT) from FILE or stdin
+		and replace line LINE of PATH with CONTENT.
+
+		Examples:
+		    grep -n "word" > list
+		    vim list
+		    ${COMMAND} < list
+	HEREDOC
+}
+
 function grepped_line_replacer() {
     if [[ "${INPUT_FILE}" == "/dev/stdin" && ! -s "${INPUT_FILE}" ]]; then
-        echo 'usage: $ grep -n "word" > list'
-        echo '       $ vim list'
-        echo "       $ ${0} < list"
+        usage >&2
         exit 1
     fi
 
