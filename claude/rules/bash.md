@@ -31,3 +31,4 @@ shfmt -d -ln bash -i 4 -bn -ci -sr -kp <file> # 整形差分の確認
   算術式 `$((...))` は囲まない
 - スクリプト内だけで使う補助の関数は `function __name()` と頭に `__` を付ける
 - `usage` の中のコマンド名は `local COMMAND=...` と `readonly COMMAND` で宣言する
+- 配列は `"${arr[@]}"` とダブルクォートで囲んで展開する
