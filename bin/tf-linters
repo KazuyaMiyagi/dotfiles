@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+set -u -o pipefail
+
 echo -e "==> Starting Terraform validation...\n"
 terraform validate
 echo -e "==> Terraform validation completed.\n"
