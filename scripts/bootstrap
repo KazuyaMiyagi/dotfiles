@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# 開発環境に必要なツールをインストールし、最新に更新する。
+
 # 指定したコマンドがインストールされているかを調べる
 function __is_installed() {
     type "${1}" &> /dev/null

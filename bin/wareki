@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# 指定した年（省略時は今年）の前後 10 年について、西暦と令和・平成・昭和の対応表を表示する。
+
 BOLD="\e[1;32m"
 readonly BOLD
 OUT="\e[31m"

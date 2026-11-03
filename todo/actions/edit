@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# todo.sh のアクション。TODO ファイルを $EDITOR で開く。
+
 function edit() {
     if [[ "${ACTION}" == "usage" ]]; then
         echo "    edit: Opens the TODO file in the editor specified by the \$EDITOR environment variable."

@@ -2,6 +2,9 @@
 
 set -e -u -o pipefail
 
+# Claude Code の statusLine。
+# プロジェクト・モデル・費用と、コンテキストやレート制限の使用率を色付きで表示する。
+
 case "$(uname)" in
     Darwin) REALPATH_CMD="grealpath" ;;
     *) REALPATH_CMD="realpath" ;;

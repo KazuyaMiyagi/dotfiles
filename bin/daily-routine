@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# 毎日の作業として、全リポジトリの更新・bootstrap・リポジトリの状態の確認を続けて行う。
+
 DOTFILES_DIR="$(ghq root)/github.com/KazuyaMiyagi/dotfiles"
 readonly DOTFILES_DIR
 

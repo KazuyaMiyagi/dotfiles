@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# dotfiles のシンボリックリンクを張り、設定ファイルを配置する。
+
 DOTFILE_ROOT_DIR="$(cd "$(dirname "${0}")/.." && pwd)"
 readonly DOTFILE_ROOT_DIR
 BACKUP_DIR="${DOTFILE_ROOT_DIR}/backup"

@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# ghq で管理しているすべてのリポジトリを pull し、ブランチ・状態・stash を表示する。
+
 function all_repo_update() {
     local repo_path short_path
     for repo_path in $(ghq list --full-path); do

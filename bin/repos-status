@@ -2,6 +2,9 @@
 
 set -u -o pipefail
 
+# ghq で管理しているリポジトリのうち、デフォルト以外のブランチや未コミットの変更などがあるものを表示する。
+# stash は pop して戻すので、実行すると stash は空になる。
+
 function repos_status() {
     local repo_path header output stash_output default_branch candidate
     local extra_branches status_output filtered_status

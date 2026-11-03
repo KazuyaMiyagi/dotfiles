@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# GitHub の Organization にある、アーカイブされていないリポジトリをすべて ghq でクローンする。
+
 function org_repos_clone() {
     local repo
     for repo in $(gh repo list "${ORG}" --limit "${LIMIT}" --no-archived --json 'name' | jq -r '.[].name'); do

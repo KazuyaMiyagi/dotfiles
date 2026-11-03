@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# AWS STS の一時クレデンシャルを取得してキャッシュし、AWS CLI の credential_process の形式で出力する。
+
 function __is_installed() {
     type "${1}" &> /dev/null
 }

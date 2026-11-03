@@ -2,6 +2,8 @@
 
 set -u -o pipefail
 
+# カレントディレクトリの Terraform を、terraform validate・TFLint・trivy で続けて検査する。
+
 function tf_linters() {
     echo -e "==> Starting Terraform validation...\n"
     terraform validate

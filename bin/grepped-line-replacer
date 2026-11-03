@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# grep -n の結果を書き換えたリストを読み、各行をファイルの該当する行に書き戻す。
+
 if [[ "$(uname)" == 'Darwin' ]]; then
     SED_COMMAND='gsed'
 else

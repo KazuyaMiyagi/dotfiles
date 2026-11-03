@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# WezTerm の別のペインにテキストを送り、Enter を押す。
+
 function __is_installed() {
     type "${1}" &> /dev/null
 }

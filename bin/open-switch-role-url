@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+# AWS_PROFILE のロールに切り替える、AWS コンソールの URL を開く。
+
 function open_switch_role_url() {
     local role_arn account role_name
     role_arn="$(aws configure get role_arn)"
