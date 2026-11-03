@@ -3,9 +3,10 @@
 set -e -u -o pipefail
 
 case "$(uname)" in
-    Darwin) realpath_cmd=grealpath ;;
-    *) realpath_cmd=realpath ;;
+    Darwin) REALPATH_CMD="grealpath" ;;
+    *) REALPATH_CMD="realpath" ;;
 esac
+readonly REALPATH_CMD
 
 input="$(cat)"
 project_dir="$(jq -r '.workspace.project_dir // .cwd // empty' <<< "${input}")"
@@ -18,16 +19,27 @@ seven_day="$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits
 
 # 配色
 BG_ORANGE="196,123,92" # Claude のサーモン
+readonly BG_ORANGE
 BG_GRAY1="80,78,76"    # 灰（明るめ）
+readonly BG_GRAY1
 BG_GRAY2="68,66,64"    # 灰
+readonly BG_GRAY2
 BG_GRAY3="56,54,52"    # 灰（暗め）
+readonly BG_GRAY3
 BG_GRAY4="46,44,42"    # 灰（より暗め）
+readonly BG_GRAY4
 BG_GRAY5="38,36,34"    # 灰（いちばん暗い）
+readonly BG_GRAY5
 FG_DARK="20,20,20"     # 黒に近い色
+readonly FG_DARK
 FG_LIGHT="220,218,214" # 白に近い色
+readonly FG_LIGHT
 FG_GREEN="152,151,26"  # gruvbox の緑
+readonly FG_GREEN
 FG_YELLOW="215,153,33" # gruvbox の黄
+readonly FG_YELLOW
 FG_RED="204,36,29"     # gruvbox の赤
+readonly FG_RED
 
 # 書式の指示を順に出力する。
 #   Background=<color> -> 背景色を設定する
@@ -80,7 +92,7 @@ project_text=""
 if [[ -n "${project_dir}" ]]; then
     project_name="$(basename "${project_dir}")"
     if [[ -n "${cwd}" && "${cwd}" != "${project_dir}" ]]; then
-        rel="$("${realpath_cmd}" -m -s --relative-to="${project_dir}" "${cwd}")"
+        rel="$("${REALPATH_CMD}" -m -s --relative-to="${project_dir}" "${cwd}")"
         [[ "${rel}" == ..* ]] || rel="./${rel}"
         project_text=" [${project_name}](${rel}/) "
     else

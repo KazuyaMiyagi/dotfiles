@@ -2,9 +2,10 @@
 
 set -e -u -o pipefail
 
-input_file="${1:-/dev/stdin}"
+INPUT_FILE="${1:-/dev/stdin}"
+readonly INPUT_FILE
 
-if [[ "${input_file}" == "/dev/stdin" && ! -s "${input_file}" ]]; then
+if [[ "${INPUT_FILE}" == "/dev/stdin" && ! -s "${INPUT_FILE}" ]]; then
     echo 'usage: $ grep -n "word" > list'
     echo '       $ vim list'
     echo "       $ ${0} < list"
@@ -14,15 +15,16 @@ fi
 IFS=$'\n'
 
 if [[ "$(uname)" == 'Darwin' ]]; then
-    sed_command='gsed'
+    SED_COMMAND='gsed'
 else
-    sed_command='sed'
+    SED_COMMAND='sed'
 fi
+readonly SED_COMMAND
 
 while read -r line; do
     file_name="$(echo "${line}" | cut -d ':' -f 1)"
     line_number="$(echo "${line}" | cut -d ':' -f 2)"
     new_content="$(echo "${line}" | cut -d ':' -f 3-)"
     escaped_content="$(echo "${new_content}" | sed 's/[\\&/]/\\&/g')"
-    "${sed_command}" -i "${line_number}s/.*/${escaped_content}/" "${file_name}"
-done < "${input_file}"
+    "${SED_COMMAND}" -i "${line_number}s/.*/${escaped_content}/" "${file_name}"
+done < "${INPUT_FILE}"

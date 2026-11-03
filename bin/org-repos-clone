@@ -2,9 +2,12 @@
 
 set -e -u -o pipefail
 
-org="${1:?Usage: org-repos-clone <org>}"
-limit="${2:-1000}"
+ORG="${1:?Usage: org-repos-clone <org>}"
+readonly ORG
 
-for repo in $(gh repo list "${org}" --limit "${limit}" --no-archived --json 'name' | jq -r '.[].name'); do
-    ghq get "${org}/${repo}"
+LIMIT="${2:-1000}"
+readonly LIMIT
+
+for repo in $(gh repo list "${ORG}" --limit "${LIMIT}" --no-archived --json 'name' | jq -r '.[].name'); do
+    ghq get "${ORG}/${repo}"
 done

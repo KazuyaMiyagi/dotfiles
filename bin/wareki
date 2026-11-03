@@ -2,15 +2,19 @@
 
 set -e -u -o pipefail
 
-y="${1:-$(date +%Y)}"
+YEAR="${1:-$(date +%Y)}"
+readonly YEAR
 
-bold="\e[1;32m"
-out="\e[31m"
-reset="\e[0m"
+BOLD="\e[1;32m"
+readonly BOLD
+OUT="\e[31m"
+readonly OUT
+RESET="\e[0m"
+readonly RESET
 
 # 各列の最大表示幅を計算
-start=$((y - 10))
-end=$((y + 10))
+start=$((YEAR - 10))
+end=$((YEAR + 10))
 
 function max_w() {
     local max=0 val
@@ -38,9 +42,9 @@ function pad_fmt() {
     local padded
     padded="$(printf "%-${width}s" "${val}")"
     if [[ "${highlight}" == "1" ]]; then
-        printf '%b%s%b' "${bold}" "${padded}" "${reset}"
+        printf '%b%s%b' "${BOLD}" "${padded}" "${RESET}"
     elif [[ "${in_range}" == "0" ]]; then
-        printf '%b%s%b' "${out}" "${padded}" "${reset}"
+        printf '%b%s%b' "${OUT}" "${padded}" "${RESET}"
     else
         printf '%s' "${padded}"
     fi
@@ -73,7 +77,7 @@ for year in $(seq "${start}" "${end}"); do
     s=$((year - 1925))
 
     is_current=0
-    [[ "${year}" -eq "${y}" ]] && is_current=1
+    [[ "${year}" -eq "${YEAR}" ]] && is_current=1
 
     # 実際の元号の範囲: 令和 2019~, 平成 1989~2019, 昭和 1926~1989
     r_in=1
