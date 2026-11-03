@@ -1,0 +1,342 @@
+#! /usr/bin/env bash
+
+set -e -u -o pipefail
+
+# エージェントの Stop hook。
+# 直前の応答に件名の添えられていない Issue / PR 番号（#123・owner/repo#123）やコミットハッシュ
+# （9ea63c8・owner/repo@9ea63c8）があれば、状態と件名と URL を引いて表示する。
+# エージェントに言い直させると、待ち時間とトークンがかかるうえ、書き写すときに記号やエスケープが崩れる
+#
+# --client で呼び出し元（claude / codex）を受け取り、省略時は何もしない。
+# --demo を付けると、応答の中身にかかわらず全状態の一覧を出す（表示の確認用）
+
+MAX_REFS=10
+readonly MAX_REFS
+
+message=""
+default_repo=""
+entry_states=()
+entry_titles=()
+entry_refs=()
+entry_urls=()
+
+# アイコンと色は GitHub の StateLabel（Primer）に合わせ、octicons を Nerd Font のコードポイントで、色をダークテーマの値で指定する。
+# duplicate は Primer に対応する状態がないので not planned と同じにする。
+# StateLabel にはコミットの状態がないので、push 済みは GitHub にあるものとして open と、未 push は draft と同じにする
+function __icon() {
+    local state="${1}"
+    local glyph rgb
+    case "${state}" in
+        issue_open) glyph=$'' rgb="63;185;80" ;;
+        issue_completed) glyph=$'' rgb="171;125;248" ;;
+        issue_not_planned | issue_duplicate) glyph=$'' rgb="145;152;161" ;;
+        pr_open) glyph=$'' rgb="63;185;80" ;;
+        pr_draft) glyph=$'' rgb="145;152;161" ;;
+        pr_queued) glyph=$'' rgb="210;153;34" ;;
+        pr_merged) glyph=$'' rgb="171;125;248" ;;
+        pr_closed) glyph=$'' rgb="248;81;73" ;;
+        commit_pushed) glyph=$'' rgb="63;185;80" ;;
+        commit_local) glyph=$'' rgb="145;152;161" ;;
+    esac
+    printf '\e[38;2;%sm%s\e[0m' "${rgb}" "${glyph}"
+}
+
+function __entry() {
+    local state="${1}" title="${2}" ref="${3}" url="${4}"
+    entry_states+=("${state}")
+    entry_titles+=("${title//$'\t'/ }")
+    entry_refs+=("${ref}")
+    entry_urls+=("${url}")
+}
+
+# Codex の画面は OSC 8 で囲んだ文字ごと消してしまうので、Codex では URL をそのまま並べる。
+# URL に owner・リポジトリ名・番号が含まれるので、Codex では番号を出さない
+function __second_column() {
+    local i="${1}"
+    if [[ "${CLIENT}" == "codex" && -n "${entry_urls[i]}" ]]; then
+        printf '%s' "${entry_urls[i]}"
+    else
+        printf '%s' "${entry_refs[i]}"
+    fi
+}
+
+function __link() {
+    local url="${1}" text="${2}"
+    local osc=$'\e]8;;' st=$'\e\\'
+    printf '%s' "${osc}${url}${st}${text}${osc}${st}"
+}
+
+# URL を並べると長くて読みにくいので、Claude Code では OSC 8 で件名と番号にリンクを埋め込む
+function __show() {
+    # hook は LANG の無い環境から呼ばれることがあり、C ロケールでは日本語の幅や罫線の文字を数え違える
+    local LC_ALL=en_US.UTF-8
+    local i line second aligned after_title padding title_text second_text
+    local rows=() hints=""
+
+    # macOS の column には区切り文字を指定する -o が無いので、セルの頭に罫線を付けてからそろえる。
+    # 色や OSC 8 のエスケープシーケンスも幅として数えられて列がずれるので、アイコンは @ でそろえてから差し替える
+    for i in "${!entry_urls[@]}"; do
+        rows+=("@ ${entry_titles[i]}"$'\t'"│ $(__second_column "${i}")")
+    done
+    aligned="$(printf '%s\n' "${rows[@]}" | column -t -s $'\t')"
+
+    i=0
+    while IFS= read -r line; do
+        second="$(__second_column "${i}")"
+        after_title="${line#"@ ${entry_titles[i]}"}"
+        padding="${after_title%%"│ "*}"
+
+        # 行全体をリンクにすると、列をそろえる空白までリンクになって長すぎるので、件名と番号を別々のリンクにする
+        title_text="${entry_titles[i]}"
+        second_text="${second}"
+        if [[ "${CLIENT}" == "claude" && -n "${entry_urls[i]}" ]]; then
+            title_text="$(__link "${entry_urls[i]}" "${title_text}")"
+            second_text="$(__link "${entry_urls[i]}" "${second_text}")"
+        fi
+        # 未 push の注記は番号の列に並べると番号と同じ重みで目立つので、列の外に補助的な文字の色で添える
+        if [[ "${entry_states[i]}" == "commit_local" ]]; then
+            second_text+=$' \e[38;2;145;152;161mnot pushed\e[0m'
+        fi
+        hints+="$(__icon "${entry_states[i]}") ${title_text}${padding}│ ${second_text}"$'\n'
+        i=$((i + 1))
+    done <<< "${aligned}"
+
+    # 先頭で改行して、1 件目が「Stop says:」と同じ行に続かないようにする
+    jq -n --arg hints "${hints%$'\n'}" '{systemMessage: ("\n" + $hints)}'
+}
+
+function __add_demo_entries() {
+    local state path number=0
+    for state in issue_open issue_completed issue_not_planned issue_duplicate \
+        pr_open pr_draft pr_queued pr_merged pr_closed; do
+        number=$((number + 1))
+        path="pull"
+        if [[ "${state}" == issue_* ]]; then
+            path="issues"
+        fi
+        __entry "${state}" "${state}" "#${number}" "https://github.com/o/r/${path}/${number}"
+    done
+    # 番号の縮め方を確かめるため、同じ owner の別リポジトリと、別の owner のリポジトリも出す
+    __entry issue_open "same owner, other repo" "other#10" "https://github.com/o/other/issues/10"
+    __entry pr_open "other owner" "x/y#11" "https://github.com/x/y/pull/11"
+    __entry commit_pushed "commit_pushed" "9ea63c8" "https://github.com/o/r/commit/9ea63c8"
+    __entry commit_local "commit_local" "9e5aba9" ""
+}
+
+# 直前が英数字・&・/ の # は、HTML の数値文字参照や URL のアンカーなので拾わない。
+# 直後に英数字・- が続く #2025-planning や #1on1 は、Slack のチャンネル名などなので拾わない。
+# grep -E には先読みがなく、後ろの区切り文字まで match に含めると「#1 #2」の #2 を取りこぼすので perl を使う。
+# コードの中の番号は例示や出力の引用であることが多く、Issue を指していないので拾わない
+function __extract_issue_refs() {
+    perl -0777 -ne '
+        s/^[ \t]*(`{3,}|~{3,}).*?(?:^[ \t]*\1[^\n]*$|\z)//gms;
+        s/(`+).+?\1//g;
+        print "$1\n" while m{(?<![\w&/#])((?:[\w.-]+/[\w.-]+)?#\d+)(?![\w-])}g;
+    ' <<< "${message}" \
+        | awk '!seen[$0]++' \
+        | head -n "${MAX_REFS}" || true
+}
+
+# コミットハッシュはふつうインラインコードで書くので、コードブロックの中だけを除く。
+# 数字だけの値や defaced のような英単語を拾わないよう、数字と英字を両方含むものに限る。
+# 直前が # や / のものは色コードや URL の一部なので拾わない
+function __extract_commit_refs() {
+    perl -0777 -ne '
+        s/^[ \t]*(`{3,}|~{3,}).*?(?:^[ \t]*\1[^\n]*$|\z)//gms;
+        while (m{(?<![\w&/#@.-])((?:[\w.-]+/[\w.-]+@)?([0-9a-f]{7,40}))(?![\w-])}g) {
+            my ($ref, $sha) = ($1, $2);
+            print "$ref\n" if $sha =~ /[0-9]/ && $sha =~ /[a-f]/;
+        }
+    ' <<< "${message}" \
+        | awk '!seen[$0]++' \
+        | head -n "${MAX_REFS}" || true
+}
+
+# GitHub と同じく、cwd と同じリポジトリなら省き、同じ owner なら repo だけにする
+function __repo_prefix() {
+    local repo="${1}"
+    if [[ "${repo}" == "${default_repo}" ]]; then
+        return
+    elif [[ -n "${default_repo}" && "${repo%%/*}" == "${default_repo%%/*}" ]]; then
+        printf '%s' "${repo#*/}"
+    else
+        printf '%s' "${repo}"
+    fi
+}
+
+# 色コードや手順番号など、Issue でない #数字 もあるので、引けないものは黙って飛ばす。
+# REST の issues API では merge queue に入っているかが分からないので GraphQL で引く。
+# @tsv は件名のバックスラッシュをエスケープしてしまうので join で区切る
+function __fetch_issue() {
+    local repo="${1}" number="${2}"
+    # shellcheck disable=SC2016 # $owner などは GraphQL と jq の変数
+    gh api graphql -F owner="${repo%%/*}" -F name="${repo#*/}" -F number="${number}" -f query='
+        query($owner: String!, $name: String!, $number: Int!) {
+            repository(owner: $owner, name: $name) {
+                issueOrPullRequest(number: $number) {
+                    __typename
+                    ... on Issue { title url state stateReason }
+                    ... on PullRequest { title url state isDraft isInMergeQueue }
+                }
+            }
+        }' --jq '
+        .data.repository.issueOrPullRequest
+        | select(. != null)
+        | (if .__typename == "PullRequest" then
+            if .state == "MERGED" then "pr_merged"
+            elif .state == "CLOSED" then "pr_closed"
+            elif .isInMergeQueue then "pr_queued"
+            elif .isDraft then "pr_draft"
+            else "pr_open" end
+        elif .state == "CLOSED" then
+            if .stateReason == "NOT_PLANNED" then "issue_not_planned"
+            elif .stateReason == "DUPLICATE" then "issue_duplicate"
+            else "issue_completed" end
+        else "issue_open" end) as $state
+        | [.title, .url, $state] | join("\t")
+    ' 2> /dev/null
+}
+
+function __add_issue_entries() {
+    local refs="${1}"
+    local ref repo number issue title url state prefix seen=" "
+    while IFS= read -r ref; do
+        [[ -n "${ref}" ]] || continue
+        repo="${ref%%#*}"
+        number="${ref##*#}"
+        repo="${repo:-${default_repo}}"
+        [[ -n "${repo}" ]] || continue
+
+        if [[ "${seen}" == *" ${repo}#${number} "* ]]; then
+            continue
+        fi
+        seen+="${repo}#${number} "
+
+        issue="$(__fetch_issue "${repo}" "${number}")" || continue
+        IFS=$'\t' read -r title url state <<< "${issue}"
+        if [[ -z "${title}" || -z "${url}" ]] || grep -qF -- "${title}" <<< "${message}"; then
+            continue
+        fi
+        prefix="$(__repo_prefix "${repo}")"
+        __entry "${state}" "${title}" "${prefix}#${number}" "${url}"
+    done <<< "${refs}"
+}
+
+# 結果は「完全なハッシュ・件名・URL」をタブ区切りで返す。URL が空なら push していない。
+# まだ push していないコミットは GitHub に無いので、cwd のリポジトリなら先に手元の git で引く
+function __fetch_commit() {
+    local repo="${1}" sha="${2}"
+    local full subject url=""
+    if [[ "${repo}" == "${default_repo}" ]] && full="$(git rev-parse --verify --quiet "${sha}^{commit}" 2> /dev/null)"; then
+        subject="$(git log -1 --format=%s "${full}")"
+        # squash merge のあとにブランチを消したコミットや、fetch していないコミットはリモート追跡ブランチに含まれないが、
+        # GitHub には残っているので API でも確かめる
+        if [[ -n "$(git branch -r --contains "${full}" 2> /dev/null)" ]] \
+            || gh api "repos/${repo}/commits/${full}" --silent 2> /dev/null; then
+            url="https://github.com/${repo}/commit/${full}"
+        fi
+        printf '%s\t%s\t%s\n' "${full}" "${subject}" "${url}"
+        return
+    fi
+    gh api "repos/${repo}/commits/${sha}" \
+        --jq '[.sha, (.commit.message | split("\n")[0]), .html_url] | join("\t")' 2> /dev/null
+}
+
+function __add_commit_entries() {
+    local refs="${1}"
+    local ref repo sha commit full subject url prefix seen=" "
+    while IFS= read -r ref; do
+        [[ -n "${ref}" ]] || continue
+        repo="${default_repo}"
+        sha="${ref##*@}"
+        if [[ "${ref}" == */*@* ]]; then
+            repo="${ref%@*}"
+        fi
+        [[ -n "${repo}" ]] || continue
+
+        commit="$(__fetch_commit "${repo}" "${sha}")" || continue
+        IFS=$'\t' read -r full subject url <<< "${commit}"
+        if [[ -z "${full}" || -z "${subject}" || "${seen}" == *" ${full} "* ]] || grep -qF -- "${subject}" <<< "${message}"; then
+            continue
+        fi
+        seen+="${full} "
+
+        prefix="$(__repo_prefix "${repo}")"
+        if [[ -n "${url}" ]]; then
+            __entry commit_pushed "${subject}" "${prefix:+${prefix}@}${full:0:7}" "${url}"
+        else
+            __entry commit_local "${subject}" "${prefix:+${prefix}@}${full:0:7}" ""
+        fi
+    done <<< "${refs}"
+}
+
+function usage() {
+    local COMMAND="agent-ref-hint"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} --client <claude|codex> [--demo]
+
+		Stop hook that reads the hook input from stdin.
+		With --demo, show every state regardless of the input.
+	HEREDOC
+}
+
+function __validate() {
+    case "${CLIENT}" in
+        claude | codex) ;;
+        *)
+            echo "Error: unknown client: ${CLIENT}" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+function agent_ref_hint() {
+    __validate
+
+    if [[ "${MODE}" == "--demo" ]]; then
+        __add_demo_entries
+        __show
+        return
+    fi
+
+    local input
+    input="$(cat)"
+
+    # transcript は Stop hook の時点で最後の応答が書き込まれていないことがあるので読まない
+    message="$(jq -r '.last_assistant_message // empty' <<< "${input}")"
+
+    local issue_refs commit_refs
+    issue_refs="$(__extract_issue_refs)"
+    commit_refs="$(__extract_commit_refs)"
+    if [[ -z "${issue_refs}" && -z "${commit_refs}" ]]; then
+        return
+    fi
+
+    local cwd
+    cwd="$(jq -r '.cwd // empty' <<< "${input}")"
+    if [[ -n "${cwd}" ]]; then
+        cd "${cwd}" || return 0
+    fi
+    default_repo="$(gh repo view --json nameWithOwner --jq .nameWithOwner 2> /dev/null || true)"
+
+    __add_issue_entries "${issue_refs}"
+    __add_commit_entries "${commit_refs}"
+    if [[ "${#entry_urls[@]}" -eq 0 ]]; then
+        return
+    fi
+    __show
+}
+
+if [[ "${1:-""}" != "--client" ]]; then
+    exit 0
+fi
+
+CLIENT="${2:-""}"
+readonly CLIENT
+
+MODE="${3:-""}"
+readonly MODE
+
+agent_ref_hint

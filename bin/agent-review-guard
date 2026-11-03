@@ -2,17 +2,46 @@
 
 set -e -u -o pipefail
 
-# Claude Code の PreToolUse hook。
+# エージェントの PreToolUse hook。
 # 次の Bash コマンドのときだけ承認ダイアログを出し、それ以外は何も返さずに通す。
 #   - gh api でのコメント・レビューの投稿（読むだけの gh api は通す）
 #   - レビュー依頼済みの PR のブランチでの rebase / amend / force push
+#
+# --client で呼び出し元（claude / codex）を受け取り、省略時は何もしない。
+# Codex の PreToolUse は "ask" に対応しておらず、返してもエラー扱いでコマンドが実行されてしまうので、
+# Codex では承認ダイアログの代わりにコマンドを止める。
+
+function usage() {
+    local COMMAND="agent-review-guard"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} --client <claude|codex>
+
+		PreToolUse hook that reads the hook input from stdin.
+	HEREDOC
+}
+
+function __validate() {
+    case "${CLIENT}" in
+        claude | codex) ;;
+        *)
+            echo "Error: unknown client: ${CLIENT}" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
 
 function __ask() {
     local reason="${1}"
-    jq -n --arg reason "${reason}" '{
+    local decision="ask"
+    if [[ "${CLIENT}" == "codex" ]]; then
+        decision="deny"
+    fi
+    jq -n --arg decision "${decision}" --arg reason "${reason}" '{
         hookSpecificOutput: {
             hookEventName: "PreToolUse",
-            permissionDecision: "ask",
+            permissionDecision: $decision,
             permissionDecisionReason: $reason
         }
     }'
@@ -34,6 +63,8 @@ function __is_rewriting_history() {
 }
 
 function agent_review_guard() {
+    __validate
+
     local input command cwd
     input="$(cat)"
     command="$(jq -r '.tool_input.command // empty' <<< "${input}")"
@@ -73,5 +104,12 @@ function agent_review_guard() {
         __ask "Rewriting commit history on a branch whose pull request is under review"
     fi
 }
+
+if [[ "${1:-""}" != "--client" ]]; then
+    exit 0
+fi
+
+CLIENT="${2:-""}"
+readonly CLIENT
 
 agent_review_guard

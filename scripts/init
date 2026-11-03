@@ -116,6 +116,9 @@ function init() {
     # ~/.codex/AGENTS.md を用意する
     __create_symlink "${DOTFILE_ROOT_DIR}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md" "codex_AGENTS.md"
 
+    # ~/.codex/hooks.json を用意する
+    __create_symlink "${DOTFILE_ROOT_DIR}/codex/hooks.json" "${HOME}/.codex/hooks.json" "codex_hooks.json"
+
     # ~/.codex/config.toml を用意する
     __merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
 

@@ -30,7 +30,8 @@ function __resolve_tty() {
         pid="$(ps -o ppid= -p "${pid}" 2> /dev/null | tr -d ' ')"
     done
 
-    if [[ -w /dev/tty ]]; then
+    # -w は権限しか見ないので、制御端末が無くても真になり、書き込みで Device not configured になる
+    if { : > /dev/tty; } 2> /dev/null; then
         printf '/dev/tty\n'
         return 0
     fi

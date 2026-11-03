@@ -37,6 +37,10 @@
           {
             "type": "command",
             "command": "afplay /System/Library/Sounds/Hero.aiff"
+          },
+          {
+            "type": "command",
+            "command": "agent-ref-hint --client claude"
           }
         ]
       }
@@ -47,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "agent-review-guard"
+            "command": "agent-review-guard --client claude"
           }
         ]
       }
