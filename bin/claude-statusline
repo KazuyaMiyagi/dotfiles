@@ -80,7 +80,7 @@ function __pct_fg() {
 project_text=""
 if [[ -n "${project_dir}" ]]; then
     project_name="$(basename "${project_dir}")"
-    if [[ -n "${cwd}" ]] && [[ "${cwd}" != "${project_dir}" ]]; then
+    if [[ -n "${cwd}" && "${cwd}" != "${project_dir}" ]]; then
         rel="$("${realpath_cmd}" -m -s --relative-to="${project_dir}" "${cwd}")"
         [[ "${rel}" == ..* ]] || rel="./${rel}"
         project_text=" [${project_name}](${rel}/) "

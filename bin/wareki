@@ -79,9 +79,9 @@ for year in $(seq "${start}" "${end}"); do
     r_in=1
     [[ "${year}" -lt 2019 ]] && r_in=0
     h_in=1
-    { [[ "${year}" -lt 1989 ]] || [[ "${year}" -gt 2019 ]]; } && h_in=0
+    [[ "${year}" -lt 1989 || "${year}" -gt 2019 ]] && h_in=0
     s_in=1
-    { [[ "${year}" -lt 1926 ]] || [[ "${year}" -gt 1989 ]]; } && s_in=0
+    [[ "${year}" -lt 1926 || "${year}" -gt 1989 ]] && s_in=0
 
     printf "│ %b │ %b │ %b │ %b │\n" \
         "$(pad_fmt "${year}" "${w_year}" "${is_current}" 1)" \
