@@ -30,7 +30,7 @@ function __validate() {
     fi
 
     if ! wezterm cli list --format json | jq -e ".[] | select(.pane_id == ${worker_pane_id})" &> /dev/null; then
-        echo "Error: パネルID ${worker_pane_id} が見つかりません" >&2
+        echo "Error: pane ID ${worker_pane_id} not found" >&2
         exit 1
     fi
 }
@@ -62,8 +62,8 @@ function usage() {
 		    MESSAGE         Message to send
 
 		Examples:
-		    ${COMMAND} 15 'terraform/dir1 ディレクトリで aws_iam_policy_document を jsonencode に書き直してください'
-		    ${COMMAND} 16 'terraform/dir2 ディレクトリで aws_iam_policy_document を jsonencode に書き直してください'
+		    ${COMMAND} 15 'Rewrite aws_iam_policy_document with jsonencode in terraform/dir1'
+		    ${COMMAND} 16 'Rewrite aws_iam_policy_document with jsonencode in terraform/dir2'
 	HEREDOC
 }
 

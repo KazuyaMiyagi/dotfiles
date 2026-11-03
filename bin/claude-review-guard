@@ -26,7 +26,7 @@ ask() {
 if grep -Eq '(^|[;&|(][[:space:]]*)gh[[:space:]]+api[[:space:]]' <<< "${command}" \
     && grep -Eq '(comments|reviews|replies)' <<< "${command}" \
     && grep -Eq '((-f|-F|--field|--raw-field)[[:space:]=]+body=|(-X|--method)[[:space:]=]*(POST|PATCH))' <<< "${command}"; then
-    ask "gh api でコメントかレビューを投稿しようとしています"
+    ask "Posting a comment or review with gh api"
 fi
 
 git_command='(^|[;&|(][[:space:]]*)git[[:space:]]+'
@@ -43,7 +43,7 @@ if ! pr="$(gh pr view --json isDraft,reviewRequests,reviews 2>&1)"; then
     if grep -qi 'no pull requests found' <<< "${pr}"; then
         exit 0
     fi
-    ask "PR の状態を取得できませんでした。履歴を書き換えてよいか確認してください"
+    ask "Could not get the pull request state. Confirm before rewriting history"
 fi
 
 # draft 中に付く Copilot や bot のレビューは、レビュー依頼とはみなさない
@@ -55,5 +55,5 @@ requested="$(jq -r '
 ' <<< "${pr}")"
 
 if [[ "${requested}" == "true" ]]; then
-    ask "レビュー依頼済みの PR のブランチで、コミット履歴を書き換えようとしています"
+    ask "Rewriting commit history on a branch whose pull request is under review"
 fi

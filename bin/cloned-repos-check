@@ -11,17 +11,17 @@ function usage() {
     cat <<- HEREDOC
 		Usage: ${COMMAND} [OPTIONS] [ORG]
 
-		ghq でクローン済みの GitHub リポジトリを照合し、
-		アーカイブ・削除・リネームを検知する。
+		Check GitHub repositories cloned with ghq against GitHub
+		and detect archived, deleted or renamed ones.
 
-		ORG を省略すると、ghq に存在する github.com の全 owner を対象にする。
+		Without ORG, every github.com owner cloned with ghq is checked.
 
 		Options:
-		  -a, --all    active なリポジトリも含めて全件表示
-		  -h, --help   このヘルプを表示
+		  -a, --all    Also list active repositories
+		  -h, --help   Show this help
 
 		Arguments:
-		  ORG  対象の GitHub Organization または User（省略時は全 owner）
+		  ORG  GitHub organization or user to check (default: every owner)
 	HEREDOC
 }
 
@@ -65,7 +65,7 @@ else
 fi
 
 if [[ -z "${orgs}" ]]; then
-    echo "ローカルに github.com のクローンが見つかりません" >&2
+    echo "No clones of github.com found locally" >&2
     exit 0
 fi
 
@@ -111,7 +111,7 @@ while IFS= read -r owner; do
 done <<< "${orgs}"
 
 if [[ -z "${rows}" ]]; then
-    echo "問題なし: ローカルクローンは全て active です"
+    echo "OK: all local clones are active"
     exit 0
 fi
 

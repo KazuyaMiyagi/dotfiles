@@ -72,13 +72,13 @@ function usage() {
     readonly COMMAND
     cat <<- HEREDOC
 		Usage: ${COMMAND} <TITLE> <BODY>
-		       ${COMMAND}   (引数なし: stdin の JSON から .title / .message を読む)
+		       ${COMMAND}   (without arguments: read .title / .message from JSON on stdin)
 
-		呼び出し元の端末 (pty) へ OSC 777 のデスクトップ通知を送る。
+		Send an OSC 777 desktop notification to the terminal (pty) of the caller.
 
 		Examples:
 		    ${COMMAND} 'Claude Code' 'Stop'
-		    echo '{"title":"Claude Code","message":"完了"}' | ${COMMAND}
+		    echo '{"title":"Claude Code","message":"Done"}' | ${COMMAND}
 	HEREDOC
 }
 
