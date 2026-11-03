@@ -49,10 +49,10 @@ function check_required_tools() {
 
     for tool in "${required_tools[@]}"; do
         if ! __is_installed "${tool}"; then
-            echo "[Error] ${tool} not installed. Please install the ${tool}." >&2
+            echo "Error: ${tool} is not installed. Please install ${tool}." >&2
             exit 1
         else
-            echo "[Success] ${tool} was already installed."
+            echo "${tool} was already installed."
         fi
     done
     echo -e "<== End checking required tools.\n"
