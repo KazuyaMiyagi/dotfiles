@@ -3,7 +3,7 @@
 set -u -o pipefail
 
 for repo_path in $(ghq list --full-path); do
-    pushd "${repo_path}" > /dev/null 2>&1 || continue
+    pushd "${repo_path}" &> /dev/null || continue
 
     header="<--- $(echo "${repo_path}" | rev | cut -d '/' -f '1,2' | rev) --->"
     output=""
@@ -44,5 +44,5 @@ for repo_path in $(ghq list --full-path); do
         printf '%s' "${output}"
     fi
 
-    popd > /dev/null 2>&1 || true
+    popd &> /dev/null || true
 done

@@ -29,7 +29,7 @@ function __validate() {
         exit 1
     fi
 
-    if ! wezterm cli list --format json | jq -e ".[] | select(.pane_id == ${worker_pane_id})" > /dev/null 2>&1; then
+    if ! wezterm cli list --format json | jq -e ".[] | select(.pane_id == ${worker_pane_id})" &> /dev/null; then
         echo "Error: パネルID ${worker_pane_id} が見つかりません" >&2
         exit 1
     fi

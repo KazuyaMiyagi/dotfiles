@@ -19,7 +19,7 @@ function homebrew_install() {
 }
 
 function homebrew_bundle_install() {
-    brew bundle check > /dev/null 2>&1 || {
+    brew bundle check &> /dev/null || {
         echo "==> Installing Homebrew dependencies…"
         brew bundle install
     }
@@ -184,7 +184,7 @@ function __npm_server_is_current() {
     # so the exit status says nothing. Validate the report instead, and let an unparseable one
     # fall through to a reinstall rather than read as "nothing to do".
     report="$(cd "${server_dir}" && npm outdated --json 2> /dev/null)" || true
-    jq -e . > /dev/null 2>&1 <<< "${report}" || return 1
+    jq -e . &> /dev/null <<< "${report}" || return 1
 
     for spec in ${specs}; do
         # Trim a trailing @version. A scoped name with no version leaves this empty.
