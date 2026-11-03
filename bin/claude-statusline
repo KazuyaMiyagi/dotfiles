@@ -40,14 +40,14 @@ function __format() {
         case "${directive}" in
             Background=*)
                 rgb="${directive#Background=}"
-                printf "\033[48;2;%sm" "${rgb//,/;}"
+                printf "\e[48;2;%sm" "${rgb//,/;}"
                 ;;
             Foreground=*)
                 rgb="${directive#Foreground=}"
-                printf "\033[38;2;%sm" "${rgb//,/;}"
+                printf "\e[38;2;%sm" "${rgb//,/;}"
                 ;;
             Text=*) printf "%s" "${directive#Text=}" ;;
-            ResetAttributes) printf "\033[0m" ;;
+            ResetAttributes) printf "\e[0m" ;;
         esac
     done
 }

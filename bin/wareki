@@ -4,9 +4,9 @@ set -e -u -o pipefail
 
 y="${1:-$(date +%Y)}"
 
-bold="\033[1;32m"
-out="\033[31m"
-reset="\033[0m"
+bold="\e[1;32m"
+out="\e[31m"
+reset="\e[0m"
 
 # 各列の最大表示幅を計算
 start=$((y - 10))
