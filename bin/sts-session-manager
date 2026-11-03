@@ -202,7 +202,7 @@ function remove() {
 }
 
 function usage() {
-    COMMAND="sts_session_manager"
+    local COMMAND="sts_session_manager"
     readonly COMMAND
     cat <<- HEREDOC
 		Usage: ${COMMAND} <subcommand>
