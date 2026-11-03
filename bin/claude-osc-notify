@@ -38,7 +38,7 @@ function __resolve_tty() {
     return 1
 }
 
-function claude-osc-notify() {
+function claude_osc_notify() {
     local title body device
 
     if [[ ${#} -ge 2 ]]; then
@@ -82,4 +82,4 @@ function usage() {
 	HEREDOC
 }
 
-claude-osc-notify "${@}"
+claude_osc_notify "${@}"

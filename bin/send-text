@@ -35,7 +35,7 @@ function __validate() {
     fi
 }
 
-function send-text() {
+function send_text() {
     __validate "${@}"
 
     local worker_pane_id="${1}"
@@ -78,4 +78,4 @@ if [[ ${#} -eq 0 ]]; then
     exit 1
 fi
 
-send-text "${WORKER_PANE_ID}" "${MESSAGE}"
+send_text "${WORKER_PANE_ID}" "${MESSAGE}"

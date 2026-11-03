@@ -7,7 +7,7 @@ function __is_installed() {
 }
 
 function __validate() {
-    check-required-tools > /dev/null
+    check_required_tools > /dev/null
 
     if [[ -z "${AWS_PROFILE:=""}" ]]; then
         echo "Error: AWS_PROFILE is not exported" >&2
@@ -39,7 +39,7 @@ function __validate() {
     fi
 }
 
-function check-required-tools() {
+function check_required_tools() {
     echo "==> Checking required tools..."
     local required_tools=(aws jq)
 
@@ -58,7 +58,7 @@ function check-required-tools() {
     echo -e "<== End checking required tools.\n"
 }
 
-function get-session-token() {
+function get_session_token() {
     __validate
 
     local get_session_token_cache_file
@@ -102,7 +102,7 @@ function get-session-token() {
     jq --raw-output --monochrome-output '{Version: 1} + .Credentials' < "${get_session_token_cache_file}"
 }
 
-function assume-role() {
+function assume_role() {
     __validate
 
     local assume_role_cache_file
@@ -230,13 +230,13 @@ readonly CACHE_DIR
 
 case "${SUBCOMMAND}" in
     check-required-tools | check)
-        check-required-tools
+        check_required_tools
         ;;
     get-session-token)
-        get-session-token
+        get_session_token
         ;;
     assume-role)
-        assume-role
+        assume_role
         ;;
     list | ls)
         list
