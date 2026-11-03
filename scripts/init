@@ -69,9 +69,9 @@ function merge_managed_block() {
     ' "${target_path}" > "${target_path}.tmp"
 
     {
-        printf "%s\n" "${marker_begin}"
+        printf '%s\n' "${marker_begin}"
         cat "${source_path}"
-        printf "%s\n" "${marker_end}"
+        printf '%s\n' "${marker_end}"
     } >> "${target_path}.tmp"
 
     mv "${target_path}.tmp" "${target_path}"

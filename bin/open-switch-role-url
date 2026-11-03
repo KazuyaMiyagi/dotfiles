@@ -11,4 +11,4 @@ readonly ACCOUNT
 ROLE_NAME="$(cut -d '/' -f 2 <<< "${ROLE_ARN}")"
 readonly ROLE_NAME
 
-open "$(printf "https://signin.aws.amazon.com/switchrole?account=%s&roleName=%s&displayName=%s" "${ACCOUNT}" "${ROLE_NAME}" "${AWS_PROFILE}")"
+open "$(printf 'https://signin.aws.amazon.com/switchrole?account=%s&roleName=%s&displayName=%s' "${ACCOUNT}" "${ROLE_NAME}" "${AWS_PROFILE}")"

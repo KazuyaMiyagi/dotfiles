@@ -40,14 +40,14 @@ function __format() {
         case "${directive}" in
             Background=*)
                 rgb="${directive#Background=}"
-                printf "\e[48;2;%sm" "${rgb//,/;}"
+                printf '\e[48;2;%sm' "${rgb//,/;}"
                 ;;
             Foreground=*)
                 rgb="${directive#Foreground=}"
-                printf "\e[38;2;%sm" "${rgb//,/;}"
+                printf '\e[38;2;%sm' "${rgb//,/;}"
                 ;;
-            Text=*) printf "%s" "${directive#Text=}" ;;
-            ResetAttributes) printf "\e[0m" ;;
+            Text=*) printf '%s' "${directive#Text=}" ;;
+            ResetAttributes) printf '\e[0m' ;;
         esac
     done
 }
@@ -60,18 +60,18 @@ function __pie_icon() {
     local icons=(󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥)
     local idx=$(((int_pct * 8 + 50) / 100))
     if [[ "${idx}" -gt 8 ]]; then idx=8; fi
-    printf "%s" "${icons[${idx}]}"
+    printf '%s' "${icons[${idx}]}"
 }
 
 # Foreground color by percentage: green (<50%), yellow (50-79%), red (>=80%)
 function __pct_fg() {
     local int_pct="${1}"
     if [[ "${int_pct}" -ge 80 ]]; then
-        printf "%s" "${FG_RED}"
+        printf '%s' "${FG_RED}"
     elif [[ "${int_pct}" -ge 50 ]]; then
-        printf "%s" "${FG_YELLOW}"
+        printf '%s' "${FG_YELLOW}"
     else
-        printf "%s" "${FG_GREEN}"
+        printf '%s' "${FG_GREEN}"
     fi
 }
 
