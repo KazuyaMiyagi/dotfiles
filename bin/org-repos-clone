@@ -25,9 +25,9 @@ function org_repos_clone() {
     fi
 
     local repo
-    for repo in $(gh repo list "${ORG}" --limit "${LIMIT}" --no-archived --json 'name' | jq -r '.[].name'); do
+    while IFS= read -r -u 3 repo; do
         ghq get "${ORG}/${repo}"
-    done
+    done 3< <(gh repo list "${ORG}" --limit "${LIMIT}" --no-archived --json 'name' | jq -r '.[].name')
 }
 
 ORG="${1:-""}"

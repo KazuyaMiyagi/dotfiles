@@ -121,9 +121,9 @@ function __vim_plug_package_install() {
 
 function __asdf_plugins_install() {
     echo "==> Installing asdf plugins..."
-    for plugin in $(cut -d ' ' -f1 ./asdf/tool-versions | tr '\n' ' '); do
+    while IFS= read -r -u 3 plugin; do
         asdf plugin add "${plugin}"
-    done
+    done 3< <(cut -d ' ' -f1 ./asdf/tool-versions)
     echo "==> Finished installing asdf plugins."
 }
 
@@ -159,10 +159,10 @@ function __asdf_plugins_python_apply_path() {
 function __asdf_managed_tools_update() {
     echo "==> Updating asdf managed tools versions..."
     pushd asdf > /dev/null
-    for plugin in $(cut -d ' ' -f1 ./tool-versions | tr '\n' ' '); do
+    while IFS= read -r -u 3 plugin; do
         asdf install "${plugin}" latest
         asdf set "${plugin}" latest
-    done
+    done 3< <(cut -d ' ' -f1 ./tool-versions)
     popd > /dev/null
     echo "==> Finished updating asdf managed tools versions."
 }
@@ -267,7 +267,7 @@ function __vim_lsp_settings_update() {
         # その場での更新はできないので、消してから入れ直す。
         rm -rf "${server_dir:?}"/*
         retries=3
-        for i in $(seq 1 "${retries}"); do
+        for ((i = 1; i <= retries; i++)); do
             (cd "${server_dir}" && sh "${script}") && break
             if [[ "${i}" -ge "${retries}" ]]; then
                 echo "==> Failed to update ${server} after ${retries} attempts."

@@ -8,7 +8,7 @@ set -u -o pipefail
 function repos_status() {
     local repo_path header output stash_output default_branch candidate
     local extra_branches status_output filtered_status
-    for repo_path in $(ghq list --full-path); do
+    while IFS= read -r -u 3 repo_path; do
         pushd "${repo_path}" &> /dev/null || continue
 
         header="<--- $(echo "${repo_path}" | rev | cut -d '/' -f '1,2' | rev) --->"
@@ -51,7 +51,7 @@ function repos_status() {
         fi
 
         popd &> /dev/null || true
-    done
+    done 3< <(ghq list --full-path)
 }
 
 repos_status

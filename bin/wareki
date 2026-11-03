@@ -15,7 +15,7 @@ readonly RESET
 function __max_width() {
     local start="${1}" end="${2}" offset="${3}"
     local max=0 year val len
-    for year in $(seq "${start}" "${end}"); do
+    for ((year = start; year <= end; year++)); do
         val=$((year + offset))
         len=${#val}
         [[ "${len}" -gt "${max}" ]] && max=${len}
@@ -90,7 +90,7 @@ function wareki() {
     echo "├${hr_year}┼${hr_reiwa}┼${hr_heisei}┼${hr_showa}┤"
 
     local year r h s is_current r_in h_in s_in
-    for year in $(seq "${start}" "${end}"); do
+    for ((year = start; year <= end; year++)); do
         r=$((year - 2018))
         h=$((year - 1988))
         s=$((year - 1925))
