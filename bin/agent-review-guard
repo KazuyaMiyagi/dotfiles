@@ -33,7 +33,7 @@ function __is_rewriting_history() {
     grep -Eq "${git_command}(rebase|commit[[:space:]].*--amend|push[[:space:]].*(--force|[[:space:]]-f([[:space:]]|$)|[[:space:]]\+))" <<< "${command}"
 }
 
-function claude_review_guard() {
+function agent_review_guard() {
     local input command cwd
     input="$(cat)"
     command="$(jq -r '.tool_input.command // empty' <<< "${input}")"
@@ -74,4 +74,4 @@ function claude_review_guard() {
     fi
 }
 
-claude_review_guard
+agent_review_guard

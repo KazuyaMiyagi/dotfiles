@@ -4,7 +4,7 @@ set -e -u -o pipefail
 
 # OSC 777 のデスクトップ通知を、呼び出し元プロセスが繋がっている端末 (pty) へ送る。
 #
-# Claude Code のフックなどから呼ばれた場合、そのプロセスは制御端末を失っており
+# Claude Code や Codex のフックなどから呼ばれた場合、そのプロセスは制御端末を失っており
 # /dev/tty を開けない (Device not configured) ことがある。そこで祖先プロセスを
 # たどって実際の pty (例: /dev/ttys000) を特定し、そこへ直接シーケンスを書き込む。
 #
@@ -38,7 +38,7 @@ function __resolve_tty() {
     return 1
 }
 
-function claude_osc_notify() {
+function agent_osc_notify() {
     local title body device
 
     if [[ ${#} -ge 2 ]]; then
@@ -68,7 +68,7 @@ function claude_osc_notify() {
 }
 
 function usage() {
-    local COMMAND="claude-osc-notify"
+    local COMMAND="agent-osc-notify"
     readonly COMMAND
     cat <<- HEREDOC
 		Usage: ${COMMAND} <TITLE> <BODY>
@@ -82,4 +82,4 @@ function usage() {
 	HEREDOC
 }
 
-claude_osc_notify "${@}"
+agent_osc_notify "${@}"

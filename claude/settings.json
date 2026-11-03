@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-osc-notify"
+            "command": "agent-osc-notify"
           },
           {
             "type": "command",
@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-osc-notify 'Claude Code' 'Stop'"
+            "command": "agent-osc-notify 'Claude Code' 'Stop'"
           },
           {
             "type": "command",
@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-review-guard"
+            "command": "agent-review-guard"
           }
         ]
       }
