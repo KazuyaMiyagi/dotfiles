@@ -24,3 +24,4 @@ shfmt -d -ln bash -i 4 -bn -ci -sr -kp <file> # 整形差分の確認
   `set -e -u -o pipefail` を冒頭に置く。
   オプションを 1 つずつ書くと、`-o` が `pipefail` を引数に取ることが読み取りやすい
 - shebang は `#!` とパスの間にスペースを入れて `#! /usr/bin/env bash` と書く
+- 条件式は `[ ]` ではなく `[[ ]]` で書く
