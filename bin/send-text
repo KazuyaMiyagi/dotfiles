@@ -45,7 +45,7 @@ function send_text() {
     echo "Message: ${message}"
 
     wezterm cli send-text --pane-id "${worker_pane_id}" "${message}"
-    sleep 0.1 # Wait for the message to be processed
+    sleep 0.1 # メッセージが処理されるのを待つ
     wezterm cli send-text --pane-id "${worker_pane_id}" --no-paste $'\r'
 
     echo "Message sent successfully"

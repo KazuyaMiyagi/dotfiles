@@ -16,24 +16,24 @@ context="$(jq -r 'if .context_window.used_percentage then (.context_window.used_
 five_hour="$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<< "${input}")"
 seven_day="$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<< "${input}")"
 
-# Color palette
-BG_ORANGE="196,123,92" # claude salmon
-BG_GRAY1="80,78,76"    # gray (light)
-BG_GRAY2="68,66,64"    # gray
-BG_GRAY3="56,54,52"    # gray (dark)
-BG_GRAY4="46,44,42"    # gray (darker)
-BG_GRAY5="38,36,34"    # gray (darkest)
-FG_DARK="20,20,20"     # near black
-FG_LIGHT="220,218,214" # near white
-FG_GREEN="152,151,26"  # gruvbox green
-FG_YELLOW="215,153,33" # gruvbox yellow
-FG_RED="204,36,29"     # gruvbox red
+# 配色
+BG_ORANGE="196,123,92" # Claude のサーモン
+BG_GRAY1="80,78,76"    # 灰（明るめ）
+BG_GRAY2="68,66,64"    # 灰
+BG_GRAY3="56,54,52"    # 灰（暗め）
+BG_GRAY4="46,44,42"    # 灰（より暗め）
+BG_GRAY5="38,36,34"    # 灰（いちばん暗い）
+FG_DARK="20,20,20"     # 黒に近い色
+FG_LIGHT="220,218,214" # 白に近い色
+FG_GREEN="152,151,26"  # gruvbox の緑
+FG_YELLOW="215,153,33" # gruvbox の黄
+FG_RED="204,36,29"     # gruvbox の赤
 
-# Render format directives:
-#   Background=<color> -> set background color
-#   Foreground=<color> -> set foreground color
-#   Text=<text>        -> output text
-#   ResetAttributes    -> reset all
+# 書式の指示を順に出力する。
+#   Background=<color> -> 背景色を設定する
+#   Foreground=<color> -> 文字色を設定する
+#   Text=<text>        -> 文字列を出力する
+#   ResetAttributes    -> 属性をすべて戻す
 function __format() {
     local rgb
     for directive in "${@}"; do
@@ -52,9 +52,8 @@ function __format() {
     done
 }
 
-# Pie chart icon by percentage: 󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥
-# Rounds to the nearest eighth so the empty and full icons cover
-# symmetric ranges (0-6% and 94-100%).
+# 割合に応じた円グラフのアイコン: 󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥
+# 空と満杯のアイコンが受け持つ範囲を対称（0-6% と 94-100%）にするため、8 分の 1 単位で四捨五入する。
 function __pie_icon() {
     local int_pct="${1}"
     local icons=(󰝦 󰪞 󰪟 󰪠 󰪡 󰪢 󰪣 󰪤 󰪥)
@@ -63,7 +62,7 @@ function __pie_icon() {
     printf '%s' "${icons[${idx}]}"
 }
 
-# Foreground color by percentage: green (<50%), yellow (50-79%), red (>=80%)
+# 割合に応じた文字色: 緑（50% 未満）、黄（50-79%）、赤（80% 以上）
 function __pct_fg() {
     local int_pct="${1}"
     if [[ "${int_pct}" -ge 80 ]]; then
@@ -75,7 +74,7 @@ function __pct_fg() {
     fi
 }
 
-# --- Build segment texts ---
+# --- 各セグメントの文字列を組み立てる ---
 
 project_text=""
 if [[ -n "${project_dir}" ]]; then
@@ -117,7 +116,7 @@ if [[ -n "${seven_day}" ]]; then
     seven_text=" $(__pie_icon "${seven_day}") 7d ${seven_day}% "
 fi
 
-# --- Format and output (reorder segments here) ---
+# --- 書式を付けて出力する（セグメントの順番はここで入れ替える） ---
 __format \
     "Background=${BG_ORANGE}" "Foreground=${FG_DARK}" "Text=${project_text}" ResetAttributes \
     "Background=${BG_GRAY1}" "Foreground=${FG_LIGHT}" "Text=${model_text}" ResetAttributes \

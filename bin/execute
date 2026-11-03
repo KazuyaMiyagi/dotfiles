@@ -2,7 +2,7 @@
 
 set -e -u -o pipefail
 
-# usage `CONFIRM=yes execute command.log ls |& tee evidence.log`
+# 使い方: `CONFIRM=yes execute command.log ls |& tee evidence.log`
 function execute() {
     local output="${1}"
     shift

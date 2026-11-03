@@ -86,37 +86,37 @@ if [[ ! -d "${BACKUP_DIR}" ]]; then
     mkdir "${BACKUP_DIR}"
 fi
 
-# Setup ~/.config symlink
+# ~/.config のシンボリックリンクを張る
 create_symlink "${DOTFILE_ROOT_DIR}" "${XDG_CONFIG_HOME}" "config"
 
-# Setup ~/tool-versions symlink
+# ~/tool-versions のシンボリックリンクを張る
 create_symlink "${DOTFILE_ROOT_DIR}/asdf/tool-versions" "${HOME}/tool-versions" "tool-versions"
 
-# Setup ~/.tflint.hcl symlink
+# ~/.tflint.hcl のシンボリックリンクを張る
 create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tflint.hcl"
 
-# Setup ~/.claude/settings.json
+# ~/.claude/settings.json を用意する
 create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/settings.json" "claude_settings.json"
 
-# Setup ~/.claude/CLAUDE.md
+# ~/.claude/CLAUDE.md を用意する
 create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
 
-# Setup ~/.claude/rules/*.md (言語別ルール)
+# ~/.claude/rules/*.md（言語別ルール）を用意する
 link_claude_rules "${DOTFILE_ROOT_DIR}/claude/rules" "${HOME}/.claude/rules" "claude_rules"
 
-# Setup ~/.codex
+# ~/.codex を用意する
 if [[ ! -d "${HOME}/.codex" ]]; then
     echo "Creating ${HOME}/.codex"
     mkdir -p "${HOME}/.codex"
 fi
 
-# Setup ~/.codex/AGENTS.md
+# ~/.codex/AGENTS.md を用意する
 create_symlink "${DOTFILE_ROOT_DIR}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md" "codex_AGENTS.md"
 
-# Setup ~/.codex/config.toml
+# ~/.codex/config.toml を用意する
 merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
 
-# Setup ~/.zshenv
+# ~/.zshenv を用意する
 if [[ -f "${HOME}/.zshenv" ]]; then
     echo "${HOME}/.zshenv found. Backing up to ${BACKUP_DIR}/zshenv"
     mv "${HOME}/.zshenv" "${BACKUP_DIR}/zshenv"
@@ -124,13 +124,13 @@ fi
 echo "Creating ${HOME}/.zshenv"
 echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" > "${HOME}/.zshenv"
 
-# Setup ~/.local/share/zsh
+# ~/.local/share/zsh を用意する
 if [[ ! -d "${XDG_DATA_HOME}/zsh" ]]; then
     echo "Creating ${XDG_DATA_HOME}/zsh"
     mkdir -p "${XDG_DATA_HOME}/zsh"
 fi
 
-# Setup Touch ID for sudo
+# sudo で Touch ID を使えるようにする
 if [[ ! -f /etc/pam.d/sudo_local ]]; then
     echo "==> Enabling Touch ID for sudo..."
     sudo cp /etc/pam.d/sudo_local.template /etc/pam.d/sudo_local

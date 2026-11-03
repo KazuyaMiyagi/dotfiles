@@ -4,7 +4,7 @@ set -e -u -o pipefail
 
 cd "$(dirname "${0}")/.."
 
-# __is_installed checks if the specified command is installed
+# 指定したコマンドがインストールされているかを調べる
 function __is_installed() {
     type "${1}" &> /dev/null
 }
@@ -44,8 +44,8 @@ function go_packages_update() {
     local package
 
     echo "==> Updating Go packages..."
-    # brew bundle installs a missing Go package but never moves an installed one forward,
-    # so reinstall every Brewfile entry at its latest release.
+    # brew bundle は足りない Go パッケージを入れるだけで、入っているものは新しくしないので、
+    # Brewfile のすべてを最新のリリースで入れ直す。
     while read -r package; do
         go install "${package}@latest"
     done < <(sed -n -E 's/^go "([^"]+)".*/\1/p' Brewfile)
@@ -53,13 +53,13 @@ function go_packages_update() {
 }
 
 function github_web_flow_key_import() {
-    # Pinned instead of trusting whatever the URL serves, so a key rotation is noticed
-    # (new web commits show "No public key") and the new fingerprint is checked by hand.
+    # URL が返すものをそのまま信用せず固定しておくと、鍵が変わったときに気づけて
+    # （新しい Web 上のコミットが "No public key" になる）、新しい指紋を手で確かめられる。
     local fingerprint="968479A1AFF927E37D1A566BB5690EEEBB952194"
     local key
 
-    # Fetching on every run would make an offline run or a GitHub outage abort the whole
-    # bootstrap under set -e, for a key that changes once in several years.
+    # 数年に一度しか変わらない鍵のために毎回取得すると、オフラインのときや GitHub の障害時に
+    # set -e で bootstrap 全体が止まってしまう。
     if gpg --list-keys "${fingerprint}" &> /dev/null; then
         echo "==> GitHub web-flow GPG key was already imported."
         return
@@ -75,8 +75,8 @@ function github_web_flow_key_import() {
         echo "==> Skipping GitHub web-flow GPG key: ${fingerprint} is not in the downloaded keys."
         return
     fi
-    # No ownertrust is set: ultimate trust would also validate any key GitHub's key signs,
-    # and lsign needs a GPG secret key that SSH-based commit signing never creates.
+    # ownertrust は設定しない。ultimate にすると GitHub の鍵が署名した鍵まで有効になり、
+    # lsign には SSH でコミットに署名する運用では作らない GPG の秘密鍵が要る。
     if ! gpg --import <<< "${key}"; then
         echo "==> Skipping GitHub web-flow GPG key: gpg --import failed."
         return
@@ -92,7 +92,7 @@ function gh_extensions_install() {
     local installed extension
 
     echo "==> Installing gh extensions..."
-    # gh extension install fails on an extension that is already installed, so skip those.
+    # gh extension install はインストール済みの拡張では失敗するので、それは飛ばす。
     installed="$(gh extension list | cut -f2)"
     for extension in "${extensions[@]}"; do
         if grep -qxF "${extension}" <<< "${installed}"; then
@@ -167,27 +167,27 @@ function asdf_managed_tools_update() {
     echo "==> Finished updating asdf managed tools versions."
 }
 
-# __npm_server_is_current checks if an npm based server is at the version a reinstall would produce
+# npm で入れるサーバーが、入れ直したときと同じバージョンになっているかを調べる
 function __npm_server_is_current() {
     local server_dir="${1}"
     local script="${2}"
     local report specs spec name version expected current
 
-    # The installer pins some packages on purpose (typescript@6), so comparing every package
-    # against its newest release would mark those outdated forever. Read the installer's own
-    # specs instead, so each package is compared against what a reinstall would actually fetch.
-    # Some installers reach for npm directly rather than the helper, so collect both forms.
+    # インストーラーは一部のパッケージをわざと固定している（typescript@6）ので、どれも最新のリリースと
+    # 比べると、それらがずっと古いと判定される。代わりにインストーラー自身の指定を読み、
+    # 入れ直したときに実際に取ってくるものと比べる。
+    # ヘルパーを使わず npm を直接呼ぶインストーラーもあるので、両方の書き方を集める。
     specs="$(awk '/npm_install\.sh/ || /^[[:space:]]*npm install / { print $NF }' "${script}" | tr -d "\"'")"
     [[ -n "${specs}" ]] || return 1
 
-    # npm outdated exits non-zero both when updates exist and when the registry is unreachable,
-    # so the exit status says nothing. Validate the report instead, and let an unparseable one
-    # fall through to a reinstall rather than read as "nothing to do".
+    # npm outdated は更新があるときもレジストリにつながらないときも 0 以外で終わるので、
+    # 終了コードからは何も分からない。代わりに結果を検証し、読めない結果は
+    # 「何もしなくてよい」とは扱わずに入れ直しへ回す。
     report="$(cd "${server_dir}" && npm outdated --json 2> /dev/null)" || true
     jq -e . &> /dev/null <<< "${report}" || return 1
 
     for spec in ${specs}; do
-        # Trim a trailing @version. A scoped name with no version leaves this empty.
+        # 末尾の @version を除く。バージョンの無いスコープ付きの名前では空になる。
         name="${spec%@*}"
         [[ -n "${name}" ]] || name="${spec}"
         if [[ "${spec}" == "${name}" ]]; then
@@ -197,30 +197,30 @@ function __npm_server_is_current() {
         fi
 
         current="$(jq -r --arg n "${name}" '.[$n].current // empty' <<< "${report}")"
-        # npm outdated omits packages that are fully current.
+        # npm outdated は最新のパッケージを出さない。
         [[ -n "${current}" ]] || continue
 
         if [[ -z "${version}" ]]; then
             expected="$(jq -r --arg n "${name}" '.[$n].latest // empty' <<< "${report}")"
         elif [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            # Pinned to one release, so a reinstall can only ever produce that same version.
+            # 1 つのリリースに固定されているので、入れ直しても同じバージョンにしかならない。
             expected="${version}"
         else
-            # Pinned to a range, so a reinstall stays within the recorded package.json range.
+            # 範囲で固定されているので、入れ直しても package.json に記録された範囲に収まる。
             expected="$(jq -r --arg n "${name}" '.[$n].wanted // empty' <<< "${report}")"
         fi
         [[ "${current}" == "${expected}" ]] || return 1
     done
 }
 
-# __vim_lsp_server_is_current checks if the specified server is installed and up to date
+# 指定したサーバーがインストールされていて、最新かを調べる
 function __vim_lsp_server_is_current() {
     local server_dir="${1}"
     local server="${2}"
     local script="${3}"
 
-    # An interrupted install leaves the dependencies in place but not the entrypoint,
-    # so treat a missing entrypoint as not installed rather than trusting the version check below.
+    # インストールが途中で止まると、依存は残ってもエントリーポイントが無いので、
+    # 後のバージョンの確認を信用せず、エントリーポイントが無ければ未インストールとして扱う。
     [[ -e "${server_dir}/${server}" ]] || return 1
 
     if [[ -f "${server_dir}/package.json" ]]; then
@@ -228,18 +228,18 @@ function __vim_lsp_server_is_current() {
     elif [[ -x "${server_dir}/venv/bin/pip3" ]]; then
         local pip3="${server_dir}/venv/bin/pip3"
         local requested outdated
-        # Extras such as python-lsp-server[all] cap dependencies below their newest release,
-        # so pip list --outdated never empties out. Narrow it to the explicitly requested
-        # packages, which are the only ones a reinstall can actually move forward.
+        # python-lsp-server[all] のような extras は依存を最新のリリースより下に抑えるので、
+        # pip list --outdated はいつまでも空にならない。入れ直しで実際に新しくできるのは
+        # 明示的に指定したパッケージだけなので、それに絞る。
         requested="$("${pip3}" inspect 2> /dev/null | jq -r '.installed[] | select(.requested) | .metadata.name' | sort)" || return 1
         outdated="$("${pip3}" list --outdated --format=json 2> /dev/null | jq -r '.[].name' | sort)" || return 1
-        # No requested packages means pip could not report what the installer asked for,
-        # which must not read as "nothing to do".
+        # 指定したパッケージが無いのは、インストーラーが求めたものを pip が報告できなかったということで、
+        # 「何もしなくてよい」と読んではいけない。
         [[ -n "${requested}" ]] || return 1
         [[ -z "$(comm -12 <(echo "${requested}") <(echo "${outdated}"))" ]]
     else
-        # Servers that just drop a binary expose no version the installer agrees on,
-        # and reimplementing the installer's version lookup here would duplicate upstream.
+        # バイナリを置くだけのサーバーは、インストーラーと一致するバージョンを示さず、
+        # インストーラーのバージョンの調べ方をここで作り直すと上流と重複する。
         return 1
     fi
 }
@@ -263,8 +263,8 @@ function vim_lsp_settings_update() {
         fi
 
         echo "==> Updating ${server}..."
-        # The installers assume an empty directory: their ln -s has no -f, and unzip blocks
-        # on an overwrite prompt. Updating in place is not an option, so wipe and reinstall.
+        # インストーラーは空のディレクトリを前提にしていて、ln -s に -f が無く、unzip は上書きの確認で止まる。
+        # その場での更新はできないので、消してから入れ直す。
         rm -rf "${server_dir:?}"/*
         retries=3
         for i in $(seq 1 "${retries}"); do
