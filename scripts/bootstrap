@@ -292,7 +292,7 @@ function session_manager_plugin_install() {
     local arch
     arch="$(uname -m)"
     local pkg_url
-    if [[ "${arch}" = "arm64" ]]; then
+    if [[ "${arch}" == "arm64" ]]; then
         pkg_url="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac_arm64/session-manager-plugin.pkg"
     else
         pkg_url="https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/session-manager-plugin.pkg"

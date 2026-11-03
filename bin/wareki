@@ -37,9 +37,9 @@ function pad_fmt() {
     local val="${1}" width="${2}" highlight="${3}" in_range="${4}"
     local padded
     padded="$(printf "%-${width}s" "${val}")"
-    if [[ "${highlight}" = "1" ]]; then
+    if [[ "${highlight}" == "1" ]]; then
         printf '%b%s%b' "${bold}" "${padded}" "${reset}"
-    elif [[ "${in_range}" = "0" ]]; then
+    elif [[ "${in_range}" == "0" ]]; then
         printf '%b%s%b' "${out}" "${padded}" "${reset}"
     else
         printf "%s" "${padded}"
