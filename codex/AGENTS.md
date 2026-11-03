@@ -283,7 +283,8 @@ shfmt -d -ln bash -i 4 -bn -ci -sr -kp <file> # 整形差分の確認
   `--indent 4 --binary-next-line --case-indent --space-redirects --keep-padding`。
   フラグを揃えてあるので、エディタ保存時の整形と CLI の結果が一致する
 - 変数は基本ダブルクォートで囲む。
-  `set -euo pipefail` を冒頭に置く
+  `set -e -u -o pipefail` を冒頭に置く。
+  オプションを 1 つずつ書くと、`-o` が `pipefail` を引数に取ることが読み取りやすい
 
 ## Go コーディング規約
 

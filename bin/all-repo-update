@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
-set -o pipefail
+set -e -u -o pipefail
 
 for repo_path in $(ghq list --full-path); do
     short_path="$(echo "${repo_path}" | rev | cut -d '/' -f '1-3' | rev)"

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -u
-set -o pipefail
+set -u -o pipefail
 
 for repo_path in $(ghq list --full-path); do
     pushd "${repo_path}" > /dev/null 2>&1 || continue

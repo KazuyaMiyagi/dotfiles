@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
-set -o pipefail
+set -e -u -o pipefail
 
 # OSC 777 のデスクトップ通知を、呼び出し元プロセスが繋がっている端末 (pty) へ送る。
 #

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
-set -o pipefail
+set -e -u -o pipefail
 
 DOTFILES_DIR="$(ghq root)/github.com/KazuyaMiyagi/dotfiles"
 readonly DOTFILES_DIR

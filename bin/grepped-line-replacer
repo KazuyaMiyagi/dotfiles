@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
-set -o pipefail
+set -e -u -o pipefail
 
 input_file="${1:-/dev/stdin}"
 

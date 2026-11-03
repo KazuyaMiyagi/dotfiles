@@ -5,7 +5,7 @@
 #   - gh api でのコメント・レビューの投稿（読むだけの gh api は通す）
 #   - レビュー依頼済みの PR のブランチでの rebase / amend / force push
 
-set -euo pipefail
+set -e -u -o pipefail
 
 input=$(cat)
 command=$(jq -r '.tool_input.command // empty' <<< "${input}")

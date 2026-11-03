@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
-set -o pipefail
+set -e -u -o pipefail
 
 ROLE_ARN="$(aws configure get role_arn)"
 readonly ROLE_ARN
