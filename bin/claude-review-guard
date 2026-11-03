@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 # Claude Code の PreToolUse hook。
 # 次の Bash コマンドのときだけ承認ダイアログを出し、それ以外は何も返さずに通す。
