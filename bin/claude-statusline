@@ -68,7 +68,6 @@ function __pie_icon() {
     printf '%s' "${icons[${idx}]}"
 }
 
-# 割合に応じた文字色: 緑（50% 未満）、黄（50-79%）、赤（80% 以上）
 function __pct_fg() {
     local int_pct="${1}"
     if [[ "${int_pct}" -ge 80 ]]; then
@@ -93,7 +92,6 @@ function claude_statusline() {
 
     local project_text project_name rel model_text cost_text
     local context_fg context_text five_fg five_text seven_fg seven_text
-    # --- 各セグメントの文字列を組み立てる ---
 
     project_text=""
     if [[ -n "${project_dir}" ]]; then

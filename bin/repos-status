@@ -14,13 +14,11 @@ function repos_status() {
         header="<--- $(echo "${repo_path}" | rev | cut -d '/' -f '1,2' | rev) --->"
         output=""
 
-        # stash があれば戻す
         stash_output="$(git stash pop 2>&1)"
         if [[ "${stash_output}" != "No stash entries found." ]]; then
             output="${output}${stash_output}"$'\n'
         fi
 
-        # デフォルトブランチを調べる
         default_branch="$(git symbolic-ref refs/remotes/origin/HEAD 2> /dev/null | sed 's@^refs/remotes/origin/@@')" || default_branch=""
         if [[ -z "${default_branch}" ]]; then
             for candidate in main master; do
@@ -31,20 +29,17 @@ function repos_status() {
             done
         fi
 
-        # デフォルトブランチ以外のブランチ
         extra_branches="$(git branch | grep -v -e "^\* ${default_branch}$" -e "^  ${default_branch}$" || true)"
         if [[ -n "${extra_branches}" ]]; then
             output="${output}${extra_branches}"$'\n'
         fi
 
-        # 状態（デフォルトブランチが origin と一致している行は除く）
         status_output="$(git status --short --branch)"
         filtered_status="$(echo "${status_output}" | grep -v "^## ${default_branch}\.\.\.origin/${default_branch}$" || true)"
         if [[ -n "${filtered_status}" ]]; then
             output="${output}${filtered_status}"$'\n'
         fi
 
-        # 気にすべきものがあるリポジトリだけ出力する
         if [[ -n "${output}" ]]; then
             echo "${header}"
             printf '%s' "${output}"

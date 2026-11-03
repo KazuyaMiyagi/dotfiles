@@ -25,7 +25,6 @@ function usage() {
 	HEREDOC
 }
 
-# 照合結果の行を、罫線で囲んだ表にして出力する
 function __print_table() {
     local rows="${1}"
     {
@@ -98,7 +97,6 @@ function cloned_repos_check() {
         esac
     done
 
-    # 1. 対象 owner 一覧を決定
     local orgs
     if [[ -n "${org}" ]]; then
         orgs="${org}"
@@ -111,7 +109,6 @@ function cloned_repos_check() {
         return
     fi
 
-    # 2. 各 owner ごとに照合してテーブル行を蓄積
     local rows="" owner local_repos remote_list name match full new_full
     while IFS= read -r owner; do
         [[ -z "${owner}" ]] && continue
@@ -119,7 +116,6 @@ function cloned_repos_check() {
         local_repos="$(ghq list | awk -F/ -v o="${owner}" '$1 == "github.com" && $2 == o { print $3 }' | sort -u)"
         [[ -z "${local_repos}" ]] && continue
 
-        # リモート一覧（archived フラグ込み）。tab 区切りで保持
         remote_list="$(gh repo list "${owner}" --limit 1000 --json name,isArchived \
             | jq -r '.[] | "\(.name)\t\(.isArchived)"')"
 

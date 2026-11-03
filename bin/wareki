@@ -11,7 +11,6 @@ readonly OUT
 RESET="\e[0m"
 readonly RESET
 
-# start から end までの年に offset を足した値のうち、いちばん長い桁数を返す
 function __max_width() {
     local start="${1}" end="${2}" offset="${3}"
     local max=0 year val len
@@ -59,7 +58,6 @@ function wareki() {
         exit 1
     fi
 
-    # 各列の最大表示幅を計算
     local start=$((YEAR - 10))
     local end=$((YEAR + 10))
     local w_year w_reiwa w_heisei w_showa
@@ -74,7 +72,6 @@ function wareki() {
     [[ "${w_heisei}" -lt 4 ]] && w_heisei=4
     [[ "${w_showa}" -lt 4 ]] && w_showa=4
 
-    # ヘッダ用の罫線を生成
     local hr_year hr_reiwa hr_heisei hr_showa
     hr_year="$(printf '%0.s─' $(seq 1 $((w_year + 2))))"
     hr_reiwa="$(printf '%0.s─' $(seq 1 $((w_reiwa + 2))))"

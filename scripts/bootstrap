@@ -4,7 +4,6 @@ set -e -u -o pipefail
 
 # 開発環境に必要なツールをインストールし、最新に更新する。
 
-# 指定したコマンドがインストールされているかを調べる
 function __is_installed() {
     type "${1}" &> /dev/null
 }
@@ -213,7 +212,6 @@ function __npm_server_is_current() {
     done
 }
 
-# 指定したサーバーがインストールされていて、最新かを調べる
 function __vim_lsp_server_is_current() {
     local server_dir="${1}"
     local server="${2}"

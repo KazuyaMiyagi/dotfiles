@@ -46,7 +46,6 @@ function agent_osc_notify() {
         title="${1}"
         body="${2}"
     elif [[ ! -t 0 ]]; then
-        # 引数が無い場合は stdin の JSON (Claude Code フックのペイロード) から取得する。
         if ! __is_installed jq; then
             echo "Error: jq is not installed" >&2
             exit 1

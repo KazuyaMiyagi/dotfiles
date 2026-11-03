@@ -89,40 +89,29 @@ function init() {
         mkdir "${BACKUP_DIR}"
     fi
 
-    # ~/.config のシンボリックリンクを張る
     __create_symlink "${DOTFILE_ROOT_DIR}" "${XDG_CONFIG_HOME}" "config"
 
-    # ~/tool-versions のシンボリックリンクを張る
     __create_symlink "${DOTFILE_ROOT_DIR}/asdf/tool-versions" "${HOME}/tool-versions" "tool-versions"
 
-    # ~/.tflint.hcl のシンボリックリンクを張る
     __create_symlink "${DOTFILE_ROOT_DIR}/tflint/tflint.hcl" "${HOME}/.tflint.hcl" "tflint.hcl"
 
-    # ~/.claude/settings.json を用意する
     __create_symlink "${DOTFILE_ROOT_DIR}/claude/settings.json" "${HOME}/.claude/settings.json" "claude_settings.json"
 
-    # ~/.claude/CLAUDE.md を用意する
     __create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
 
-    # ~/.claude/rules/*.md（言語別ルール）を用意する
     __link_claude_rules "${DOTFILE_ROOT_DIR}/claude/rules" "${HOME}/.claude/rules" "claude_rules"
 
-    # ~/.codex を用意する
     if [[ ! -d "${HOME}/.codex" ]]; then
         echo "Creating ${HOME}/.codex"
         mkdir -p "${HOME}/.codex"
     fi
 
-    # ~/.codex/AGENTS.md を用意する
     __create_symlink "${DOTFILE_ROOT_DIR}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md" "codex_AGENTS.md"
 
-    # ~/.codex/hooks.json を用意する
     __create_symlink "${DOTFILE_ROOT_DIR}/codex/hooks.json" "${HOME}/.codex/hooks.json" "codex_hooks.json"
 
-    # ~/.codex/config.toml を用意する
     __merge_managed_block "${DOTFILE_ROOT_DIR}/codex/config.toml" "${HOME}/.codex/config.toml" "codex"
 
-    # ~/.zshenv を用意する
     if [[ -f "${HOME}/.zshenv" ]]; then
         echo "${HOME}/.zshenv found. Backing up to ${BACKUP_DIR}/zshenv"
         mv "${HOME}/.zshenv" "${BACKUP_DIR}/zshenv"
@@ -130,7 +119,6 @@ function init() {
     echo "Creating ${HOME}/.zshenv"
     echo "export ZDOTDIR=${XDG_CONFIG_HOME}/zsh" > "${HOME}/.zshenv"
 
-    # ~/.local/share/zsh を用意する
     if [[ ! -d "${XDG_DATA_HOME}/zsh" ]]; then
         echo "Creating ${XDG_DATA_HOME}/zsh"
         mkdir -p "${XDG_DATA_HOME}/zsh"
