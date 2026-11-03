@@ -6,21 +6,23 @@ set -e -u -o pipefail
 # アーカイブ・削除・リネームを検知する。
 
 function usage() {
-    cat << HEREDOC
-Usage: $(basename "${0}") [OPTIONS] [ORG]
+    local COMMAND="cloned-repos-check"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} [OPTIONS] [ORG]
 
-ghq でクローン済みの GitHub リポジトリを照合し、
-アーカイブ・削除・リネームを検知する。
+		ghq でクローン済みの GitHub リポジトリを照合し、
+		アーカイブ・削除・リネームを検知する。
 
-ORG を省略すると、ghq に存在する github.com の全 owner を対象にする。
+		ORG を省略すると、ghq に存在する github.com の全 owner を対象にする。
 
-Options:
-  -a, --all    active なリポジトリも含めて全件表示
-  -h, --help   このヘルプを表示
+		Options:
+		  -a, --all    active なリポジトリも含めて全件表示
+		  -h, --help   このヘルプを表示
 
-Arguments:
-  ORG  対象の GitHub Organization または User（省略時は全 owner）
-HEREDOC
+		Arguments:
+		  ORG  対象の GitHub Organization または User（省略時は全 owner）
+	HEREDOC
 }
 
 show_all=0
