@@ -8,15 +8,6 @@ case "$(uname)" in
 esac
 readonly REALPATH_CMD
 
-input="$(cat)"
-project_dir="$(jq -r '.workspace.project_dir // .cwd // empty' <<< "${input}")"
-cwd="$(jq -r '.cwd // empty' <<< "${input}")"
-model="$(jq -r '.model.display_name // empty' <<< "${input}")"
-cost="$(jq -r '.cost.total_cost_usd // empty' <<< "${input}")"
-context="$(jq -r 'if .context_window.used_percentage then (.context_window.used_percentage | floor | tostring) else empty end' <<< "${input}")"
-five_hour="$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<< "${input}")"
-seven_day="$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<< "${input}")"
-
 # 配色
 BG_ORANGE="196,123,92" # Claude のサーモン
 readonly BG_ORANGE
@@ -47,7 +38,7 @@ readonly FG_RED
 #   Text=<text>        -> 文字列を出力する
 #   ResetAttributes    -> 属性をすべて戻す
 function __format() {
-    local rgb
+    local directive rgb
     for directive in "${@}"; do
         case "${directive}" in
             Background=*)
@@ -86,53 +77,69 @@ function __pct_fg() {
     fi
 }
 
-# --- 各セグメントの文字列を組み立てる ---
+function claude_statusline() {
+    local input project_dir cwd model cost context five_hour seven_day
+    input="$(cat)"
+    project_dir="$(jq -r '.workspace.project_dir // .cwd // empty' <<< "${input}")"
+    cwd="$(jq -r '.cwd // empty' <<< "${input}")"
+    model="$(jq -r '.model.display_name // empty' <<< "${input}")"
+    cost="$(jq -r '.cost.total_cost_usd // empty' <<< "${input}")"
+    context="$(jq -r 'if .context_window.used_percentage then (.context_window.used_percentage | floor | tostring) else empty end' <<< "${input}")"
+    five_hour="$(jq -r 'if .rate_limits.five_hour.used_percentage then (.rate_limits.five_hour.used_percentage | floor | tostring) else empty end' <<< "${input}")"
+    seven_day="$(jq -r 'if .rate_limits.seven_day.used_percentage then (.rate_limits.seven_day.used_percentage | floor | tostring) else empty end' <<< "${input}")"
 
-project_text=""
-if [[ -n "${project_dir}" ]]; then
-    project_name="$(basename "${project_dir}")"
-    if [[ -n "${cwd}" && "${cwd}" != "${project_dir}" ]]; then
-        rel="$("${REALPATH_CMD}" -m -s --relative-to="${project_dir}" "${cwd}")"
-        [[ "${rel}" == ..* ]] || rel="./${rel}"
-        project_text=" [${project_name}](${rel}/) "
-    else
-        project_text=" [${project_name}] "
+    local project_text project_name rel model_text cost_text
+    local context_fg context_text five_fg five_text seven_fg seven_text
+    # --- 各セグメントの文字列を組み立てる ---
+
+    project_text=""
+    if [[ -n "${project_dir}" ]]; then
+        project_name="$(basename "${project_dir}")"
+        if [[ -n "${cwd}" && "${cwd}" != "${project_dir}" ]]; then
+            rel="$("${REALPATH_CMD}" -m -s --relative-to="${project_dir}" "${cwd}")"
+            [[ "${rel}" == ..* ]] || rel="./${rel}"
+            project_text=" [${project_name}](${rel}/) "
+        else
+            project_text=" [${project_name}] "
+        fi
     fi
-fi
 
-model_text=" ${model} "
+    model_text=" ${model} "
 
-cost_text=""
-if [[ -n "${cost}" ]]; then
-    cost_text="$(printf ' $%.1f ' "${cost}")"
-fi
+    cost_text=""
+    if [[ -n "${cost}" ]]; then
+        cost_text="$(printf ' $%.1f ' "${cost}")"
+    fi
 
-context_fg="${FG_LIGHT}"
-context_text=""
-if [[ -n "${context}" ]]; then
-    context_fg="$(__pct_fg "${context}")"
-    context_text=" $(__pie_icon "${context}") ctx ${context}% "
-fi
+    context_fg="${FG_LIGHT}"
+    context_text=""
+    if [[ -n "${context}" ]]; then
+        context_fg="$(__pct_fg "${context}")"
+        context_text=" $(__pie_icon "${context}") ctx ${context}% "
+    fi
 
-five_fg="${FG_LIGHT}"
-five_text=""
-if [[ -n "${five_hour}" ]]; then
-    five_fg="$(__pct_fg "${five_hour}")"
-    five_text=" $(__pie_icon "${five_hour}") 5h ${five_hour}% "
-fi
+    five_fg="${FG_LIGHT}"
+    five_text=""
+    if [[ -n "${five_hour}" ]]; then
+        five_fg="$(__pct_fg "${five_hour}")"
+        five_text=" $(__pie_icon "${five_hour}") 5h ${five_hour}% "
+    fi
 
-seven_fg="${FG_LIGHT}"
-seven_text=""
-if [[ -n "${seven_day}" ]]; then
-    seven_fg="$(__pct_fg "${seven_day}")"
-    seven_text=" $(__pie_icon "${seven_day}") 7d ${seven_day}% "
-fi
+    seven_fg="${FG_LIGHT}"
+    seven_text=""
+    if [[ -n "${seven_day}" ]]; then
+        seven_fg="$(__pct_fg "${seven_day}")"
+        seven_text=" $(__pie_icon "${seven_day}") 7d ${seven_day}% "
+    fi
 
-# --- 書式を付けて出力する（セグメントの順番はここで入れ替える） ---
-__format \
-    "Background=${BG_ORANGE}" "Foreground=${FG_DARK}" "Text=${project_text}" ResetAttributes \
-    "Background=${BG_GRAY1}" "Foreground=${FG_LIGHT}" "Text=${model_text}" ResetAttributes \
-    "Background=${BG_GRAY2}" "Foreground=${FG_LIGHT}" "Text=${cost_text}" ResetAttributes \
-    "Background=${BG_GRAY3}" "Foreground=${context_fg}" "Text=${context_text}" ResetAttributes \
-    "Background=${BG_GRAY4}" "Foreground=${five_fg}" "Text=${five_text}" ResetAttributes \
-    "Background=${BG_GRAY5}" "Foreground=${seven_fg}" "Text=${seven_text}" ResetAttributes
+    # --- 書式を付けて出力する（セグメントの順番はここで入れ替える） ---
+    __format \
+        "Background=${BG_ORANGE}" "Foreground=${FG_DARK}" "Text=${project_text}" ResetAttributes \
+        "Background=${BG_GRAY1}" "Foreground=${FG_LIGHT}" "Text=${model_text}" ResetAttributes \
+        "Background=${BG_GRAY2}" "Foreground=${FG_LIGHT}" "Text=${cost_text}" ResetAttributes \
+        "Background=${BG_GRAY3}" "Foreground=${context_fg}" "Text=${context_text}" ResetAttributes \
+        "Background=${BG_GRAY4}" "Foreground=${five_fg}" "Text=${five_text}" ResetAttributes \
+        "Background=${BG_GRAY5}" "Foreground=${seven_fg}" "Text=${seven_text}" ResetAttributes
+}
+
+claude_statusline

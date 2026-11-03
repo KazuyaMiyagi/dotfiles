@@ -2,9 +2,6 @@
 
 set -e -u -o pipefail
 
-YEAR="${1:-$(date +%Y)}"
-readonly YEAR
-
 BOLD="\e[1;32m"
 readonly BOLD
 OUT="\e[31m"
@@ -12,32 +9,19 @@ readonly OUT
 RESET="\e[0m"
 readonly RESET
 
-# 各列の最大表示幅を計算
-start=$((YEAR - 10))
-end=$((YEAR + 10))
-
-function max_w() {
-    local max=0 val
+# start から end までの年に offset を足した値のうち、いちばん長い桁数を返す
+function __max_width() {
+    local start="${1}" end="${2}" offset="${3}"
+    local max=0 year val len
     for year in $(seq "${start}" "${end}"); do
-        val=$((year + ${1}))
+        val=$((year + offset))
         len=${#val}
         [[ "${len}" -gt "${max}" ]] && max=${len}
     done
     echo "${max}"
 }
 
-w_year="$(max_w 0)"
-w_reiwa="$(max_w -2018)"
-w_heisei="$(max_w -1988)"
-w_showa="$(max_w -1925)"
-
-# 最小幅を4に（ヘッダの全角文字分）
-[[ "${w_year}" -lt 4 ]] && w_year=4
-[[ "${w_reiwa}" -lt 4 ]] && w_reiwa=4
-[[ "${w_heisei}" -lt 4 ]] && w_heisei=4
-[[ "${w_showa}" -lt 4 ]] && w_showa=4
-
-function pad_fmt() {
+function __pad_fmt() {
     local val="${1}" width="${2}" highlight="${3}" in_range="${4}"
     local padded
     padded="$(printf "%-${width}s" "${val}")"
@@ -50,48 +34,72 @@ function pad_fmt() {
     fi
 }
 
-# ヘッダ用の罫線を生成
-hr_year="$(printf '%0.s─' $(seq 1 $((w_year + 2))))"
-hr_reiwa="$(printf '%0.s─' $(seq 1 $((w_reiwa + 2))))"
-hr_heisei="$(printf '%0.s─' $(seq 1 $((w_heisei + 2))))"
-hr_showa="$(printf '%0.s─' $(seq 1 $((w_showa + 2))))"
-
 # ヘッダの全角文字パディング（全角2文字=表示4列）
-function pad_header() {
+function __pad_header() {
     local label="${1}" width="${2}"
     local spaces=$((width - 4))
     printf '%s%*s' "${label}" "${spaces}" ""
 }
 
-echo "┌${hr_year}┬${hr_reiwa}┬${hr_heisei}┬${hr_showa}┐"
-printf '│ %s │ %s │ %s │ %s │\n' \
-    "$(pad_header "西暦" "${w_year}")" \
-    "$(pad_header "令和" "${w_reiwa}")" \
-    "$(pad_header "平成" "${w_heisei}")" \
-    "$(pad_header "昭和" "${w_showa}")"
-echo "├${hr_year}┼${hr_reiwa}┼${hr_heisei}┼${hr_showa}┤"
+function wareki() {
+    # 各列の最大表示幅を計算
+    local start=$((YEAR - 10))
+    local end=$((YEAR + 10))
+    local w_year w_reiwa w_heisei w_showa
+    w_year="$(__max_width "${start}" "${end}" 0)"
+    w_reiwa="$(__max_width "${start}" "${end}" -2018)"
+    w_heisei="$(__max_width "${start}" "${end}" -1988)"
+    w_showa="$(__max_width "${start}" "${end}" -1925)"
 
-for year in $(seq "${start}" "${end}"); do
-    r=$((year - 2018))
-    h=$((year - 1988))
-    s=$((year - 1925))
+    # 最小幅を4に（ヘッダの全角文字分）
+    [[ "${w_year}" -lt 4 ]] && w_year=4
+    [[ "${w_reiwa}" -lt 4 ]] && w_reiwa=4
+    [[ "${w_heisei}" -lt 4 ]] && w_heisei=4
+    [[ "${w_showa}" -lt 4 ]] && w_showa=4
 
-    is_current=0
-    [[ "${year}" -eq "${YEAR}" ]] && is_current=1
+    # ヘッダ用の罫線を生成
+    local hr_year hr_reiwa hr_heisei hr_showa
+    hr_year="$(printf '%0.s─' $(seq 1 $((w_year + 2))))"
+    hr_reiwa="$(printf '%0.s─' $(seq 1 $((w_reiwa + 2))))"
+    hr_heisei="$(printf '%0.s─' $(seq 1 $((w_heisei + 2))))"
+    hr_showa="$(printf '%0.s─' $(seq 1 $((w_showa + 2))))"
 
-    # 実際の元号の範囲: 令和 2019~, 平成 1989~2019, 昭和 1926~1989
-    r_in=1
-    [[ "${year}" -lt 2019 ]] && r_in=0
-    h_in=1
-    [[ "${year}" -lt 1989 || "${year}" -gt 2019 ]] && h_in=0
-    s_in=1
-    [[ "${year}" -lt 1926 || "${year}" -gt 1989 ]] && s_in=0
+    echo "┌${hr_year}┬${hr_reiwa}┬${hr_heisei}┬${hr_showa}┐"
+    printf '│ %s │ %s │ %s │ %s │\n' \
+        "$(__pad_header "西暦" "${w_year}")" \
+        "$(__pad_header "令和" "${w_reiwa}")" \
+        "$(__pad_header "平成" "${w_heisei}")" \
+        "$(__pad_header "昭和" "${w_showa}")"
+    echo "├${hr_year}┼${hr_reiwa}┼${hr_heisei}┼${hr_showa}┤"
 
-    printf '│ %b │ %b │ %b │ %b │\n' \
-        "$(pad_fmt "${year}" "${w_year}" "${is_current}" 1)" \
-        "$(pad_fmt "${r}" "${w_reiwa}" "${is_current}" "${r_in}")" \
-        "$(pad_fmt "${h}" "${w_heisei}" "${is_current}" "${h_in}")" \
-        "$(pad_fmt "${s}" "${w_showa}" "${is_current}" "${s_in}")"
-done
+    local year r h s is_current r_in h_in s_in
+    for year in $(seq "${start}" "${end}"); do
+        r=$((year - 2018))
+        h=$((year - 1988))
+        s=$((year - 1925))
 
-echo "└${hr_year}┴${hr_reiwa}┴${hr_heisei}┴${hr_showa}┘"
+        is_current=0
+        [[ "${year}" -eq "${YEAR}" ]] && is_current=1
+
+        # 実際の元号の範囲: 令和 2019~, 平成 1989~2019, 昭和 1926~1989
+        r_in=1
+        [[ "${year}" -lt 2019 ]] && r_in=0
+        h_in=1
+        [[ "${year}" -lt 1989 || "${year}" -gt 2019 ]] && h_in=0
+        s_in=1
+        [[ "${year}" -lt 1926 || "${year}" -gt 1989 ]] && s_in=0
+
+        printf '│ %b │ %b │ %b │ %b │\n' \
+            "$(__pad_fmt "${year}" "${w_year}" "${is_current}" 1)" \
+            "$(__pad_fmt "${r}" "${w_reiwa}" "${is_current}" "${r_in}")" \
+            "$(__pad_fmt "${h}" "${w_heisei}" "${is_current}" "${h_in}")" \
+            "$(__pad_fmt "${s}" "${w_showa}" "${is_current}" "${s_in}")"
+    done
+
+    echo "└${hr_year}┴${hr_reiwa}┴${hr_heisei}┴${hr_showa}┘"
+}
+
+YEAR="${1:-$(date +%Y)}"
+readonly YEAR
+
+wareki

@@ -2,14 +2,18 @@
 
 set -u -o pipefail
 
-echo -e "==> Starting Terraform validation...\n"
-terraform validate
-echo -e "==> Terraform validation completed.\n"
+function tf_linters() {
+    echo -e "==> Starting Terraform validation...\n"
+    terraform validate
+    echo -e "==> Terraform validation completed.\n"
 
-echo -e "==> Starting TFLint...\n"
-tflint --format compact --recursive --call-module-type=local
-echo -e "==> TFLint completed.\n"
+    echo -e "==> Starting TFLint...\n"
+    tflint --format compact --recursive --call-module-type=local
+    echo -e "==> TFLint completed.\n"
 
-echo -e "==> Starting trivy...\n"
-trivy config --tf-exclude-downloaded-modules --skip-dirs '**/.terraform' --format sarif . | jq --raw-output --from-file "${XDG_CONFIG_HOME}/efm-langserver/sarif-to-errfmt.jq"
-echo -e "==> Trivy completed.\n"
+    echo -e "==> Starting trivy...\n"
+    trivy config --tf-exclude-downloaded-modules --skip-dirs '**/.terraform' --format sarif . | jq --raw-output --from-file "${XDG_CONFIG_HOME}/efm-langserver/sarif-to-errfmt.jq"
+    echo -e "==> Trivy completed.\n"
+}
+
+tf_linters

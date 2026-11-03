@@ -2,14 +2,19 @@
 
 set -e -u -o pipefail
 
-for repo_path in $(ghq list --full-path); do
-    short_path="$(echo "${repo_path}" | rev | cut -d '/' -f '1-3' | rev)"
-    echo -e "\n==> Updating ${short_path}...\n"
-    pushd "${repo_path}" &> /dev/null
-    git pull --prune --recurse-submodules --jobs=10
-    git branch
-    git status --short --branch
-    git stash list
-    popd &> /dev/null
-    echo -e "\n==> ${short_path} update completed.\n"
-done
+function all_repo_update() {
+    local repo_path short_path
+    for repo_path in $(ghq list --full-path); do
+        short_path="$(echo "${repo_path}" | rev | cut -d '/' -f '1-3' | rev)"
+        echo -e "\n==> Updating ${short_path}...\n"
+        pushd "${repo_path}" &> /dev/null
+        git pull --prune --recurse-submodules --jobs=10
+        git branch
+        git status --short --branch
+        git stash list
+        popd &> /dev/null
+        echo -e "\n==> ${short_path} update completed.\n"
+    done
+}
+
+all_repo_update

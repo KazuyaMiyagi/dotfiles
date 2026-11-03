@@ -2,9 +2,16 @@
 
 set -e -u -o pipefail
 
-if [[ "${1}" == "usage" ]]; then
-    echo "    edit: Opens the TODO file in the editor specified by the \$EDITOR environment variable."
-    exit 0
-fi
+function edit() {
+    if [[ "${ACTION}" == "usage" ]]; then
+        echo "    edit: Opens the TODO file in the editor specified by the \$EDITOR environment variable."
+        return
+    fi
 
-"${EDITOR}" "${TODO_FILE}"
+    "${EDITOR}" "${TODO_FILE}"
+}
+
+ACTION="${1:-""}"
+readonly ACTION
+
+edit

@@ -2,12 +2,17 @@
 
 set -e -u -o pipefail
 
+function org_repos_clone() {
+    local repo
+    for repo in $(gh repo list "${ORG}" --limit "${LIMIT}" --no-archived --json 'name' | jq -r '.[].name'); do
+        ghq get "${ORG}/${repo}"
+    done
+}
+
 ORG="${1:?Usage: org-repos-clone <org>}"
 readonly ORG
 
 LIMIT="${2:-1000}"
 readonly LIMIT
 
-for repo in $(gh repo list "${ORG}" --limit "${LIMIT}" --no-archived --json 'name' | jq -r '.[].name'); do
-    ghq get "${ORG}/${repo}"
-done
+org_repos_clone

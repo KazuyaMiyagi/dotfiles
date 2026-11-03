@@ -216,6 +216,32 @@ function usage() {
     exit 1
 }
 
+function sts_session_manager() {
+    case "${SUBCOMMAND}" in
+        check-required-tools | check)
+            check_required_tools
+            ;;
+        get-session-token)
+            get_session_token
+            ;;
+        assume-role)
+            assume_role
+            ;;
+        list | ls)
+            list
+            ;;
+        show)
+            show
+            ;;
+        remove | rm)
+            remove
+            ;;
+        *)
+            usage
+            ;;
+    esac
+}
+
 SUBCOMMAND="${1:-""}"
 readonly SUBCOMMAND
 
@@ -228,26 +254,4 @@ readonly MFA_TOKEN
 CACHE_DIR="${HOME}/.aws/cli/cache"
 readonly CACHE_DIR
 
-case "${SUBCOMMAND}" in
-    check-required-tools | check)
-        check_required_tools
-        ;;
-    get-session-token)
-        get_session_token
-        ;;
-    assume-role)
-        assume_role
-        ;;
-    list | ls)
-        list
-        ;;
-    show)
-        show
-        ;;
-    remove | rm)
-        remove
-        ;;
-    *)
-        usage
-        ;;
-esac
+sts_session_manager

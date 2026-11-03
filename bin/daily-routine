@@ -5,13 +5,17 @@ set -e -u -o pipefail
 DOTFILES_DIR="$(ghq root)/github.com/KazuyaMiyagi/dotfiles"
 readonly DOTFILES_DIR
 
-echo -e "\n==> Updating all repos...\n"
-all-repo-update
+function daily_routine() {
+    echo -e "\n==> Updating all repos...\n"
+    all-repo-update
 
-echo -e "\n==> Running bootstrap...\n"
-"${DOTFILES_DIR}/scripts/bootstrap"
+    echo -e "\n==> Running bootstrap...\n"
+    "${DOTFILES_DIR}/scripts/bootstrap"
 
-echo -e "\n==> Checking repos status...\n"
-repos-status
+    echo -e "\n==> Checking repos status...\n"
+    repos-status
 
-echo -e "\n==> Daily routine completed!\n"
+    echo -e "\n==> Daily routine completed!\n"
+}
+
+daily_routine

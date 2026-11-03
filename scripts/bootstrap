@@ -2,8 +2,6 @@
 
 set -e -u -o pipefail
 
-cd "$(dirname "${0}")/.."
-
 # 指定したコマンドがインストールされているかを調べる
 function __is_installed() {
     type "${1}" &> /dev/null
@@ -315,23 +313,29 @@ function gcloud_update() {
     echo "==> Finished updating gcloud components."
 }
 
-echo "Starting bootstrap..."
+function bootstrap() {
+    cd "$(dirname "${0}")/.."
 
-homebrew_install
-homebrew_update
-homebrew_bundle_install
-go_packages_update
-github_web_flow_key_import
-gh_extensions_install
-vim_plug_install
-vim_plug_package_install
-asdf_plugins_install
-asdf_plugins_update
-asdf_plugins_python_apply_path
-asdf_managed_tools_update
-vim_lsp_settings_update
-tflint_init
-gcloud_update
-session_manager_plugin_install
+    echo "Starting bootstrap..."
 
-echo "Bootstrap finished!"
+    homebrew_install
+    homebrew_update
+    homebrew_bundle_install
+    go_packages_update
+    github_web_flow_key_import
+    gh_extensions_install
+    vim_plug_install
+    vim_plug_package_install
+    asdf_plugins_install
+    asdf_plugins_update
+    asdf_plugins_python_apply_path
+    asdf_managed_tools_update
+    vim_lsp_settings_update
+    tflint_init
+    gcloud_update
+    session_manager_plugin_install
+
+    echo "Bootstrap finished!"
+}
+
+bootstrap
