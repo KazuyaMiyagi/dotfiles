@@ -1,4 +1,5 @@
 brew "actionlint"
+brew "apm"
 brew "asdf"
 brew "autoconf"
 brew "awscli"
