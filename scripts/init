@@ -51,6 +51,25 @@ function __link_claude_rules() {
     done
 }
 
+function __link_claude_skills() {
+    local source_dir="${1}"
+    local target_dir="${2}"
+    local backup_prefix="${3}"
+
+    if [[ ! -d "${source_dir}" ]]; then
+        echo "==> ${source_dir} not found. Skipping skill symlinks."
+        return
+    fi
+
+    mkdir -p "${target_dir}"
+    for skill in "${source_dir}"/*/; do
+        [[ -f "${skill}SKILL.md" ]] || continue
+        local name
+        name="$(basename "${skill}")"
+        __create_symlink "${skill%/}" "${target_dir}/${name}" "${backup_prefix}_${name}"
+    done
+}
+
 function __merge_managed_block() {
     local source_path="${1}"
     local target_path="${2}"
@@ -100,6 +119,8 @@ function init() {
     __create_symlink "${DOTFILE_ROOT_DIR}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md" "claude_CLAUDE.md"
 
     __link_claude_rules "${DOTFILE_ROOT_DIR}/claude/rules" "${HOME}/.claude/rules" "claude_rules"
+
+    __link_claude_skills "${DOTFILE_ROOT_DIR}/claude/skills" "${HOME}/.claude/skills" "claude_skills"
 
     if [[ ! -d "${HOME}/.codex" ]]; then
         echo "Creating ${HOME}/.codex"
