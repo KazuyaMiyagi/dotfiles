@@ -34,11 +34,12 @@ description: >-
 
 ```bash
 herdr tab create --workspace "${HERDR_WORKSPACE_ID}" \
-    --cwd <リポジトリのパス> --label "review-<repo>" --no-focus
+    --cwd <リポジトリのパス> --label "<repo>-<PR 番号>" --no-focus
 herdr agent start "rv-<repo>" --kind claude \
     --pane <返ってきた root_pane の pane_id> --timeout 60000
 ```
 
+- 1 つのリポジトリで PR を複数頼むときは、タブ名に番号をハイフンでつなげて並べる（`readyfor-24851-24849`）
 - タブの ID と pane の ID は、返ってきた JSON から読む
 - `agent start` が `agent_not_ready` を返したら、
   `herdr agent read <名前> --source visible` で画面を確かめる。
