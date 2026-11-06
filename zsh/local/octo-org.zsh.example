@@ -1,0 +1,1 @@
+export AWS_MCP_PROXY_PROFILES='octo-org-dev/ReadOnly octo-org/ReadOnly'

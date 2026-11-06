@@ -4,6 +4,8 @@
 /zsh/.zcompdump*
 /zsh/.zsh_sessions/
 /zsh/.zsh_history
+/zsh/local/*
+!/zsh/local/*.example
 
 # npm
 /configstore/update-notifier-npm.json
