@@ -51,3 +51,8 @@
 !/herdr-app/keys.json
 !/herdr-app/settings.json
 !/herdr-app/programs.json
+!/herdr-app/mods/
+/herdr-app/mods/*
+!/herdr-app/mods/prefix/
+/herdr-app/mods/*/gpui-kit.d.ts
+/herdr-app/mods/*/jsconfig.json

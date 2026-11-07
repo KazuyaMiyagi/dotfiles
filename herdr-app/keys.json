@@ -1,5 +1,6 @@
 {
   "global": {
+    "ctrl-z": "mod.open:prefix",
     "cmd-q": "app.quit",
     "cmd-h": "app.hide",
     "cmd-alt-h": "app.hide_others",
@@ -69,5 +70,8 @@
     "cmd-left": "send:\u0001",
     "cmd-right": "send:\u0005",
     "cmd-backspace": "send:\u0015"
+  },
+  "mod:prefix": {
+    "ctrl-z": "prefix.send_ctrl_z"
   }
 }
