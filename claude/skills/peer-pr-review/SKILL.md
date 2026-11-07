@@ -3,9 +3,9 @@ name: peer-pr-review
 description: >-
   PR の URL を渡されてレビューする時に使用。
   作業ディレクトリのリポジトリの PR は自分でレビューし、ほかのリポジトリの PR は
-  herdr でリポジトリごとにタブを開いて claude を起動し、ピア（SendMessage）にレビューを任せる。
-  herdr の外では、すべての PR を自分でレビューする。
-  結果のまとめ方、承認と CI の再実行の分担、コンテナイメージを更新する PR の動作確認、タブの片付けを含む。
+  リポジトリごとにコーディングエージェント（既定は claude）をピアとして起動し、レビューを任せる。
+  ピアを起動できるのは Herdr app・herdr（TUI 版）・WezTerm の中で、それ以外ではすべての PR を自分でレビューする。
+  結果のまとめ方、承認と CI の再実行の分担、コンテナイメージを更新する PR の動作確認、ピアの片付けを含む。
   「レビューして」と PR を渡された時や、「ピアでレビューを依頼して」と言われた時にトリガーする。
 ---
 
@@ -13,9 +13,13 @@ description: >-
 
 ## 前提
 
-- ピアに任せるのは、herdr の中で動いているとき（`test "${HERDR_ENV:-}" = 1`）だけ
-- herdr の CLI の使い方は `herdr --skill` と各コマンドグループのヘルプで確かめる
-- ピアとの連絡には `ListAgents` と `SendMessage` を使う
+- 手順では、ピアを扱う操作を「ピアを起動する」「画面を読む」のような名前で書く。
+  環境ごとの具体的なコマンドは「環境ごとの操作」にまとめる
+- 最初に、どの環境の中で動いているかを「環境ごとの操作」の判定で決める。
+  どの環境でもなければ、ピアには任せない
+- ピアの agent は、ユーザーが指定しなければ claude にする
+- ピアが claude なら、連絡には `ListAgents` と `SendMessage` を使う。
+  claude 以外なら、環境の「依頼を送る」と「結果を返してもらう」を使う
 
 ## 1. PR の振り分け
 
@@ -24,36 +28,29 @@ description: >-
 - 作業ディレクトリのリポジトリの PR は自分でレビューする
 - ほかのリポジトリの PR は自分でレビューせず、ピアに任せる。
   1 つのリポジトリに PR が複数あれば、同じピアにまとめて頼む
-- herdr の外では、ほかのリポジトリの PR も自分でレビューし、手順 2・3・7 は飛ばす
+- ピアに任せられないとき（どの環境の中でもない、または環境がそのピアの agent に対応していない）は、
+  ほかのリポジトリの PR も自分でレビューし、手順 2・3・7 は飛ばす
 
 ## 2. ピアの起動
 
-リポジトリごとにタブを開き、claude を起動する。
+リポジトリごとに「ピアを起動する」。
 リポジトリがローカルのどこにあるかは、作業ディレクトリの指示ファイルか `ghq list -p <repo>` で確かめる。
 見つからなければユーザーに聞く。
 
-```bash
-herdr tab create --workspace "${HERDR_WORKSPACE_ID}" \
-    --cwd <リポジトリのパス> --label "<repo>-<PR 番号>" --no-focus
-herdr agent start "rv-<repo>" --kind claude \
-    --pane <返ってきた root_pane の pane_id> --timeout 60000
-```
-
-- 1 つのリポジトリで PR を複数頼むときは、タブ名に番号をハイフンでつなげて並べる（`readyfor-24851-24849`）
-- タブの ID と pane の ID は、返ってきた JSON から読む
-- `agent start` が `agent_not_ready` を返したら、
-  `herdr agent read <名前> --source visible` で画面を確かめる。
-  フォルダを信頼するかの確認が出ていたら、ユーザーに聞いてから
-  `herdr agent send-keys <名前> down` と `enter` で「信頼する」を選ぶ
-- 起動したら `ListAgents` で各セッションの名前を確かめる。
-  `SendMessage` の宛先にはこの名前を使い、herdr のエージェント名は使わない
+- ピアの名前は `<repo>-<PR 番号>` にする。
+  1 つのリポジトリで PR を複数頼むときは、番号をハイフンでつなげて並べる（`readyfor-24851-24849`）
+- 起動したら「画面を読む」で、入力を待つ状態になったことを確かめる。
+  フォルダを信頼するかの確認が出ていたら、ユーザーに聞いてから「キーを送る」で `down` と `enter` を送り、「信頼する」を選ぶ
+- ピアが claude なら、`ListAgents` で各セッションの名前を確かめる。
+  `SendMessage` の宛先にはこの名前を使い、端末側での名前は使わない
 - 同じ名前の頭のセッションがほかにもあるときは、起動した時刻と busy/idle の表示で特定し、
   宛先には `名前 [ref]` の形で行末の ref まで付ける。
   時刻の表示は「1m ago」のように粗く、時刻だけでは見分けられないことがある
 
 ## 3. レビューの依頼
 
-`SendMessage` で、PR の URL と次の指示を送る。
+PR の URL と次の指示を送る。
+ピアが claude なら `SendMessage` で、claude 以外なら「依頼を送る」で送る。
 
 ```text
 この PR をレビューしてください: <PR の URL>
@@ -61,15 +58,17 @@ herdr agent start "rv-<repo>" --kind claude \
 結果はこのセッションのチャットで返してください。PR へのコメント投稿・承認・再実行はしないでください。
 CI が PR と関係ない理由で落ちていたら、その旨を報告に書いてください。
 PR を読むために作ったブランチや worktree は、終わったら消してください。
-終わったら結果の要約を <自分のセッション名> に SendMessage で送ってください。
+終わったら<結果の返し方>。
 ```
 
+- `<結果の返し方>` は、ピアが claude なら「結果の要約を <自分のセッション名> に SendMessage で送ってください」にする。
+  claude 以外なら、環境の「結果を返してもらう」のとおりに頼む
 - 自分のセッション名は `ListAgents` の先頭行に出る
-- 依頼の `SendMessage` には `notify_when_idle: true` を付ける。
+- `SendMessage` で頼むときは `notify_when_idle: true` を付ける。
   ピアの結果が届かないまま止まったときに気付くため
-  - 結果を受け取ったあとに届く「exited」の通知は、タブを閉じたことによるものなので反応しない
+  - 結果を受け取ったあとに届く「exited」の通知は、手順 7 でピアを片付けたことによるものなので反応しない
 - 依頼を送ったら、自分の担当分（手順 1 で振り分けたもの）のレビューに移る
-- 結果がなかなか届かないときは、`herdr agent get <名前>` と `herdr agent read <名前>` でピアの状態を確かめる。
+- 結果がなかなか届かないときは、「画面を読む」でピアの状態を確かめる。
   確認待ちで止まっていたら、何を聞かれているかをユーザーに伝える
 
 ## 4. 結果のまとめ
@@ -120,8 +119,89 @@ PR を読むために作ったブランチや worktree は、終わったら消�
 
 ## 7. 片付け
 
-- 自分が開いたピアのタブは、結果を受け取ったら確認を取らずに `herdr tab close <tab_id>` で閉じる
-- ピアにコマンドの実行許可などの確認が出たまま止まっていても、こちらから `send-keys` で答えない。
+- 自分が起動したピアは、結果を受け取ったら確認を取らずに「片付ける」
+- ピアにコマンドの実行許可などの確認が出たまま止まっていても、こちらから「キーを送る」で答えない。
   ほかのセッションの許可確認に答える操作は止められる。
-  自分で同じ作業を済ませてあるなら、そのタブを閉じて片付ける
-- 自分が開いていないタブは閉じない
+  自分で同じ作業を済ませてあるなら、そのピアを片付ける
+- 自分が起動していないピアは片付けない
+
+## 環境ごとの操作
+
+上から順に判定し、最初に当てはまった環境の操作を使う。
+herdr を WezTerm の中で動かしていると、`WEZTERM_PANE` も入っていることがあるため、WezTerm は最後に見る。
+Ghostty にはペインを外から操作する CLI がないため、ピアには任せない。
+
+### Herdr app
+
+判定：`test -n "${HC_TERMINAL_ID:-}"`
+
+端末を扱う CLI は `herdr-core` と書く。
+`hc` はそのシンボリックリンクで、インストールの仕方によっては作られない。
+使い方は `herdr-core --skill` と各コマンドのヘルプで確かめる。
+
+- ピアを起動する：自分の子の端末として起動する。
+  新しいタブはすぐ画面に出て、ユーザーが見ている画面を奪うため、タブは開かない。
+  ピアはサイドバーのエージェント一覧に、自分の下に並ぶ。
+  自分のセッションが終わると、子のピアも一緒に終わる
+
+  ```bash
+  herdr-core run --bg --name "<ピアの名前>" --cwd <リポジトリのパス> <agent>
+  herdr-core wait "<ピアの名前>"
+  ```
+
+- 画面を読む：`herdr-core read <名前> --lines 0`。
+  `herdr-core get <名前>` の status が `blocked` なら、人の操作を待っている
+- キーを送る：`herdr-core keys <名前> down enter`
+- 依頼を送る：`herdr-core send <名前> "<依頼>"`
+- 結果を返してもらう：「結果の要約を herdr-core send <自分の HC_TERMINAL_ID> で送ってください」と頼む。
+  結果は `<hc from="...">` の形で自分の入力に届く。
+  待つときは `herdr-core wait --children any` を使う
+- 片付ける：`herdr-core kill <名前>` のあと `herdr-core rm <名前>`
+
+### herdr（TUI 版）
+
+判定：`test "${HERDR_ENV:-}" = 1`
+
+使い方は `herdr --skill` と各コマンドグループのヘルプで確かめる。
+ピアにメッセージを送る手段を確かめていないため、ピアの agent は claude だけに対応する。
+
+- ピアを起動する：リポジトリごとにタブを開き、その pane で起動する。
+  タブの ID と pane の ID は、返ってきた JSON から読む
+
+  ```bash
+  herdr tab create --workspace "${HERDR_WORKSPACE_ID}" \
+      --cwd <リポジトリのパス> --label "<ピアの名前>" --no-focus
+  herdr agent start "rv-<repo>" --kind claude \
+      --pane <返ってきた root_pane の pane_id> --timeout 60000
+  ```
+
+- 画面を読む：`herdr agent read <名前> --source visible`。
+  状態は `herdr agent get <名前>` で確かめる
+- キーを送る：`herdr agent send-keys <名前> down` のあと `enter`
+- 片付ける：`herdr tab close <tab_id>` で、自分が開いたタブを閉じる
+
+### WezTerm
+
+判定：`test -n "${WEZTERM_PANE:-}"`
+
+ペインは名前ではなく、`spawn` が出力する pane-id で扱う。
+
+- ピアを起動する：リポジトリごとにタブを開いて起動し、タブ名をピアの名前にする。
+  `spawn` は新しいタブに移るため、最後に自分のペインへ戻る
+
+  ```bash
+  pane=$(wezterm cli spawn --cwd <リポジトリのパス> -- <agent>)
+  wezterm cli set-tab-title --pane-id "$pane" "<ピアの名前>"
+  wezterm cli activate-pane --pane-id "$WEZTERM_PANE"
+  ```
+
+- 画面を読む：`wezterm cli get-text --pane-id <pane-id>`。
+  ピアの状態は画面から読み取るしかない
+- キーを送る：`wezterm cli send-text --pane-id <pane-id> --no-paste` で、
+  `down` は `$'\e[B'`、`enter` は `$'\r'` を送る
+- 依頼を送る：`wezterm cli send-text --pane-id <pane-id> "<依頼>"` のあと、
+  `--no-paste` で `$'\r'` を送って確定する
+- 結果を返してもらう：ピアから自分へ送る手段がないため、結果をファイルに書いてもらう。
+  書き先はスクラッチパッドの `peer-<ピアの名前>.md` とし、フルパスで伝える。
+  自分の担当分のレビューが終わったときと、ユーザーに聞かれたときは、そのファイルと「画面を読む」で完了を確かめる
+- 片付ける：`wezterm cli kill-pane --pane-id <pane-id>`
