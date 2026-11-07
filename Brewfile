@@ -104,6 +104,7 @@ cask "gcloud-cli"
 cask "ghostty"
 cask "google-chrome"
 cask "google-drive"
+cask "herdr-app"
 cask "mysql-shell"
 cask "slack"
 cask "terraform-linters/tap/tflint", trusted: true
