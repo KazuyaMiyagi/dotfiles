@@ -45,3 +45,9 @@
 
 # cagent
 /cagent
+
+# Herdr app
+/herdr-app/*
+!/herdr-app/keys.json
+!/herdr-app/settings.json
+!/herdr-app/programs.json
