@@ -4,5 +4,8 @@
     "enabled": true
   },
   "font_ligatures": false,
-  "minimum_contrast": 1.0
+  "minimum_contrast": 1.0,
+  "font": "Hack Nerd Font Mono",
+  "font_size": 16,
+  "ui_font": "Hack Nerd Font Mono"
 }
