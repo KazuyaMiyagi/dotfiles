@@ -261,7 +261,8 @@ Conventional Commits 形式を使用する。
 
 PR を push したあとやレビューを依頼したあとに待つときは、CI だけでなく、PR に付いたコメントやレビューも見張る。
 
-- PR のコメントやレビューは、`gh-watch-pr-activity <owner>/<repo> <PR>` をバックグラウンドで動かして待つ
+- PR のコメント・レビュー・ほかの人の push・CI の結果・マージは、
+  `gh-watch-pr-activity <owner>/<repo> <PR>` をバックグラウンドで動かして待つ
 - 自分宛てのレビュー依頼は `gh-watch-review-requests` で待つ。
   チーム経由の依頼は拾わない
 - どちらも 1 件拾ったら終わるので、続けて見張るときは仕掛け直す

@@ -2,8 +2,8 @@
 
 set -e -u -o pipefail
 
-# PR に自分以外のコメント・レビュー・レビュースレッドへの書き込みが増えるまで待ち、
-# 増えたものを出して終わる。
+# PR に自分以外のコメント・レビュー・レビュースレッドへの書き込みや push されたコミットが増えるか、
+# head の CI が終わるか、PR がマージ・クローズされるまで待ち、増えたものを出して終わる。
 
 INTERVAL=60
 readonly INTERVAL
@@ -14,9 +14,12 @@ readonly MAX_TRIES
 QUERY='query($o: String!, $r: String!, $n: Int!) {
   repository(owner: $o, name: $r) {
     pullRequest(number: $n) {
+      state url
       comments(last: 100) { nodes { author { login } url } }
       reviews(last: 100) { nodes { author { login } state url } }
       reviewThreads(last: 100) { nodes { comments(last: 50) { nodes { author { login } url } } } }
+      commits(last: 100) { nodes { commit { url author { user { login } } } } }
+      head: commits(last: 1) { nodes { commit { url statusCheckRollup { state } } } }
     }
   }
 }'
@@ -28,8 +31,9 @@ function usage() {
     cat <<- HEREDOC
 		Usage: ${COMMAND} [OPTIONS] OWNER/REPO PR
 
-		Wait until someone else comments on or reviews the pull request,
-		then print the new activity and exit.
+		Wait until someone else comments on, reviews or pushes commits to
+		the pull request, the checks on its head commit finish, or it is
+		merged or closed, then print the new activity and exit.
 
 		Options:
 		  -h, --help  Show this help
@@ -48,7 +52,10 @@ function __snapshot() {
         .data.repository.pullRequest as \$p
         | ([\$p.comments.nodes[] | select(.author.login != \"${me}\") | \"comment \(.author.login) \(.url)\"]
           + [\$p.reviews.nodes[] | select(.author.login != \"${me}\") | \"review \(.author.login) \(.state) \(.url)\"]
-          + [\$p.reviewThreads.nodes[].comments.nodes[] | select(.author.login != \"${me}\") | \"thread \(.author.login) \(.url)\"])[]" \
+          + [\$p.reviewThreads.nodes[].comments.nodes[] | select(.author.login != \"${me}\") | \"thread \(.author.login) \(.url)\"]
+          + [\$p.commits.nodes[].commit | select(.author.user.login != \"${me}\") | \"commit \(.author.user.login // \"unknown\") \(.url)\"]
+          + [\$p.head.nodes[].commit | select(.statusCheckRollup.state // \"\" | IN(\"SUCCESS\", \"FAILURE\", \"ERROR\")) | \"checks \(.statusCheckRollup.state) \(.url)\"]
+          + [\$p | select(.state != \"OPEN\") | \"state \(.state) \(.url)\"])[]" \
         | sort
 }
 
@@ -84,6 +91,10 @@ function gh_watch_pr_activity() {
 
     local base
     base="$(__snapshot "${repo}" "${pr}" "${me}")"
+    if grep -q '^state ' <<< "${base}"; then
+        echo "Error: ${repo}#${pr} is not open" >&2
+        exit 1
+    fi
 
     local i now added
     for ((i = 1; i <= MAX_TRIES; i++)); do
