@@ -165,6 +165,17 @@ Conventional Commits 形式を使用する。
   upstream へ push 済みであれば `-d` で削除できる（`main` へのマージ前でもよい）。
   追加の作業が必要になったら `git switch <branch>` でリモートから復元する
 
+- worktree で作業したときは、push したら worktree を消してから、ローカルの作業ブランチを削除する：
+
+  ```bash
+  git worktree remove <worktree のパス>
+  git branch -d <branch>
+  ```
+
+  worktree がブランチを使っている間は、`git branch -d` で削除できない。
+  `terraform init` などで未追跡のファイルが残って消せないときは、
+  `git status` で未コミットの変更がないことを確かめてから `--force` を付ける
+
 ## push 前の確認
 
 - push する前に、push するコミットの差分とコミットメッセージをユーザーに見せて確認を取る
