@@ -1,0 +1,93 @@
+#! /usr/bin/env bash
+
+set -e -u -o pipefail
+
+# 自分が個人としてレビュアーに指定された、開いている PR の通知が来るまで待ち、
+# 来たらその一覧を出して終わる。チーム経由の依頼は拾わず、通知も既読にしない。
+
+INTERVAL=60
+readonly INTERVAL
+MAX_TRIES=720
+readonly MAX_TRIES
+
+function usage() {
+    local COMMAND="gh-watch-review-requests"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} [OPTIONS] [SINCE]
+
+		Wait until a pull request requests your review as an individual,
+		then print the requests and exit.
+		Requests to a team you belong to are ignored. Notifications are not marked as read.
+
+		Options:
+		  -h, --help  Show this help
+
+		Arguments:
+		  SINCE  ISO 8601 time to look from (default: now)
+	HEREDOC
+}
+
+function __requested_to_me() {
+    local since="${1}"
+    local me="${2}"
+    local url
+    while IFS= read -r -u 3 url; do
+        gh api "${url}" --jq "select(.state == \"open\" and ([.requested_reviewers[].login] | index(\"${me}\"))) | \"\(.base.repo.full_name)#\(.number) \(.user.login) | \(.title) \(.html_url)\"" 2> /dev/null || true
+    done 3< <(gh api "notifications?all=true&since=${since}" --jq '.[] | select(.reason == "review_requested" and .subject.type == "PullRequest") | .subject.url')
+}
+
+function gh_watch_review_requests() {
+    local since=""
+
+    while [[ ${#} -gt 0 ]]; do
+        case "${1}" in
+            -h | --help)
+                usage
+                exit 0
+                ;;
+            -*)
+                echo "Error: unknown option: ${1}" >&2
+                exit 1
+                ;;
+            *)
+                if [[ -n "${since}" ]]; then
+                    echo "Error: unexpected argument: ${1}" >&2
+                    exit 1
+                fi
+                since="${1}"
+                shift
+                ;;
+        esac
+    done
+
+    if [[ -z "${since}" ]]; then
+        since="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    fi
+
+    local me
+    me="$(gh api user --jq .login)"
+    echo "since=${since}"
+
+    local i found checked_at
+    for ((i = 1; i <= MAX_TRIES; i++)); do
+        sleep "${INTERVAL}"
+        # 1 回見るあいだに届いた通知を取りこぼさないよう、見る前の時刻から次を始める
+        checked_at="$(date -u -v-1M +%Y-%m-%dT%H:%M:%SZ)"
+        if ! found="$(__requested_to_me "${since}" "${me}")"; then
+            continue
+        fi
+        if [[ -n "${found}" ]]; then
+            echo "$(date +%H:%M) review requested to me:"
+            sort -u <<< "${found}"
+            echo "next_since=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            return
+        fi
+        since="${checked_at}"
+    done
+
+    echo "Error: no review request within $((INTERVAL * MAX_TRIES / 3600))h" >&2
+    exit 1
+}
+
+gh_watch_review_requests "${@}"

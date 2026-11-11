@@ -1,0 +1,106 @@
+#! /usr/bin/env bash
+
+set -e -u -o pipefail
+
+# PR に自分以外のコメント・レビュー・レビュースレッドへの書き込みが増えるまで待ち、
+# 増えたものを出して終わる。
+
+INTERVAL=60
+readonly INTERVAL
+MAX_TRIES=720
+readonly MAX_TRIES
+# $o などは GraphQL の変数で、シェルに展開させないためシングルクォートで囲む
+# shellcheck disable=SC2016
+QUERY='query($o: String!, $r: String!, $n: Int!) {
+  repository(owner: $o, name: $r) {
+    pullRequest(number: $n) {
+      comments(last: 100) { nodes { author { login } url } }
+      reviews(last: 100) { nodes { author { login } state url } }
+      reviewThreads(last: 100) { nodes { comments(last: 50) { nodes { author { login } url } } } }
+    }
+  }
+}'
+readonly QUERY
+
+function usage() {
+    local COMMAND="gh-watch-pr-activity"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} [OPTIONS] OWNER/REPO PR
+
+		Wait until someone else comments on or reviews the pull request,
+		then print the new activity and exit.
+
+		Options:
+		  -h, --help  Show this help
+
+		Arguments:
+		  OWNER/REPO  Repository of the pull request
+		  PR          Pull request number
+	HEREDOC
+}
+
+function __snapshot() {
+    local repo="${1}"
+    local pr="${2}"
+    local me="${3}"
+    gh api graphql -F o="${repo%/*}" -F r="${repo#*/}" -F n="${pr}" -f query="${QUERY}" --jq "
+        .data.repository.pullRequest as \$p
+        | ([\$p.comments.nodes[] | select(.author.login != \"${me}\") | \"comment \(.author.login) \(.url)\"]
+          + [\$p.reviews.nodes[] | select(.author.login != \"${me}\") | \"review \(.author.login) \(.state) \(.url)\"]
+          + [\$p.reviewThreads.nodes[].comments.nodes[] | select(.author.login != \"${me}\") | \"thread \(.author.login) \(.url)\"])[]" \
+        | sort
+}
+
+function gh_watch_pr_activity() {
+    local args=()
+
+    while [[ ${#} -gt 0 ]]; do
+        case "${1}" in
+            -h | --help)
+                usage
+                exit 0
+                ;;
+            -*)
+                echo "Error: unknown option: ${1}" >&2
+                exit 1
+                ;;
+            *)
+                args+=("${1}")
+                shift
+                ;;
+        esac
+    done
+
+    if [[ ${#args[@]} -ne 2 || ! "${args[0]}" =~ ^[^/]+/[^/]+$ || ! "${args[1]}" =~ ^[0-9]+$ ]]; then
+        usage >&2
+        exit 1
+    fi
+
+    local repo="${args[0]}"
+    local pr="${args[1]}"
+    local me
+    me="$(gh api user --jq .login)"
+
+    local base
+    base="$(__snapshot "${repo}" "${pr}" "${me}")"
+
+    local i now added
+    for ((i = 1; i <= MAX_TRIES; i++)); do
+        sleep "${INTERVAL}"
+        if ! now="$(__snapshot "${repo}" "${pr}" "${me}")"; then
+            continue
+        fi
+        added="$(comm -13 <(echo "${base}") <(echo "${now}"))"
+        if [[ -n "${added}" ]]; then
+            echo "$(date +%H:%M) ${repo}#${pr} new activity:"
+            echo "${added}"
+            return
+        fi
+    done
+
+    echo "Error: no new activity on ${repo}#${pr} within $((INTERVAL * MAX_TRIES / 3600))h" >&2
+    exit 1
+}
+
+gh_watch_pr_activity "${@}"
