@@ -267,6 +267,21 @@ PR を push したあとやレビューを依頼したあとに待つときは�
   チーム経由の依頼は拾わない
 - どちらも 1 件拾ったら終わるので、続けて見張るときは仕掛け直す
 
+## Herdr app で別の作業を任せる
+
+「タブを開いて任せて」「タブでやって」と言われたら、Herdr app の新しいタブで Claude を起動して依頼する。
+
+```bash
+herdr-app do tab.new --name "<タブ名>" --folder <リポジトリのパス> \
+  --argv '["claude"]' --task "<依頼>"
+```
+
+- `herdr-core run --bg` はタブを作らず、自分の子の端末として裏で動かす。
+  ピアレビューのように、ユーザーの画面を奪いたくないときだけ使う
+- 裏で動かした端末をあとからタブにするときは、
+  `herdr-app do terminal.keep --terminal <端末> --place tab` を使う
+- TUI 版の `herdr` コマンドはもう入っていないので、`herdr tab` などは使えない
+
 ## Issue / PR の参照記法
 
 PR 本文・Issue 本文・コメントで Issue や PR を参照するときは、
