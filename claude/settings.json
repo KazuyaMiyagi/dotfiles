@@ -73,5 +73,6 @@
     }
   },
   "autoMemoryEnabled": false,
-  "skipWorkflowUsageWarning": true
+  "skipWorkflowUsageWarning": true,
+  "tui": "fullscreen"
 }
