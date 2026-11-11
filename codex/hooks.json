@@ -6,10 +6,6 @@
           {
             "type": "command",
             "command": "agent-osc-notify 'Codex' 'Permission request'"
-          },
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Blow.aiff"
           }
         ]
       }
@@ -20,10 +16,6 @@
           {
             "type": "command",
             "command": "agent-osc-notify 'Codex' 'Stop'"
-          },
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Hero.aiff"
           },
           {
             "type": "command",

@@ -18,10 +18,6 @@
           {
             "type": "command",
             "command": "agent-osc-notify"
-          },
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Blow.aiff"
           }
         ]
       }
@@ -33,10 +29,6 @@
           {
             "type": "command",
             "command": "agent-osc-notify 'Claude Code' 'Stop'"
-          },
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Hero.aiff"
           },
           {
             "type": "command",
