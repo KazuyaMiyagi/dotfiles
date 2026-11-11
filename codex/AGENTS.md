@@ -257,6 +257,15 @@ Conventional Commits 形式を使用する。
   gh pr edit --body "<更新後の本文>"
   ```
 
+## PR の見張り
+
+PR を push したあとやレビューを依頼したあとに待つときは、CI だけでなく、PR に付いたコメントやレビューも見張る。
+
+- PR のコメントやレビューは、`gh-watch-pr-activity <owner>/<repo> <PR>` をバックグラウンドで動かして待つ
+- 自分宛てのレビュー依頼は `gh-watch-review-requests` で待つ。
+  チーム経由の依頼は拾わない
+- どちらも 1 件拾ったら終わるので、続けて見張るときは仕掛け直す
+
 ## Issue / PR の参照記法
 
 PR 本文・Issue 本文・コメントで Issue や PR を参照するときは、
