@@ -199,6 +199,8 @@ Conventional Commits 形式を使用する。
 ## クレデンシャル
 
 - ファイルシステム上にある一時クレデンシャル（`~/.aws/sso/cache/`、`~/.aws/cli/cache/` など）は絶対に読まない
+- 名前や置き場所から秘密が入っていそうなファイル（`credentials.json`・`oauth.json`・`.env`・`*token*` など）は、中身を表示しない。
+  何のファイルかを確かめたいときは、ファイル名・大きさ・キーの名前だけを見る
 
 ## Pull Request
 
