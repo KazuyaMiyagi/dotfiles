@@ -5,6 +5,7 @@ set -e -u -o pipefail
 # 自分が個人としてレビュアーに指定された、開いている PR の通知が来るまで待ち、
 # 来たらその一覧を出して終わる。チーム経由の依頼は、--team で渡したチームあてのものだけ拾う。
 # --repo で渡したリポジトリは、依頼が無くても新しく開かれた PR を拾う。通知は既読にしない。
+# --follow では終わらずに出し続ける。
 
 INTERVAL=60
 readonly INTERVAL
@@ -47,10 +48,13 @@ function usage() {
 		  -t, --team ORG/TEAM    Also pick up requests to this team (repeatable)
 		  -r, --repo OWNER/REPO  Also pick up pull requests opened in this repository,
 		                         except drafts and your own (repeatable)
+		  -f, --follow           Keep printing new requests instead of exiting
+		  -s, --state FILE       Save the time looked up to and the pull requests printed
+		                         to FILE, and resume from it
 		  -h, --help             Show this help
 
 		Arguments:
-		  SINCE  ISO 8601 time to look from (default: now)
+		  SINCE  ISO 8601 time to look from (default: the time in FILE, or now)
 	HEREDOC
 }
 
@@ -82,6 +86,8 @@ function gh_watch_review_requests() {
     local since=""
     local team_args=()
     local repos=()
+    local follow=false
+    local state=""
 
     while [[ ${#} -gt 0 ]]; do
         case "${1}" in
@@ -105,6 +111,18 @@ function gh_watch_review_requests() {
                 repos+=("${2}")
                 shift 2
                 ;;
+            -f | --follow)
+                follow=true
+                shift
+                ;;
+            -s | --state)
+                if [[ ${#} -lt 2 ]]; then
+                    usage >&2
+                    exit 1
+                fi
+                state="${2}"
+                shift 2
+                ;;
             -*)
                 echo "Error: unknown option: ${1}" >&2
                 exit 1
@@ -120,6 +138,14 @@ function gh_watch_review_requests() {
         esac
     done
 
+    # 状態ファイルは 1 行目が見た時刻、2 行目からが出し終えた PR（owner/repo#番号）
+    local seen=""
+    if [[ -n "${state}" && -s "${state}" ]]; then
+        if [[ -z "${since}" ]]; then
+            since="$(head -n 1 "${state}")"
+        fi
+        seen="$(tail -n +2 "${state}")"
+    fi
     if [[ -z "${since}" ]]; then
         since="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     fi
@@ -129,7 +155,7 @@ function gh_watch_review_requests() {
     teams="$(printf '%s\n' "${team_args[@]+"${team_args[@]}"}" | jq -R -s -c 'split("\n") | map(select(length > 0))')"
     echo "since=${since}"
 
-    local i found checked_at
+    local i found checked_at fresh
     for ((i = 1; i <= MAX_TRIES; i++)); do
         sleep "${INTERVAL}"
         # 1 回見るあいだに届いた通知を取りこぼさないよう、見る前の時刻から次を始める
@@ -140,15 +166,26 @@ function gh_watch_review_requests() {
         )"; then
             continue
         fi
-        if [[ -n "${found}" ]]; then
+        # 次の回と見る時刻が重なるうえ、通知は PR に動きがあるたびに出直すので、出した PR は除く
+        fresh="$(sort -u <<< "${found}" | SEEN="${seen}" awk 'BEGIN { n = split(ENVIRON["SEEN"], s, "\n"); for (i = 1; i <= n; i++) done[s[i]] } NF && !($1 in done)')"
+        if [[ -n "${fresh}" ]]; then
             echo "$(date +%H:%M) review requested to me:"
-            sort -u <<< "${found}"
+            echo "${fresh}"
+            seen="$(printf '%s\n%s' "${seen}" "$(awk '{ print $1 }' <<< "${fresh}")" | sed '/^$/d')"
+        fi
+        since="${checked_at}"
+        if [[ -n "${state}" ]]; then
+            printf '%s\n%s\n' "${since}" "${seen}" | sed '/^$/d' > "${state}"
+        fi
+        if [[ -n "${fresh}" && "${follow}" == false ]]; then
             echo "next_since=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
             return
         fi
-        since="${checked_at}"
     done
 
+    if [[ "${follow}" == true ]]; then
+        return
+    fi
     echo "Error: no review request within $((INTERVAL * MAX_TRIES / 3600))h" >&2
     exit 1
 }

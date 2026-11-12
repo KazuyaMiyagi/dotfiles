@@ -4,6 +4,7 @@ set -e -u -o pipefail
 
 # PR に自分以外のコメント・レビュー・レビュースレッドへの書き込みや push されたコミットが増えるか、
 # head の CI が終わるか、PR がマージ・クローズされるまで待ち、増えたものを出して終わる。
+# --follow では終わらずに出し続け、PR がマージ・クローズされたら終わる。
 
 INTERVAL=60
 readonly INTERVAL
@@ -36,7 +37,9 @@ function usage() {
 		merged or closed, then print the new activity and exit.
 
 		Options:
-		  -h, --help  Show this help
+		  -f, --follow      Keep printing new activity until the pull request is merged or closed
+		  -s, --state FILE  Save what has been printed to FILE and resume from it
+		  -h, --help        Show this help
 
 		Arguments:
 		  OWNER/REPO  Repository of the pull request
@@ -61,12 +64,26 @@ function __snapshot() {
 
 function gh_watch_pr_activity() {
     local args=()
+    local follow=false
+    local state=""
 
     while [[ ${#} -gt 0 ]]; do
         case "${1}" in
             -h | --help)
                 usage
                 exit 0
+                ;;
+            -f | --follow)
+                follow=true
+                shift
+                ;;
+            -s | --state)
+                if [[ ${#} -lt 2 ]]; then
+                    usage >&2
+                    exit 1
+                fi
+                state="${2}"
+                shift 2
                 ;;
             -*)
                 echo "Error: unknown option: ${1}" >&2
@@ -90,10 +107,17 @@ function gh_watch_pr_activity() {
     me="$(gh api user --jq .login)"
 
     local base
-    base="$(__snapshot "${repo}" "${pr}" "${me}")"
-    if grep -q '^state ' <<< "${base}"; then
-        echo "Error: ${repo}#${pr} is not open" >&2
-        exit 1
+    if [[ -n "${state}" && -s "${state}" ]]; then
+        base="$(< "${state}")"
+    else
+        base="$(__snapshot "${repo}" "${pr}" "${me}")"
+        if grep -q '^state ' <<< "${base}"; then
+            echo "Error: ${repo}#${pr} is not open" >&2
+            exit 1
+        fi
+        if [[ -n "${state}" ]]; then
+            echo "${base}" > "${state}"
+        fi
     fi
 
     local i now added
@@ -106,10 +130,19 @@ function gh_watch_pr_activity() {
         if [[ -n "${added}" ]]; then
             echo "$(date +%H:%M) ${repo}#${pr} new activity:"
             echo "${added}"
-            return
+            base="${now}"
+            if [[ -n "${state}" ]]; then
+                echo "${base}" > "${state}"
+            fi
+            if [[ "${follow}" == false ]] || grep -q '^state ' <<< "${added}"; then
+                return
+            fi
         fi
     done
 
+    if [[ "${follow}" == true ]]; then
+        return
+    fi
     echo "Error: no new activity on ${repo}#${pr} within $((INTERVAL * MAX_TRIES / 3600))h" >&2
     exit 1
 }

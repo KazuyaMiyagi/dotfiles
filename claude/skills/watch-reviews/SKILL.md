@@ -2,8 +2,7 @@
 name: watch-reviews
 description: >-
   自分宛てのレビュー依頼と、待っている PR へのコメント・レビュー・push・CI の結果・マージをバックグラウンドで見張る時に使用。
-  個人としてレビュアーに指定された PR が来たら peer-pr-review の手順でピアにレビューを頼み、
-  見張りを仕掛け直す。
+  個人としてレビュアーに指定された PR が来たら peer-pr-review の手順でピアにレビューを頼む。
   返事やレビューを待っている PR を渡されたら、その PR の動きも見張る。
   「レビュー依頼を見張って」と言われた時や、セッションを始め直して見張りを戻す時にトリガーする。
 ---
@@ -11,8 +10,7 @@ description: >-
 # レビュー依頼と PR の見張り
 
 `gh-watch-review-requests` と `gh-watch-pr-activity`（dotfiles の `bin/`）を
-バックグラウンドで動かし、通知を受けたら次の手順まで進める。
-どちらのスクリプトも 1 件拾ったら終わるので、拾うたびに仕掛け直す。
+`--follow` 付きで Monitor に載せ、行が出るたびに次の手順まで進める。
 
 ## 1. 見張る対象を決める
 
@@ -24,15 +22,20 @@ description: >-
 
 ## 2. 見張りを仕掛ける
 
-どちらも `run_in_background` で動かす。
+どちらも Monitor で、`timeout_ms` を上限にして動かす。
 
 ```bash
-gh-watch-review-requests [--team <org>/<team>]... [--repo <owner>/<repo>]... [SINCE]
-gh-watch-pr-activity <owner>/<repo> <PR>
+gh-watch-review-requests --follow --state <状態ファイル> \
+  [--team <org>/<team>]... [--repo <owner>/<repo>]... [SINCE]
+gh-watch-pr-activity --follow --state <状態ファイル> <owner>/<repo> <PR>
 ```
 
-- `gh-watch-review-requests` の `SINCE` は、初回は省いて今から見張る。
-  仕掛け直すときは、前回の出力の `next_since` を渡す
+- 状態ファイルはスクラッチパッドに、見張りごとに別の名前で置く。
+  見た時刻と出し終えたものを書き残すので、同じ状態ファイルで仕掛け直せば、取りこぼしも二重の通知も出ない
+- Monitor は上限の時間で切れる。
+  切れたら、同じコマンドのまま仕掛け直す
+- `gh-watch-review-requests` の `SINCE` は省く。
+  状態ファイルが無ければ今から、あれば書き残した時刻から見る
 - 指示ファイルがチームへの依頼もレビューするとしているときは、そのチームを `--team` で 1 つずつ渡す。
   チームへの依頼で拾った行には、末尾に `[team: <org>/<team>]` が付く
 - 指示ファイルが開かれた PR をすべてレビューするとしているリポジトリは、`--repo` で 1 つずつ渡す。
@@ -46,8 +49,7 @@ gh-watch-pr-activity <owner>/<repo> <PR>
 ### レビュー依頼が来たとき
 
 1. 出力に並んだ PR を、peer-pr-review の手順でピアにレビューを頼む
-2. `next_since` と、前回と同じ `--team`・`--repo` を渡して `gh-watch-review-requests` を仕掛け直す
-3. ピアの結果が届いたら、peer-pr-review の手順で 1 件ずつ承認するかを聞く
+2. ピアの結果が届いたら、peer-pr-review の手順で 1 件ずつ承認するかを聞く
 
 ### PR に動きがあったとき
 
@@ -66,11 +68,10 @@ gh-watch-pr-activity <owner>/<repo> <PR>
    - 修正の push なら、こちらの指摘や依頼どおりに直っているかを確かめ、承認するかをユーザーに聞く
    - 承認なら、人の承認が揃ったかを確かめる。
      揃っていれば、リポジトリの指示ファイルにあるマージの手順（pr-merger の枠など）に進む
-3. まだ待つ必要があれば、同じ PR に `gh-watch-pr-activity` を仕掛け直す。
-   マージ・クローズされた PR に仕掛けると、エラーで終わる
 
 ## 4. 止める
 
-- PR がマージ・クローズされたら（`state` の行が出たら）、その PR の見張りは仕掛け直さない
+- PR がマージ・クローズされたら（`state` の行が出たら）、`gh-watch-pr-activity` は自分で終わる。
+  その PR の見張りは仕掛け直さず、状態ファイルも消す
+- 待つ必要がなくなった PR の見張りは、Monitor を止めて状態ファイルを消す
 - ユーザーに止めるよう言われたら、仕掛けている見張りをすべて止める
-- 12 時間なにも来ずにスクリプトがエラーで終わったら、そのことを伝え、続けるかを聞く
