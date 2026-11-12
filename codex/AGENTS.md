@@ -265,7 +265,7 @@ PR を push したあとやレビューを依頼したあとに待つときは�
   `gh-watch-pr-activity <owner>/<repo> <PR>` をバックグラウンドで動かして待つ
 - 自分宛てのレビュー依頼は `gh-watch-review-requests` で待つ。
   チーム経由の依頼は、`--team <org>/<team>` で渡したチームあてのものだけ拾う。
-  `--repo <owner>/<repo>` で渡したリポジトリは、依頼が無くても開かれた PR を拾う
+  `--repo <owner>/<repo>` で渡したリポジトリは、依頼が無くても、開かれたか draft から外れた PR を拾う
 - どちらも 1 件拾ったら終わるので、続けて見張るときは仕掛け直す
 
 ## Herdr app で別の作業を任せる

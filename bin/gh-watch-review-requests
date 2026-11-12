@@ -4,7 +4,7 @@ set -e -u -o pipefail
 
 # 自分が個人としてレビュアーに指定された、開いている PR の通知が来るまで待ち、
 # 来たらその一覧を出して終わる。チーム経由の依頼は、--team で渡したチームあてのものだけ拾う。
-# --repo で渡したリポジトリは、依頼が無くても新しく開かれた PR を拾う。通知は既読にしない。
+# --repo で渡したリポジトリは、依頼が無くても、開かれたか draft から外れた PR を拾う。通知は既読にしない。
 # --follow では終わらずに出し続ける。
 
 INTERVAL=60
@@ -24,11 +24,13 @@ FILTER='
      end) as $via
   | "\($repo)#\(.number) \(.user.login) | \(.title) \(.html_url)\($via)"'
 readonly FILTER
-# draft はレビューを頼む前の段階なので拾わない
+# draft はレビューを頼む前の段階なので拾わない。
+# draft から外れた時刻は REST の PR に無いため、作られた時刻ではなく、
+# 見始めたときに無かった PR かどうかで新しいものを見分ける
 # shellcheck disable=SC2016
 OPENED_FILTER='
   .[]
-  | select(.created_at >= $since and (.draft | not) and .user.login != $me)
+  | select((.draft | not) and .user.login != $me and ($before == "" or .created_at < $before))
   | "\(.base.repo.full_name)#\(.number) \(.user.login) | \(.title) \(.html_url) [opened]"'
 readonly OPENED_FILTER
 
@@ -41,13 +43,13 @@ function usage() {
 		Wait until a pull request requests your review as an individual,
 		then print the requests and exit.
 		Requests to a team you belong to are ignored unless the team is given with -t.
-		In repositories given with -r, every newly opened pull request is picked up.
+		In repositories given with -r, every pull request opened or marked ready for review is picked up.
 		Notifications are not marked as read.
 
 		Options:
 		  -t, --team ORG/TEAM    Also pick up requests to this team (repeatable)
-		  -r, --repo OWNER/REPO  Also pick up pull requests opened in this repository,
-		                         except drafts and your own (repeatable)
+		  -r, --repo OWNER/REPO  Also pick up pull requests opened or marked ready for review
+		                         in this repository, except your own (repeatable)
 		  -f, --follow           Keep printing new requests instead of exiting
 		  -s, --state FILE       Save the time looked up to and the pull requests printed
 		                         to FILE, and resume from it
@@ -71,13 +73,13 @@ function __requested_to_me() {
 }
 
 function __opened_in() {
-    local since="${1}"
+    local before="${1}"
     local me="${2}"
     shift 2
     local repo
     for repo in "${@}"; do
-        gh api "repos/${repo}/pulls?state=open&sort=created&direction=desc&per_page=100" 2> /dev/null \
-            | jq -r --arg since "${since}" --arg me "${me}" "${OPENED_FILTER}" \
+        gh api --paginate "repos/${repo}/pulls?state=open&per_page=100" 2> /dev/null \
+            | jq -r --arg before "${before}" --arg me "${me}" "${OPENED_FILTER}" \
             || true
     done
 }
@@ -153,6 +155,9 @@ function gh_watch_review_requests() {
     local me teams
     me="$(gh api user --jq .login)"
     teams="$(printf '%s\n' "${team_args[@]+"${team_args[@]}"}" | jq -R -s -c 'split("\n") | map(select(length > 0))')"
+    if [[ (-z "${state}" || ! -s "${state}") && ${#repos[@]} -gt 0 ]]; then
+        seen="$(__opened_in "${since}" "${me}" "${repos[@]}" | awk '{ print $1 }')"
+    fi
     echo "since=${since}"
 
     local i found checked_at fresh
@@ -162,7 +167,7 @@ function gh_watch_review_requests() {
         checked_at="$(date -u -v-1M +%Y-%m-%dT%H:%M:%SZ)"
         if ! found="$(
             __requested_to_me "${since}" "${me}" "${teams}"
-            __opened_in "${since}" "${me}" "${repos[@]+"${repos[@]}"}"
+            __opened_in "" "${me}" "${repos[@]+"${repos[@]}"}"
         )"; then
             continue
         fi
