@@ -27,12 +27,17 @@ description: >-
 どちらも `run_in_background` で動かす。
 
 ```bash
-gh-watch-review-requests [SINCE]
+gh-watch-review-requests [--team <org>/<team>]... [--repo <owner>/<repo>]... [SINCE]
 gh-watch-pr-activity <owner>/<repo> <PR>
 ```
 
 - `gh-watch-review-requests` の `SINCE` は、初回は省いて今から見張る。
   仕掛け直すときは、前回の出力の `next_since` を渡す
+- 指示ファイルがチームへの依頼もレビューするとしているときは、そのチームを `--team` で 1 つずつ渡す。
+  チームへの依頼で拾った行には、末尾に `[team: <org>/<team>]` が付く
+- 指示ファイルが開かれた PR をすべてレビューするとしているリポジトリは、`--repo` で 1 つずつ渡す。
+  依頼が無くても拾った行には、末尾に `[opened]` が付く。
+  draft のあいだに開かれ、あとで ready になった PR は拾えない
 - 同じ PR に `gh-watch-pr-activity` を二重に仕掛けない。
   仕掛けている見張りは、タスクの一覧で確かめる
 
@@ -41,7 +46,7 @@ gh-watch-pr-activity <owner>/<repo> <PR>
 ### レビュー依頼が来たとき
 
 1. 出力に並んだ PR を、peer-pr-review の手順でピアにレビューを頼む
-2. `next_since` を渡して `gh-watch-review-requests` を仕掛け直す
+2. `next_since` と、前回と同じ `--team`・`--repo` を渡して `gh-watch-review-requests` を仕掛け直す
 3. ピアの結果が届いたら、peer-pr-review の手順で 1 件ずつ承認するかを聞く
 
 ### PR に動きがあったとき

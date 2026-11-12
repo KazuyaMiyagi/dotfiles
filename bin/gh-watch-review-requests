@@ -3,12 +3,33 @@
 set -e -u -o pipefail
 
 # 自分が個人としてレビュアーに指定された、開いている PR の通知が来るまで待ち、
-# 来たらその一覧を出して終わる。チーム経由の依頼は拾わず、通知も既読にしない。
+# 来たらその一覧を出して終わる。チーム経由の依頼は、--team で渡したチームあてのものだけ拾う。
+# --repo で渡したリポジトリは、依頼が無くても新しく開かれた PR を拾う。通知は既読にしない。
 
 INTERVAL=60
 readonly INTERVAL
 MAX_TRIES=720
 readonly MAX_TRIES
+# $me などは jq の変数で、シェルに展開させないためシングルクォートで囲む
+# shellcheck disable=SC2016
+FILTER='
+  select(.state == "open")
+  | .base.repo.full_name as $repo
+  | ($repo | split("/")[0]) as $org
+  | [.requested_teams[] | "\($org)/\(.slug)" | select(. as $t | $teams | index($t))] as $matched
+  | (if ([.requested_reviewers[].login] | index($me)) then ""
+     elif ($matched | length > 0) then " [team: \($matched | join(", "))]"
+     else empty
+     end) as $via
+  | "\($repo)#\(.number) \(.user.login) | \(.title) \(.html_url)\($via)"'
+readonly FILTER
+# draft はレビューを頼む前の段階なので拾わない
+# shellcheck disable=SC2016
+OPENED_FILTER='
+  .[]
+  | select(.created_at >= $since and (.draft | not) and .user.login != $me)
+  | "\(.base.repo.full_name)#\(.number) \(.user.login) | \(.title) \(.html_url) [opened]"'
+readonly OPENED_FILTER
 
 function usage() {
     local COMMAND="gh-watch-review-requests"
@@ -18,10 +39,15 @@ function usage() {
 
 		Wait until a pull request requests your review as an individual,
 		then print the requests and exit.
-		Requests to a team you belong to are ignored. Notifications are not marked as read.
+		Requests to a team you belong to are ignored unless the team is given with -t.
+		In repositories given with -r, every newly opened pull request is picked up.
+		Notifications are not marked as read.
 
 		Options:
-		  -h, --help  Show this help
+		  -t, --team ORG/TEAM    Also pick up requests to this team (repeatable)
+		  -r, --repo OWNER/REPO  Also pick up pull requests opened in this repository,
+		                         except drafts and your own (repeatable)
+		  -h, --help             Show this help
 
 		Arguments:
 		  SINCE  ISO 8601 time to look from (default: now)
@@ -31,20 +57,53 @@ function usage() {
 function __requested_to_me() {
     local since="${1}"
     local me="${2}"
+    local teams="${3}"
     local url
     while IFS= read -r -u 3 url; do
-        gh api "${url}" --jq "select(.state == \"open\" and ([.requested_reviewers[].login] | index(\"${me}\"))) | \"\(.base.repo.full_name)#\(.number) \(.user.login) | \(.title) \(.html_url)\"" 2> /dev/null || true
+        gh api "${url}" 2> /dev/null \
+            | jq -r --arg me "${me}" --argjson teams "${teams}" "${FILTER}" \
+            || true
     done 3< <(gh api "notifications?all=true&since=${since}" --jq '.[] | select(.reason == "review_requested" and .subject.type == "PullRequest") | .subject.url')
+}
+
+function __opened_in() {
+    local since="${1}"
+    local me="${2}"
+    shift 2
+    local repo
+    for repo in "${@}"; do
+        gh api "repos/${repo}/pulls?state=open&sort=created&direction=desc&per_page=100" 2> /dev/null \
+            | jq -r --arg since "${since}" --arg me "${me}" "${OPENED_FILTER}" \
+            || true
+    done
 }
 
 function gh_watch_review_requests() {
     local since=""
+    local team_args=()
+    local repos=()
 
     while [[ ${#} -gt 0 ]]; do
         case "${1}" in
             -h | --help)
                 usage
                 exit 0
+                ;;
+            -t | --team)
+                if [[ ${#} -lt 2 || ! "${2}" =~ ^[^/]+/[^/]+$ ]]; then
+                    usage >&2
+                    exit 1
+                fi
+                team_args+=("${2}")
+                shift 2
+                ;;
+            -r | --repo)
+                if [[ ${#} -lt 2 || ! "${2}" =~ ^[^/]+/[^/]+$ ]]; then
+                    usage >&2
+                    exit 1
+                fi
+                repos+=("${2}")
+                shift 2
                 ;;
             -*)
                 echo "Error: unknown option: ${1}" >&2
@@ -65,8 +124,9 @@ function gh_watch_review_requests() {
         since="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     fi
 
-    local me
+    local me teams
     me="$(gh api user --jq .login)"
+    teams="$(printf '%s\n' "${team_args[@]+"${team_args[@]}"}" | jq -R -s -c 'split("\n") | map(select(length > 0))')"
     echo "since=${since}"
 
     local i found checked_at
@@ -74,7 +134,10 @@ function gh_watch_review_requests() {
         sleep "${INTERVAL}"
         # 1 回見るあいだに届いた通知を取りこぼさないよう、見る前の時刻から次を始める
         checked_at="$(date -u -v-1M +%Y-%m-%dT%H:%M:%SZ)"
-        if ! found="$(__requested_to_me "${since}" "${me}")"; then
+        if ! found="$(
+            __requested_to_me "${since}" "${me}" "${teams}"
+            __opened_in "${since}" "${me}" "${repos[@]+"${repos[@]}"}"
+        )"; then
             continue
         fi
         if [[ -n "${found}" ]]; then
