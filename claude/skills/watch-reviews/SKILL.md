@@ -58,6 +58,7 @@ gh-watch-pr-activity --follow --state <状態ファイル> <owner>/<repo> <PR>
 - `comment`・`review`・`thread`：書き込みが増えた
 - `commit`：ほかの人がコミットを push した
 - `checks`：head のコミットの CI が終わった（`SUCCESS`・`FAILURE`・`ERROR`）
+- `automerge`：ほかの人が auto merge を有効にした（有効にした人とマージの方法が付く）
 - `state`：PR がマージ・クローズされた（`MERGED`・`CLOSED`）
 
 1. 増えた書き込みを全文で読み、要点をユーザーに伝える。
@@ -66,6 +67,7 @@ gh-watch-pr-activity --follow --state <状態ファイル> <owner>/<repo> <PR>
 2. 次の手順を決める
    - 指摘や質問なら、返信や修正の案を作り、文面と差分をユーザーに見せて確認を取る
    - 修正の push なら、こちらの指摘や依頼どおりに直っているかを確かめ、承認するかをユーザーに聞く
+   - auto merge が有効になったなら、CI が通ればマージされるので、マージの手順（pr-merger の枠など）には進まない
    - 承認なら、人の承認が揃ったかを確かめる。
      揃っていれば、リポジトリの指示ファイルにあるマージの手順（pr-merger の枠など）に進む
 

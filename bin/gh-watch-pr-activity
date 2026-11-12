@@ -3,7 +3,8 @@
 set -e -u -o pipefail
 
 # PR に自分以外のコメント・レビュー・レビュースレッドへの書き込みや push されたコミットが増えるか、
-# head の CI が終わるか、PR がマージ・クローズされるまで待ち、増えたものを出して終わる。
+# head の CI が終わるか、ほかの人が auto merge を有効にするか、PR がマージ・クローズされるまで待ち、
+# 増えたものを出して終わる。
 # --follow では終わらずに出し続け、PR がマージ・クローズされたら終わる。
 
 INTERVAL=60
@@ -16,6 +17,7 @@ QUERY='query($o: String!, $r: String!, $n: Int!) {
   repository(owner: $o, name: $r) {
     pullRequest(number: $n) {
       state url
+      autoMergeRequest { enabledBy { login } mergeMethod }
       comments(last: 100) { nodes { author { login } url } }
       reviews(last: 100) { nodes { author { login } state url } }
       reviewThreads(last: 100) { nodes { comments(last: 50) { nodes { author { login } url } } } }
@@ -33,8 +35,9 @@ function usage() {
 		Usage: ${COMMAND} [OPTIONS] OWNER/REPO PR
 
 		Wait until someone else comments on, reviews or pushes commits to
-		the pull request, the checks on its head commit finish, or it is
-		merged or closed, then print the new activity and exit.
+		the pull request, the checks on its head commit finish, someone else
+		enables auto-merge, or it is merged or closed, then print the new
+		activity and exit.
 
 		Options:
 		  -f, --follow      Keep printing new activity until the pull request is merged or closed
@@ -58,6 +61,7 @@ function __snapshot() {
           + [\$p.reviewThreads.nodes[].comments.nodes[] | select(.author.login != \"${me}\") | \"thread \(.author.login) \(.url)\"]
           + [\$p.commits.nodes[].commit | select(.author.user.login != \"${me}\") | \"commit \(.author.user.login // \"unknown\") \(.url)\"]
           + [\$p.head.nodes[].commit | select(.statusCheckRollup.state // \"\" | IN(\"SUCCESS\", \"FAILURE\", \"ERROR\")) | \"checks \(.statusCheckRollup.state) \(.url)\"]
+          + [\$p | select(.autoMergeRequest != null and .autoMergeRequest.enabledBy.login != \"${me}\") | \"automerge \(.autoMergeRequest.enabledBy.login) \(.autoMergeRequest.mergeMethod) \(.url)\"]
           + [\$p | select(.state != \"OPEN\") | \"state \(.state) \(.url)\"])[]" \
         | sort
 }
