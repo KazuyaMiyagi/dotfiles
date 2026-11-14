@@ -1,0 +1,306 @@
+#! /usr/bin/env bash
+
+set -e -u -o pipefail
+
+# GitHub の Organization にある、アーカイブされていないリポジトリから、
+# 最後のコミットが指定した月数より古いブランチを集め、持ち主と消したときに戻せるかを CSV で出す。
+
+DEFAULT_MONTHS=3
+readonly DEFAULT_MONTHS
+DEFAULT_JOBS=4
+readonly DEFAULT_JOBS
+# 同時に多く送ると secondary rate limit で止められるので、待ちは失敗したときだけにする
+RETRY_WAITS=(2 4 8)
+readonly RETRY_WAITS
+# $d などは GraphQL と jq の変数で、シェルに展開させないためシングルクォートで囲む
+# shellcheck disable=SC2016
+BRANCHES_QUERY='
+query($o: String!, $r: String!, $d: String!, $endCursor: String) {
+  repository(owner: $o, name: $r) {
+    refs(refPrefix: "refs/heads/", first: 50, after: $endCursor) {
+      pageInfo { hasNextPage endCursor }
+      nodes {
+        name
+        target { oid ... on Commit { committedDate author { email user { login } } } }
+        compare(headRef: $d) { aheadBy behindBy }
+        associatedPullRequests(first: 1, orderBy: {field: CREATED_AT, direction: DESC}) {
+          nodes { number state headRefOid author { __typename login } }
+        }
+      }
+    }
+  }
+}'
+readonly BRANCHES_QUERY
+# ブランチの側からデフォルトブランチを比べるので、aheadBy と behindBy はブランチから見た向きと逆になる
+# shellcheck disable=SC2016
+BRANCHES_FILTER='
+  .data.repository.refs.nodes[]
+  | select(.name != $d and .target.committedDate[:10] < $cutoff)
+  | .target.oid as $head
+  | (.associatedPullRequests.nodes[0] // {}) as $pr
+  | [
+      .name,
+      .target.committedDate[:10],
+      .compare.behindBy,
+      .compare.aheadBy,
+      $head,
+      (.target.author.user.login // .target.author.email),
+      (if .target.author.user then "User" elif (.target.author.email | test("\\[bot\\]")) then "Bot" else "Unknown" end),
+      ($pr.number // ""),
+      ($pr.state // ""),
+      ($pr.author.login // ""),
+      ($pr.author.__typename // ""),
+      (if $pr.headRefOid == $head then "same" else "moved" end)
+    ]
+  | map(tostring)
+  | join("\u001f")'
+readonly BRANCHES_FILTER
+# shellcheck disable=SC2016
+COMMIT_AUTHORS_FILTER='
+  [.commits[] | if .author then "\(.author.login)\t\(.author.type)" else "\(.commit.author.email)\tUnknown" end]
+  | unique[]'
+readonly COMMIT_AUTHORS_FILTER
+# shellcheck disable=SC2016
+CSV_FILTER='
+  split("\t") as $f
+  | "https://github.com/\($org)/\($f[0])" as $repo_url
+  | [
+      $f[0],
+      $f[1],
+      "\($repo_url)/tree/\($f[1] | split("/") | map(@uri) | join("/"))",
+      $f[2], $f[3], $f[4], $f[5], $f[6], $f[7],
+      (if $f[8] == "" then "" else "\($repo_url)/pull/\($f[8])" end),
+      $f[9], $f[10]
+    ]
+  | @csv'
+readonly CSV_FILTER
+CSV_HEADER='repository,branch,url,last_commit_date,unique_commits,behind_commits,owners,owner_source,owner_status,pull_request,pull_request_state,category'
+readonly CSV_HEADER
+
+function usage() {
+    local COMMAND="stale-branches"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} [OPTIONS] <ORG>
+
+		Print stale branches of every non-archived repository of ORG as CSV.
+		A branch is stale when its last commit is older than MONTHS months.
+
+		The owner of a branch is the author of its newest pull request,
+		or else the authors of its commits missing from the default branch,
+		or else the author of its last commit.
+
+		Categories:
+		  restorable  No commit is missing from the default branch,
+		              or the branch head is the head of its closed or merged pull request,
+		              which "Restore branch" brings back
+		  open-pr     Its newest pull request is still open
+		  ask-owner   Deleting it loses commits
+
+		Options:
+		  -m, --months MONTHS  Months without commits to count as stale (default: ${DEFAULT_MONTHS})
+		  -j, --jobs JOBS      Repositories to read at once (default: ${DEFAULT_JOBS})
+		  -h, --help           Show this help
+
+		Arguments:
+		  ORG  GitHub organization or user
+	HEREDOC
+}
+
+function __gh_retry() {
+    local output wait_seconds
+    for wait_seconds in "${RETRY_WAITS[@]}" ""; do
+        if output="$(gh "${@}" 2> /dev/null)"; then
+            if [[ -n "${output}" ]]; then
+                printf '%s\n' "${output}"
+            fi
+            return 0
+        fi
+        if [[ -z "${wait_seconds}" ]]; then
+            return 1
+        fi
+        sleep "${wait_seconds}"
+    done
+}
+
+# members は呼び出し元の連想配列で、空なら org のメンバーを取れなかったことを表す
+function __owner_status() {
+    local login="${1}"
+    local type="${2}"
+    if [[ "${type}" == "Bot" ]]; then
+        echo "bot"
+    elif [[ "${type}" != "User" || ${#members[@]} -eq 0 ]]; then
+        echo "unknown"
+    elif [[ -v "members[${login}]" ]]; then
+        echo "member"
+    else
+        echo "non-member"
+    fi
+}
+
+# 持ち主が複数いるときは、1 人でもメンバーがいれば、そのメンバーに判断を任せられる
+function __merge_status() {
+    local statuses="${1}"
+    local status
+    for status in member non-member unknown bot; do
+        if grep -qx "${status}" <<< "${statuses}"; then
+            echo "${status}"
+            return
+        fi
+    done
+}
+
+function __stale_branches_of() {
+    local org="${1}"
+    local repo="${2}"
+    local cutoff="${3}"
+    local default_branch rows
+    default_branch="$(__gh_retry api "repos/${org}/${repo}" --jq .default_branch)" || return 1
+    rows="$(__gh_retry api graphql --paginate -F o="${org}" -F r="${repo}" -F d="${default_branch}" -f query="${BRANCHES_QUERY}" \
+        | jq -r --arg d "${default_branch}" --arg cutoff "${cutoff}" "${BRANCHES_FILTER}")" || return 1
+    # 空のヒアストリングは空の 1 行として読まれるので、ループに入る前に抜ける
+    if [[ -z "${rows}" ]]; then
+        return 0
+    fi
+
+    local branch date unique behind head head_owner head_type pr_number pr_state pr_author pr_type pr_head
+    local owners source statuses authors login type category
+    # PR の無いブランチは空の列が続く。タブで区切ると read が空白とみなして空の列を詰めるので、
+    # 空白とみなされない制御文字で区切る
+    while IFS=$'\x1f' read -r -u 3 branch date unique behind head head_owner head_type pr_number pr_state pr_author pr_type pr_head; do
+        statuses=""
+        if [[ -n "${pr_number}" ]]; then
+            source="pull_request"
+            owners="${pr_author}"
+            statuses="$(__owner_status "${pr_author}" "${pr_type}")"
+        elif [[ "${unique}" -gt 0 ]]; then
+            source="commits"
+            authors="$(__gh_retry api "repos/${org}/${repo}/compare/${default_branch}...${head}" | jq -r "${COMMIT_AUTHORS_FILTER}")" || return 1
+            owners=""
+            while IFS=$'\t' read -r -u 4 login type; do
+                owners="${owners:+${owners} }${login}"
+                statuses="${statuses}$(__owner_status "${login}" "${type}")"$'\n'
+            done 4<<< "${authors}"
+        else
+            source="last_commit"
+            owners="${head_owner}"
+            statuses="$(__owner_status "${head_owner}" "${head_type}")"
+        fi
+
+        if [[ "${pr_state}" == "OPEN" ]]; then
+            category="open-pr"
+        elif [[ "${unique}" -eq 0 || (-n "${pr_number}" && "${pr_head}" == "same") ]]; then
+            category="restorable"
+        else
+            category="ask-owner"
+        fi
+
+        printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+            "${repo}" "${branch}" "${date}" "${unique}" "${behind}" "${owners}" "${source}" \
+            "$(__merge_status "${statuses}")" "${pr_number}" "${pr_state}" "${category}"
+    done 3<<< "${rows}"
+}
+
+function stale_branches() {
+    local org=""
+    local months="${DEFAULT_MONTHS}"
+    local jobs="${DEFAULT_JOBS}"
+
+    while [[ ${#} -gt 0 ]]; do
+        case "${1}" in
+            -h | --help)
+                usage
+                exit 0
+                ;;
+            -m | --months)
+                if [[ ${#} -lt 2 || ! "${2}" =~ ^[1-9][0-9]*$ ]]; then
+                    usage >&2
+                    exit 1
+                fi
+                months="${2}"
+                shift 2
+                ;;
+            -j | --jobs)
+                if [[ ${#} -lt 2 || ! "${2}" =~ ^[1-9][0-9]*$ ]]; then
+                    usage >&2
+                    exit 1
+                fi
+                jobs="${2}"
+                shift 2
+                ;;
+            -*)
+                echo "Error: unknown option: ${1}" >&2
+                exit 1
+                ;;
+            *)
+                if [[ -n "${org}" ]]; then
+                    echo "Error: unexpected argument: ${1}" >&2
+                    exit 1
+                fi
+                org="${1}"
+                shift
+                ;;
+        esac
+    done
+    if [[ -z "${org}" ]]; then
+        usage >&2
+        exit 1
+    fi
+
+    local cutoff
+    cutoff="$(date -v-"${months}"m +%Y-%m-%d)"
+
+    local -A members=()
+    local logins login
+    if logins="$(__gh_retry api --paginate "orgs/${org}/members" --jq '.[].login')"; then
+        while IFS= read -r -u 3 login; do
+            members["${login}"]=1
+        done 3<<< "${logins}"
+    else
+        echo "Error: could not read members of ${org}; owner_status is unknown" >&2
+    fi
+
+    local work_dir
+    work_dir="$(mktemp -d)"
+    # local の変数は関数を抜けると消えるので、trap を仕掛ける時点で展開しておく
+    # shellcheck disable=SC2064
+    trap "rm -rf '${work_dir}'" EXIT
+
+    local repos=()
+    local repo
+    while IFS= read -r -u 3 repo; do
+        repos+=("${repo}")
+    done 3< <(gh repo list "${org}" --limit 1000 --no-archived --json name --jq '.[].name' | sort)
+
+    # 出力をリポジトリの順に揃えるため、リポジトリごとのファイルに書いてから最後につなぐ
+    local i
+    for ((i = 0; i < ${#repos[@]}; i++)); do
+        while [[ "$(jobs -rp | wc -l)" -ge "${jobs}" ]]; do
+            wait -n || true
+        done
+        repo="${repos[i]}"
+        {
+            if ! __stale_branches_of "${org}" "${repo}" "${cutoff}" > "${work_dir}/${i}.tsv"; then
+                echo "${repo}" > "${work_dir}/${i}.failed"
+            fi
+        } &
+    done
+    wait
+
+    echo "${CSV_HEADER}"
+    for ((i = 0; i < ${#repos[@]}; i++)); do
+        if [[ -s "${work_dir}/${i}.tsv" && ! -e "${work_dir}/${i}.failed" ]]; then
+            jq -R -r --arg org "${org}" "${CSV_FILTER}" < "${work_dir}/${i}.tsv"
+        fi
+    done
+
+    local failed
+    failed="$(cat "${work_dir}"/*.failed 2> /dev/null || true)"
+    if [[ -n "${failed}" ]]; then
+        echo "Error: could not read these repositories:" >&2
+        echo "${failed}" >&2
+        exit 1
+    fi
+}
+
+stale_branches "${@}"
