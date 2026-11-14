@@ -1,0 +1,214 @@
+#! /usr/bin/env bash
+
+set -e -u -o pipefail
+
+# herdr の端末で動いている Claude Code と Codex のセッション ID を、端末ごとにファイルへ書き出す。
+# OS の再起動のあとに herdr-restore で同じ会話へ戻すために使う。
+
+HERDR_SESSIONS_FILE="${HERDR_SESSIONS_FILE:-"${XDG_STATE_HOME:-${HOME}/.local/state}/herdr/sessions.json"}"
+readonly HERDR_SESSIONS_FILE
+CLAUDE_SESSIONS_DIR="${CLAUDE_CONFIG_DIR:-${HOME}/.claude}/sessions"
+readonly CLAUDE_SESSIONS_DIR
+CODEX_HOME="${CODEX_HOME:-${HOME}/.codex}"
+readonly CODEX_HOME
+# 再開のための引数は保存しない。復元するときに再開の指定を付け直すので、残すと二重になる
+CLAUDE_STRIP_RESUME_ARGS_FILTER='
+  def strip:
+    if length == 0 then []
+    elif .[0] == "-r" or .[0] == "--resume" then
+      if (.[1] // "-") | startswith("-") then .[1:] | strip else .[2:] | strip end
+    elif .[0] == "--session-id" then .[2:] | strip
+    elif .[0] | test("^(-c|--continue|--fork-session|--resume=.*|--session-id=.*)$") then .[1:] | strip
+    else [.[0]] + (.[1:] | strip)
+    end;
+  strip'
+readonly CLAUDE_STRIP_RESUME_ARGS_FILTER
+# resume のあとのオプションも捨てる。セッション ID と区別して残すには、
+# Codex のオプションごとに値を取るかを知る必要があり、そこまでして残すほど使わない
+# shellcheck disable=SC2016
+CODEX_STRIP_RESUME_ARGS_FILTER='
+  (index("resume")) as $i | if $i == null then . else .[:$i] end'
+readonly CODEX_STRIP_RESUME_ARGS_FILTER
+# shellcheck disable=SC2016
+CODEX_RESUMED_ID_FILTER='
+  (index("resume")) as $i
+  | if $i == null then empty else .[$i + 1:] | map(select(startswith("-") | not)) | .[0] // empty end'
+readonly CODEX_RESUMED_ID_FILTER
+# hc run で起動した端末にはスペースとタブのラベルが付かず、窓の一覧でも親の端末の sub_agents にしか出ない。
+# そのため、窓の一覧にある値を優先し、sub_agents も同じタブの端末として扱う
+# shellcheck disable=SC2016
+ADD_NAMES_FILTER='
+  [$layout.spaces[] as $space | $space.tabs[] as $tab
+    | {space: $space.id, tab: $tab.id, space_name: $space.name, tab_name: $tab.name, terminals: [$tab.terminals[] | .terminal, .sub_agents[]?]}]
+    as $tabs
+  | map(. as $entry
+    | ([$tabs[] | select(.terminals | index($entry.address))][0]
+       // [$tabs[] | select(.tab == $entry.tab)][0]
+       // {space_name: null, tab_name: null}) as $found
+    | $entry + ($found | del(.terminals)))'
+readonly ADD_NAMES_FILTER
+# 同じセッションに引き当てた端末は、どれが本物か分からないので保存しない
+DROP_DUPLICATES_FILTER='
+  group_by(.session_id) | map(select(length == 1)[]) | sort_by(.address)'
+readonly DROP_DUPLICATES_FILTER
+
+function usage() {
+    local COMMAND="herdr-save"
+    readonly COMMAND
+    cat <<-HEREDOC
+		Usage: ${COMMAND} [OPTIONS]
+
+		Save the Claude Code and Codex sessions running in herdr terminals,
+		so that herdr-restore can resume them after a reboot.
+
+		Options:
+		  -h, --help  Show this help
+
+		Environment:
+		  HERDR_SESSIONS_FILE  File to save to (default: \$XDG_STATE_HOME/herdr/sessions.json)
+	HEREDOC
+}
+
+function __claude_session_id() {
+    local pid="${1}"
+
+    local session_file="${CLAUDE_SESSIONS_DIR}/${pid}.json"
+    if [[ -f "${session_file}" ]]; then
+        jq -r '.sessionId // empty' "${session_file}"
+    fi
+}
+
+# Codex は複数の TUI が 1 つの app-server を共有し、スレッドを TUI のプロセスに結び付けて残さない。
+# そのため、作業フォルダーが同じで、TUI が起動してから使われたスレッドのうち最新のものを当てる
+function __codex_session_id() {
+    local pid="${1}"
+    local cwd="${2}"
+    local argv="${3}"
+
+    local state_db
+    state_db="$(find "${CODEX_HOME}" -maxdepth 1 -name 'state_*.sqlite' | sort -V | tail -n 1)"
+
+    local started_at
+    started_at="$(LC_ALL=C date -j -f '%a %b %d %T %Y' "$(LC_ALL=C ps -o lstart= -p "${pid}" | sed 's/ *$//')" +%s)"
+
+    local session_id=""
+    if [[ -n "${state_db}" ]]; then
+        session_id="$(sqlite3 -readonly "${state_db}" "
+            SELECT id FROM threads
+            WHERE cwd = '${cwd//\'/\'\'}'
+              AND thread_source = 'user'
+              AND archived = 0
+              AND updated_at_ms >= ${started_at}000
+            ORDER BY updated_at_ms DESC
+            LIMIT 1")"
+    fi
+
+    # 再開したまま話しかけていないスレッドは更新されないので、起動の引数から取る
+    if [[ -z "${session_id}" ]]; then
+        session_id="$(jq -r "${CODEX_RESUMED_ID_FILTER}" <<<"${argv}")"
+    fi
+
+    echo "${session_id}"
+}
+
+function __session_entry() {
+    local terminal="${1}"
+    local detail
+    detail="$(hc get "${terminal}" --json)"
+
+    local program pid cwd argv
+    program="$(jq -r '.foreground.argv[0] // "" | split("/") | last' <<<"${detail}")"
+    pid="$(jq -r '.foreground.pid' <<<"${detail}")"
+    cwd="$(jq -r '.foreground.cwd' <<<"${detail}")"
+    argv="$(jq -c '.foreground.argv[1:]' <<<"${detail}")"
+
+    local session_id resume_argv
+    case "${program}" in
+    claude)
+        session_id="$(__claude_session_id "${pid}")"
+        resume_argv="$(jq -c --arg id "${session_id}" "[\"claude\"] + (${CLAUDE_STRIP_RESUME_ARGS_FILTER}) + [\"--resume\", \$id]" <<<"${argv}")"
+        ;;
+    codex)
+        session_id="$(__codex_session_id "${pid}" "${cwd}" "${argv}")"
+        resume_argv="$(jq -c --arg id "${session_id}" "[\"codex\"] + (${CODEX_STRIP_RESUME_ARGS_FILTER}) + [\"resume\", \$id]" <<<"${argv}")"
+        ;;
+    *)
+        return
+        ;;
+    esac
+
+    if [[ -z "${session_id}" ]]; then
+        echo "Warning: no ${program} session found for ${terminal} (pid ${pid})" >&2
+        return
+    fi
+
+    jq -c --arg agent "${program}" --arg session_id "${session_id}" --argjson resume_argv "${resume_argv}" '{
+        address,
+        where: .labels.where,
+        space: .labels["herdr.space"],
+        tab: .labels["herdr.tab"],
+        cwd: .foreground.cwd,
+        agent: $agent,
+        session_id: $session_id,
+        resume_argv: $resume_argv
+    }' <<<"${detail}"
+}
+
+function herdr_save() {
+    while [[ ${#} -gt 0 ]]; do
+        case "${1}" in
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -*)
+            echo "Error: unknown option: ${1}" >&2
+            exit 1
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+        esac
+    done
+
+    local entries=()
+    local terminal entry
+    while IFS= read -r -u 3 terminal; do
+        entry="$(__session_entry "${terminal}")"
+        if [[ -n "${entry}" ]]; then
+            entries+=("${entry}")
+        fi
+    done 3< <(hc ls --json | jq -r '.terminals[] | select(.state == "live") | .address')
+
+    local duplicates
+    duplicates="$(printf '%s\n' "${entries[@]}" | jq -s -r 'group_by(.session_id) | map(select(length > 1)[]) | .[] | "Warning: \(.where) (\(.address)) shares a session with another terminal and is not saved"')"
+    if [[ -n "${duplicates}" ]]; then
+        echo "${duplicates}" >&2
+    fi
+
+    # 名前が取れなくても、端末に残るタブの ID で元の端末には戻せるので、保存は止めない
+    local layout
+    if ! layout="$(herdr-app ls 2>/dev/null)"; then
+        echo "Warning: herdr-app is not running. Space and tab names are not saved" >&2
+        layout='{"spaces": []}'
+    fi
+
+    mkdir -p "$(dirname "${HERDR_SESSIONS_FILE}")"
+    local tmp_file
+    tmp_file="$(mktemp "${HERDR_SESSIONS_FILE}.XXXXXX")"
+    # 書き出しの途中で止まっても前回の保存を壊さないよう、別のファイルに書いてから置き換える
+    printf '%s\n' "${entries[@]}" |
+        jq -s \
+            --arg saved_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --argjson layout "${layout}" \
+            "{saved_at: \$saved_at, sessions: (${DROP_DUPLICATES_FILTER} | ${ADD_NAMES_FILTER})}" \
+            >"${tmp_file}"
+    mv "${tmp_file}" "${HERDR_SESSIONS_FILE}"
+
+    echo "Saved $(jq '.sessions | length' "${HERDR_SESSIONS_FILE}") session(s) to ${HERDR_SESSIONS_FILE}"
+    jq -r '.sessions[] | "  \(.address)\t\(.agent)\t\(.where)\t\(.session_id)"' "${HERDR_SESSIONS_FILE}"
+}
+
+herdr_save "${@}"
+

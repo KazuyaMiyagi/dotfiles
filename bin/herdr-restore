@@ -1,0 +1,238 @@
+#! /usr/bin/env bash
+
+set -e -u -o pipefail
+
+# herdr-save で保存した Claude Code と Codex のセッションを、元の herdr の端末で再開する。
+# --reopen では、元のタブが無くなったセッションを新しいタブで開き直す。
+
+HERDR_SESSIONS_FILE="${HERDR_SESSIONS_FILE:-"${XDG_STATE_HOME:-${HOME}/.local/state}/herdr/sessions.json"}"
+readonly HERDR_SESSIONS_FILE
+HERDR_SAVE="$(dirname "${0}")/herdr-save"
+readonly HERDR_SAVE
+# 端末のアドレスは作り直されると変わるので、端末に残るタブの ID で探す。
+# 候補はシェルだけが動いている端末に絞る。ほかのプログラムが動いている端末は、別の作業に使っている
+# shellcheck disable=SC2016
+FIND_TERMINAL_FILTER='
+  (if $session.tab == null then [] else map(select(.tab == $session.tab)) end) as $by_tab
+  | if ($by_tab | length) == 1 then {address: $by_tab[0].address}
+    elif ($by_tab | length) > 1 then
+      ($by_tab | map(select(.address == $session.address)) | .[0].address // null) as $address
+      | if $address == null then {ambiguous: true} else {address: $address} end
+    elif $session.tab == null then
+      (map(select(.address == $session.address)) | .[0].address // null) as $address
+      | if $address == null then {} else {address: $address} end
+    else {}
+    end'
+readonly FIND_TERMINAL_FILTER
+# shellcheck disable=SC2016
+FIND_SPACE_FILTER='
+  [.spaces[] | select(.id == $session.space)][0].id
+  // ($session.space_name as $name | if $name == null then null else [.spaces[] | select(.name == $name)][0].id end)
+  // empty'
+readonly FIND_SPACE_FILTER
+# 名前の無いタブは番号が名前として返るので、番号は名前として付け直さない
+# shellcheck disable=SC2016
+REOPEN_ARGS_FILTER='
+  {folder: $session.cwd}
+  + (if $space == "" then {} else {space: $space} end)
+  + ($session.tab_name // "" | if . == "" or test("^[0-9]+$") then {} else {($tab_key): .} end)
+  + (if $space == "" and $session.space_name != null then {name: $session.space_name} else {} end)'
+readonly REOPEN_ARGS_FILTER
+
+function usage() {
+    local COMMAND="herdr-restore"
+    readonly COMMAND
+    cat <<-HEREDOC
+		Usage: ${COMMAND} [OPTIONS]
+
+		Resume the Claude Code and Codex sessions saved by herdr-save,
+		each in the herdr terminal it was running in.
+		Sessions already running somewhere are skipped.
+
+		Options:
+		  -r, --reopen   Reopen sessions whose tab has no idle shell left in a new tab
+		                 (in the saved space, or a new space with its name)
+		  -n, --dry-run  Print what would be done without doing it
+		  -h, --help     Show this help
+
+		Environment:
+		  HERDR_SESSIONS_FILE  File saved by herdr-save (default: \$XDG_STATE_HOME/herdr/sessions.json)
+	HEREDOC
+}
+
+function __validate() {
+    if [[ ! -f "${HERDR_SESSIONS_FILE}" ]]; then
+        echo "Error: ${HERDR_SESSIONS_FILE} not found. Run herdr-save first" >&2
+        exit 1
+    fi
+}
+
+# hc run で起動した端末にはタブのラベルが付かず、窓の一覧でも親の端末の sub_agents にしか出ない。
+# そのため、窓の一覧にあるタブを優先し、sub_agents も同じタブの端末として扱う
+function __shell_terminals() {
+    local layout
+    layout="$(herdr-app ls 2>/dev/null || echo '{"spaces": []}')"
+
+    local terminal
+    while IFS= read -r -u 3 terminal; do
+        hc get "${terminal}" --json | jq -c --argjson layout "${layout}" '
+            select(.foreground.argv[0] // "" | split("/") | last | ltrimstr("-") | test("^(zsh|bash|sh|fish)$"))
+            | .address as $address
+            | {
+                address: $address,
+                tab: ([$layout.spaces[].tabs[] | select([.terminals[] | .terminal, .sub_agents[]?] | index($address))][0].id
+                      // .labels["herdr.tab"])
+            }'
+    done 3< <(hc ls --json | jq -r '.terminals[] | select(.state == "live") | .address')
+}
+
+# 動いているセッションの引き当て方は herdr-save と同じにしたいので、herdr-save に一時ファイルへ書かせる
+function __running_sessions() {
+    local tmp_file
+    tmp_file="$(mktemp)"
+    env HERDR_SESSIONS_FILE="${tmp_file}" "${HERDR_SAVE}" &>/dev/null
+    jq -c '.sessions' "${tmp_file}"
+    rm -f "${tmp_file}"
+}
+
+# herdr の端末の中から送ると、送り元を示す <hc from="..."> のタグが付き、シェルがコマンドとして読めない
+function __send_to_shell() {
+    local terminal="${1}"
+    local command="${2}"
+    env -u HC_TERMINAL_ID hc send "${terminal}" "${command}" >/dev/null
+}
+
+function __resume_command() {
+    local session="${1}"
+
+    local cwd
+    cwd="$(jq -r '.cwd' <<<"${session}")"
+
+    local argv=()
+    local arg
+    while IFS= read -r -u 3 arg; do
+        argv+=("${arg}")
+    done 3< <(jq -r '.resume_argv[]' <<<"${session}")
+
+    printf 'cd %q && %s' "${cwd}" "$(printf '%q ' "${argv[@]}" | sed 's/ $//')"
+}
+
+# herdr-app から起動した端末には、シェルの設定で足した PATH が通らず claude や codex が見つからないことがある。
+# そのため、シェルのタブを開いてから、元の端末と同じようにコマンドを送る
+function __reopen() {
+    local session="${1}"
+    local where="${2}"
+    local dry_run="${3}"
+
+    local layout
+    if ! layout="$(herdr-app ls 2>/dev/null)"; then
+        echo "Error: herdr-app is not running. Open the window and retry" >&2
+        exit 1
+    fi
+
+    local space
+    space="$(jq -r --argjson session "${session}" "${FIND_SPACE_FILTER}" <<<"${layout}")"
+
+    local command tab_key
+    if [[ -n "${space}" ]]; then
+        command="tab.new"
+        tab_key="name"
+    else
+        command="space.new"
+        tab_key="tab"
+    fi
+
+    local args
+    args="$(jq -n -c \
+        --argjson session "${session}" \
+        --arg space "${space}" \
+        --arg tab_key "${tab_key}" \
+        "${REOPEN_ARGS_FILTER}")"
+
+    local resume_command
+    resume_command="$(__resume_command "${session}")"
+
+    if [[ "${dry_run}" == true ]]; then
+        echo "Would reopen ${where}: herdr-app do ${command} '${args}', then send: ${resume_command}"
+        return
+    fi
+
+    local terminal
+    terminal="$(herdr-app "do" "${command}" "${args}" | jq -r '.terminal')"
+    __send_to_shell "${terminal}" "${resume_command}"
+    echo "Reopened ${where} in ${terminal} with ${command}"
+}
+
+function herdr_restore() {
+    local reopen=false
+    local dry_run=false
+
+    while [[ ${#} -gt 0 ]]; do
+        case "${1}" in
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -r | --reopen)
+            reopen=true
+            shift
+            ;;
+        -n | --dry-run)
+            dry_run=true
+            shift
+            ;;
+        -*)
+            echo "Error: unknown option: ${1}" >&2
+            exit 1
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+        esac
+    done
+
+    __validate
+
+    local terminals running_sessions
+    terminals="$(__shell_terminals | jq -s -c '.')"
+    running_sessions="$(__running_sessions)"
+
+    local session where session_id running found terminal command
+    while IFS= read -r -u 3 session; do
+        where="$(jq -r '.where' <<<"${session}")"
+        session_id="$(jq -r '.session_id' <<<"${session}")"
+
+        running="$(jq -r --arg id "${session_id}" '[.[] | select(.session_id == $id)][0].address // ""' <<<"${running_sessions}")"
+        if [[ -n "${running}" ]]; then
+            echo "Skip: ${where} is already running in ${running}"
+            continue
+        fi
+
+        found="$(jq -c --argjson session "${session}" "${FIND_TERMINAL_FILTER}" <<<"${terminals}")"
+        terminal="$(jq -r '.address // ""' <<<"${found}")"
+
+        if [[ -z "${terminal}" ]]; then
+            if [[ "$(jq -r '.ambiguous // false' <<<"${found}")" == true ]]; then
+                echo "Skip: ${where} has more than one idle shell and none matches the saved one" >&2
+            elif [[ "${reopen}" == true ]]; then
+                __reopen "${session}" "${where}" "${dry_run}"
+            else
+                echo "Skip: no idle shell found for ${where} (use --reopen to open it in a new tab)" >&2
+            fi
+            continue
+        fi
+
+        command="$(__resume_command "${session}")"
+        if [[ "${dry_run}" == true ]]; then
+            echo "Would send to ${terminal} (${where}): ${command}"
+            continue
+        fi
+
+        __send_to_shell "${terminal}" "${command}"
+        echo "Resumed ${terminal} (${where})"
+    done 3< <(jq -c '.sessions[]' "${HERDR_SESSIONS_FILE}")
+}
+
+herdr_restore "${@}"
+
