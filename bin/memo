@@ -1,0 +1,112 @@
+#! /usr/bin/env bash
+
+set -e -u -o pipefail
+
+# メモのフォルダーにある main.md を vim で開く。
+# フォルダーにあるメモは、main.md も含めて一覧を出したり、peco で選んで開いたり、中身を出したりする。
+
+# 公開リポジトリなので、Google Drive のアカウント名（メールアドレス）をパスに書かない
+function __default_memo_dir() {
+    local candidates=("${HOME}"/Library/CloudStorage/GoogleDrive-*/マイドライブ)
+    if [[ ${#candidates[@]} -eq 1 && -d "${candidates[0]}" ]]; then
+        echo "${candidates[0]}/Memo"
+    fi
+}
+
+function __validate() {
+    if [[ -z "${MEMO_DIR}" ]]; then
+        echo "Error: Google Drive account cannot be determined (none or more than one). Set MEMO_DIR" >&2
+        exit 1
+    fi
+
+    if [[ ! -d "${MEMO_DIR}" ]]; then
+        echo "Error: memo directory not found: ${MEMO_DIR}" >&2
+        exit 1
+    fi
+}
+
+function __main() {
+    vim "${MEMO_DIR}/main.md"
+}
+
+function __list() {
+    local path
+    for path in "${MEMO_DIR}"/*; do
+        [[ -f "${path}" ]] && basename "${path}"
+    done
+    return 0
+}
+
+function __open() {
+    local name
+    name="$(__list | peco --prompt 'memo>')" || return 0
+    [[ -n "${name}" ]] || return 0
+
+    if [[ "${name}" == *.md ]]; then
+        vim "${MEMO_DIR}/${name}"
+    else
+        open "${MEMO_DIR}/${name}"
+    fi
+}
+
+function __show() {
+    local name="${NAME:-main.md}"
+    local path="${MEMO_DIR}/${name}"
+
+    if [[ "${name}" == */* || ! -f "${path}" ]]; then
+        echo "Error: memo not found: ${name}" >&2
+        exit 1
+    fi
+
+    cat "${path}"
+}
+
+function usage() {
+    local COMMAND="memo"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} [subcommand]
+		Subcommands:
+		    ${COMMAND}             -- Open main.md in vim
+		    ${COMMAND} list | ls   -- List the memo files
+		    ${COMMAND} open        -- Select a memo file with peco and open it (Markdown in vim, others in the default application)
+		    ${COMMAND} show [NAME] -- Print the memo file NAME (default: main.md)
+
+		Environment:
+		    MEMO_DIR  Directory of the memo files (default: "マイドライブ/Memo" of the only Google Drive account)
+	HEREDOC
+}
+
+function memo() {
+    __validate
+
+    case "${SUBCOMMAND}" in
+        "")
+            __main
+            ;;
+        list | ls)
+            __list
+            ;;
+        open)
+            __open
+            ;;
+        show)
+            __show
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+SUBCOMMAND="${1:-""}"
+readonly SUBCOMMAND
+
+NAME="${2:-""}"
+readonly NAME
+
+MEMO_DIR="${MEMO_DIR:-"$(__default_memo_dir)"}"
+readonly MEMO_DIR
+
+memo
