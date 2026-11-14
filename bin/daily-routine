@@ -17,6 +17,15 @@ function daily_routine() {
     echo -e "\n==> Checking repos status...\n"
     repos-status
 
+    echo -e "\n==> Checking installed asdf tool versions...\n"
+    asdf list
+
+    echo -e "\n==> Checking Terraform and TFLint plugin caches...\n"
+    tree "${TF_PLUGIN_CACHE_DIR}" "${HOME}/.tflint.d"
+
+    echo -e "\n==> Checking files in Desktop and Downloads...\n"
+    ls -alh "${HOME}/Desktop" "${HOME}/Downloads"
+
     echo -e "\n==> Daily routine completed!\n"
 }
 
