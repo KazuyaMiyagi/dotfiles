@@ -60,27 +60,64 @@ function usage() {
 	HEREDOC
 }
 
+# 前回の応答から変わっていれば本文を出す。変わっていなければ何も出さずに失敗を返す。
+# 304 の応答は API の利用回数に数えられないので、変化が無い回は回数を使わない
+function __fetch_if_changed() {
+    local etag_file="${1}"
+    local url="${2}"
+    local headers=()
+    local response status
+    if [[ -n "${etag_file}" && -s "${etag_file}" ]]; then
+        headers=(-H "If-None-Match: $(< "${etag_file}")")
+    fi
+    # gh api は 304 も失敗の終了コードで返すので、終了コードではなく状態行で見分ける
+    response="$(gh api -i "${headers[@]+"${headers[@]}"}" "${url}" 2> /dev/null)" || true
+    status="$(head -n 1 <<< "${response}" | awk '{ print $2 }')"
+    if [[ "${status}" != 200 ]]; then
+        return 1
+    fi
+    if [[ -n "${etag_file}" ]]; then
+        sed -n 's/^[Ee][Tt][Aa][Gg]: *//p' <<< "${response}" | tr -d '\r' > "${etag_file}"
+    fi
+    awk 'body { print; next } /^\r?$/ { body = 1 }' <<< "${response}"
+}
+
 function __requested_to_me() {
     local since="${1}"
     local me="${2}"
     local teams="${3}"
-    local url
+    local etag_file="${4}"
+    local notifications url
+    if ! notifications="$(__fetch_if_changed "${etag_file}" "notifications?all=true&since=${since}")"; then
+        return 0
+    fi
     while IFS= read -r -u 3 url; do
         gh api "${url}" 2> /dev/null \
             | jq -r --arg me "${me}" --argjson teams "${teams}" "${FILTER}" \
             || true
-    done 3< <(gh api "notifications?all=true&since=${since}" --jq '.[] | select(.reason == "review_requested" and .subject.type == "PullRequest") | .subject.url')
+    done 3< <(jq -r '.[] | select(.reason == "review_requested" and .subject.type == "PullRequest") | .subject.url' <<< "${notifications}")
 }
 
 function __opened_in() {
     local before="${1}"
     local me="${2}"
-    shift 2
-    local repo
+    local etag_dir="${3}"
+    shift 3
+    local repo etag_file url pulls
     for repo in "${@}"; do
-        gh api --paginate "repos/${repo}/pulls?state=open&per_page=100" 2> /dev/null \
-            | jq -r --arg before "${before}" --arg me "${me}" "${OPENED_FILTER}" \
-            || true
+        etag_file=""
+        if [[ -n "${etag_dir}" ]]; then
+            etag_file="${etag_dir}/${repo//\//_}"
+        fi
+        url="repos/${repo}/pulls?state=open&per_page=100"
+        # --paginate は条件付きで取れないので、1 ページ目で変化を見て、収まらないときだけ全ページを取り直す
+        if ! pulls="$(__fetch_if_changed "${etag_file}" "${url}")"; then
+            continue
+        fi
+        if [[ "$(jq length <<< "${pulls}")" -ge 100 ]]; then
+            pulls="$(gh api --paginate "${url}" 2> /dev/null)" || continue
+        fi
+        jq -r --arg before "${before}" --arg me "${me}" "${OPENED_FILTER}" <<< "${pulls}" || true
     done
 }
 
@@ -152,11 +189,16 @@ function gh_watch_review_requests() {
         since="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     fi
 
-    local me teams
+    local me teams etag_dir
     me="$(gh api user --jq .login)"
     teams="$(printf '%s\n' "${team_args[@]+"${team_args[@]}"}" | jq -R -s -c 'split("\n") | map(select(length > 0))')"
+    etag_dir="$(mktemp -d)"
+    # local の変数は関数を抜けると消えるので、trap を仕掛ける時点で展開しておく
+    # shellcheck disable=SC2064
+    trap "rm -rf '${etag_dir}'" EXIT
+    # ここで ETag を控えると、見始めてから最初の回までに開かれた PR が 304 に隠れるので控えない
     if [[ (-z "${state}" || ! -s "${state}") && ${#repos[@]} -gt 0 ]]; then
-        seen="$(__opened_in "${since}" "${me}" "${repos[@]}" | awk '{ print $1 }')"
+        seen="$(__opened_in "${since}" "${me}" "" "${repos[@]}" | awk '{ print $1 }')"
     fi
     echo "since=${since}"
 
@@ -166,8 +208,8 @@ function gh_watch_review_requests() {
         # 1 回見るあいだに届いた通知を取りこぼさないよう、見る前の時刻から次を始める
         checked_at="$(date -u -v-1M +%Y-%m-%dT%H:%M:%SZ)"
         if ! found="$(
-            __requested_to_me "${since}" "${me}" "${teams}"
-            __opened_in "" "${me}" "${repos[@]+"${repos[@]}"}"
+            __requested_to_me "${since}" "${me}" "${teams}" "${etag_dir}/notifications"
+            __opened_in "" "${me}" "${etag_dir}" "${repos[@]+"${repos[@]}"}"
         )"; then
             continue
         fi
