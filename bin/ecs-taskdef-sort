@@ -1,0 +1,44 @@
+#! /usr/bin/env bash
+
+set -e -u -o pipefail
+
+# ECS のタスク定義の JSON ファイルで、各コンテナの environment と secrets を name の順に並べ替えて上書きする。
+
+# .environment |= ... を無条件に当てると、キーの無いコンテナに "environment": null が足されるので、有るときだけ並べる
+FILTER='
+  .containerDefinitions[] |= (
+    (if .environment then .environment |= sort_by(.name) else . end)
+    | (if .secrets then .secrets |= sort_by(.name) else . end)
+  )'
+readonly FILTER
+
+function usage() {
+    local COMMAND="ecs-taskdef-sort"
+    readonly COMMAND
+    cat <<- HEREDOC
+		Usage: ${COMMAND} <FILE>...
+
+		Sort environment and secrets of every container by name
+		in ECS task definition JSON files, overwriting each file.
+
+		Examples:
+		    ${COMMAND} aws/*-task-definition.json
+	HEREDOC
+}
+
+function ecs_taskdef_sort() {
+    if [[ ${#} -eq 0 ]]; then
+        usage >&2
+        exit 1
+    fi
+
+    local file sorted
+    for file in "${@}"; do
+        # jq が失敗したら代入で止まるので、壊れた JSON のファイルを空で上書きしない
+        sorted="$(jq "${FILTER}" "${file}")"
+        # mv で置き換えると、ファイルの権限が一時ファイルのものになり、symlink は実ファイルに置き換わる
+        printf '%s\n' "${sorted}" > "${file}"
+    done
+}
+
+ecs_taskdef_sort "${@}"
