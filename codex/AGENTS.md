@@ -165,6 +165,18 @@ Conventional Commits 形式を使用する。
   upstream へ push 済みであれば `-d` で削除できる（`main` へのマージ前でもよい）。
   追加の作業が必要になったら `git switch <branch>` でリモートから復元する
 
+- worktree は、リポジトリの中の `.agents/worktrees/<name>` に作る。
+  `main` を切り替えずに最新化するため、`origin/main` から切る：
+
+  ```bash
+  git fetch origin
+  git worktree add --no-track -b <branch> .agents/worktrees/<name> origin/main
+  ```
+
+  リポジトリと同じ階層に作ると、ghq が別のリポジトリとして数えてしまう。
+  `.agents/worktrees/` はグローバルの gitignore で無視している。
+  `--no-track` を付けないと upstream が `origin/main` になり、`git push` で作業ブランチを push できない
+
 - worktree で作業したときは、push したら worktree を消してから、ローカルの作業ブランチを削除する：
 
   ```bash

@@ -33,6 +33,9 @@ pgcli
 .claude/settings.local.json
 CLAUDE.local.md
 
+# Coding agents
+**/.agents/worktrees/
+
 # Amazon Q
 fish/
 
