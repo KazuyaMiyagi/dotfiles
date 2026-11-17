@@ -196,10 +196,15 @@ Conventional Commits 形式を使用する。
 
 ## コミット履歴の書き換え
 
-- レビュー依頼前（PR が未作成・draft・レビュー依頼前）は、確認を取らずに amend/rebase してよい
-- レビュー依頼後は既存のコミットを書き換えない（amend・rebase・autosquash をしない）
-  - 修正はコミットを足して、通常の push で反映する
-- 依頼済みかどうかは、書き換える前に `gh pr view <PR> --json reviewRequests,reviews,labels` で確かめる
+- 人のレビュアーにレビューを依頼する前は、確認を取らずに amend/rebase してよい
+  - PR が未作成・draft のときと、Copilot のレビューしか付いていないときは、依頼前として扱う
+  - draft で Copilot の指摘を直すときは、コミットを足さず、指摘を受けたコミットに amend（または fixup して autosquash）し、`--force-with-lease` で push する
+- 人にレビューを依頼したあとは、既存のコミットを原則として書き換えない
+  - 観点の抜けなど、変更の中身が増える修正は、コミットを足して通常の push で反映する
+  - typo などの凡ミスの修正は、そのミスを含むコミットに amend して `--force-with-lease` で push してよい
+  - どちらで直すかは、修正のたびにユーザーに確認する
+- 依頼済みかどうかは、書き換える前に `gh pr view <PR> --json isDraft,reviewRequests,reviews,labels` で確かめる。
+  Copilot（`Copilot`・`copilot-pull-request-reviewer`）による依頼やレビューは数えない
 
 ## 外部サービスへの投稿
 
