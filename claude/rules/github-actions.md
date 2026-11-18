@@ -1,7 +1,6 @@
 ---
 paths:
   - ".github/**/*.y{a,}ml"
-  - "!.github/dependabot.y{a,}ml"
   - "!.github/FUNDING.y{a,}ml"
   - "!.github/release.y{a,}ml"
   - "!.github/ISSUE_TEMPLATE/*.y{a,}ml"
@@ -11,15 +10,22 @@ paths:
 
 ## ファイル変更時のリンティング
 
-ワークフロー（`.github/workflows/` 配下）を変更した場合、コミット前に actionlint を実行してエラー・警告がないことを確認する。
+GitHub Actions のファイル（ワークフロー・composite action・`dependabot.yml`）を変更した場合、
+コミット前に actionlint と jactionlint を実行してエラー・警告がないことを確認する。
 
 ```bash
 actionlint
+jactionlint
 ```
 
-引数なしで `.github/workflows/` 配下を走査する。
-actionlint はワークフロー専用のため、composite action の `action.yml` など
-ワークフロー以外のファイルには実行しない（ワークフローとして解釈され誤検知になる）。
+どちらも引数なしでリポジトリを走査する。
+
+- actionlint は `.github/workflows/` 配下だけを見る。
+  ワークフロー専用のため、composite action の `action.yml` など
+  ワークフロー以外のファイルには実行しない（ワークフローとして解釈され誤検知になる）
+- jactionlint は actionlint のフォークで、ワークフローに加えて
+  composite action・`dependabot.yml`・`.github/workflows/actions.lock` も見る。
+  actionlint の検査に加えて、セキュリティやポリシーの検査もする
 
 指摘が出たら修正してからコミットする（未定義の式、シェルスクリプトの不備、無効なイベント名、シェル `run` 内の `shellcheck` 指摘など）。
 
