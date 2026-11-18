@@ -7,6 +7,7 @@
     "kdash-rs/kdash/kdash"
   ],
   "trustedcasks": [
+    "https://github.com/jdx/jactionlint/jactionlint",
     "terraform-linters/tap/tflint"
   ]
 }
