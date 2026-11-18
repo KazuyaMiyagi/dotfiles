@@ -97,6 +97,13 @@ tools:
     lint-formats:
       - "%f:%l:%c: %m"
 
+  jactionlint: &jactionlint
+    prefix: jactionlint
+    lint-command: 'case "${INPUT}" in */.github/workflows/*|*/action.yml|*/action.yaml|*/.github/dependabot.yml|*/.github/dependabot.yaml) jactionlint --oneline "${INPUT}" ;; esac'
+    lint-stdin: true
+    lint-formats:
+      - "%f:%l:%c: %m"
+
   commitlint: &commitlint
     prefix: commitlint
     lint-command: 'sed "/^# -* >8 -*$/,\$d" | commitlint --config ~/.config/commitlint/config.mjs | grep -E "^(⚠|✖)[[:space:]]+" | grep -vE "^[⚠✖][[:space:]]+found [0-9]+ problems" | sed -E -e "s/^⚠[[:space:]]+/W:1:1: /" -e "s/^✖[[:space:]]+/E:1:1: /"'
@@ -151,6 +158,7 @@ languages:
 
   yaml:
     - <<: *actionlint
+    - <<: *jactionlint
 
   gitcommit:
     - <<: *commitlint
