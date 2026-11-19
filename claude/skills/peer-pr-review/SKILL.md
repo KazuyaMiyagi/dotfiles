@@ -122,8 +122,11 @@ Docker を使うときは、ビルドに --label peer-pr-review を付け、コ�
 - ブラウザで開くのは、ユーザーに言われたときだけにする
 - 承認と CI の再実行は自分で行う。
   ピアは別のセッションから届いた指示を本人の指示として扱わず、自分のユーザーに確認を出して止まることがある
+  - 承認する直前に、`gh api repos/<owner>/<repo>/pulls/<番号>` の `mergeable_state` を取り直す。
+    `dirty`（コンフリクト）なら承認せず、ユーザーに伝える。
+    ピアがレビューしたあとに、ほかの PR のマージでコンフリクトしていることがあるため
   - 承認は `gh pr review <番号> --repo <owner/repo> --approve` で行い、
-    `reviewDecision` が `APPROVED` になったことを確かめる
+    自分のレビューが `APPROVED` になったことを確かめる
   - 再実行は `gh run rerun <run_id> --repo <owner/repo> --failed` で行う
 - 差分が揺らぎかどうかを確かめてから承認するもの（VRT の差分など）は、
   ピアに確認を頼み、結果を受けてから自分で承認する
