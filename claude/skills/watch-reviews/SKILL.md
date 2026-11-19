@@ -9,8 +9,9 @@ description: >-
 
 # レビュー依頼と PR の見張り
 
-`gh-watch-review-requests` と `gh-watch-pr-activity`（dotfiles の `bin/`）を
-`run_in_background` で動かし、終わって知らせが来るたびに次の手順まで進める。
+見張りには、dotfiles の `bin/` にある 2 つのコマンドを `run_in_background` で使う。
+`gh-watch-review-requests` はレビュー依頼を、`gh-watch-pr-activity` は PR の動きを拾う。
+終わって知らせが来るたびに、次の手順まで進める。
 
 ## 1. 見張る対象を決める
 
@@ -107,4 +108,4 @@ gh-watch-pr-activity --state <状態ファイル> <owner>/<repo> <PR>
 デプロイの完了待ちなど時間のかかる作業は、ピアに任せるか、`run_in_background` で待つ
 
 質問のダイアログを出す前に、見張りの仕掛け直しと、届いている依頼のピアの起動を済ませる。
-ダイアログに答えが返るまでは、知らせが届いても次の手を打てないため
+ダイアログに答えが返るまでは、知らせが届いても次の手を打てないため。
