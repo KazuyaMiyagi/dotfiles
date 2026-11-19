@@ -301,10 +301,12 @@ PR を push したあとやレビューを依頼したあとに待つときは�
 ユーザーが自分で見たり話しかけたりするピアを頼まれたときだけ、Herdr app の新しいタブで起動する。
 
 ```bash
-herdr-core run --bg --name <名前> --cwd <リポジトリのパス> claude "<依頼>"
+herdr-core run --bg --name <名前> --cwd <リポジトリのパス> env PATH="$PATH" claude "<依頼>"
 ```
 
 - `herdr-core run --bg` はタブを作らず、自分の子の端末として裏で動かす
+- `env PATH="$PATH"` を付けて、自分の PATH を渡す。
+  付けないと herdr の PATH で動き、`~/.config/bin` のフックや asdf の node などが見つからない
 - 裏で動かした端末をあとからタブにするときは、
   `herdr-app do terminal.keep --terminal <端末> --place tab` を使う
 

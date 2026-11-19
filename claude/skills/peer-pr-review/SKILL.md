@@ -215,9 +215,12 @@ Ghostty にはペインを外から操作する CLI がないため、ピアに�
   自分のセッションが終わると、子のピアも一緒に終わる
 
   ```bash
-  herdr-core run --bg --name "<ピアの名前>" --cwd <リポジトリのパス> <agent>
+  herdr-core run --bg --name "<ピアの名前>" --cwd <リポジトリのパス> env PATH="$PATH" <agent>
   herdr-core wait "<ピアの名前>"
   ```
+
+  `env PATH="$PATH"` を付けて、自分の PATH を渡す。
+  付けないと herdr の PATH で動き、`~/.config/bin` のフックや asdf の node などが見つからない
 
 - 画面を読む：`herdr-core read <名前> --lines 0`。
   `herdr-core get <名前>` の status が `blocked` なら、人の操作を待っている
