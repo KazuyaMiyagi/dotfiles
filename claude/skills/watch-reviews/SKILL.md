@@ -10,7 +10,7 @@ description: >-
 # レビュー依頼と PR の見張り
 
 `gh-watch-review-requests` と `gh-watch-pr-activity`（dotfiles の `bin/`）を
-`--follow` 付きで Monitor に載せ、行が出るたびに次の手順まで進める。
+`run_in_background` で動かし、終わって知らせが来るたびに次の手順まで進める。
 
 ## 1. 見張る対象を決める
 
@@ -22,18 +22,22 @@ description: >-
 
 ## 2. 見張りを仕掛ける
 
-どちらも Monitor で、`timeout_ms` を上限にして動かす。
+どちらも `--follow` を付けずに、Bash の `run_in_background` で動かす。
 
 ```bash
-gh-watch-review-requests --follow --state <状態ファイル> \
+gh-watch-review-requests --state <状態ファイル> \
   [--team <org>/<team>]... [--repo <owner>/<repo>]... [SINCE]
-gh-watch-pr-activity --follow --state <状態ファイル> <owner>/<repo> <PR>
+gh-watch-pr-activity --state <状態ファイル> <owner>/<repo> <PR>
 ```
 
+- Monitor に `--follow` で載せない。
+  Monitor は最大 30 分で切れ、切れるたびと仕掛け直すたびに知らせが届いて、そのつど返事が出るため
+- `--follow` なしだと、1 件拾ったところで終わって知らせが来る。
+  拾った件を読んだら、ピアの起動などより先に、同じコマンドで仕掛け直す
 - 状態ファイルはスクラッチパッドに、見張りごとに別の名前で置く。
   見た時刻と出し終えたものを書き残すので、同じ状態ファイルで仕掛け直せば、取りこぼしも二重の通知も出ない
-- Monitor は上限の時間で切れる。
-  切れたら、同じコマンドのまま仕掛け直す
+- 何も拾わないまま上限の回数（`gh-watch-review-requests` は 60 秒 × 720 回で 12 時間）を過ぎると、エラーで終わる。
+  そのときも同じコマンドで仕掛け直す
 - `gh-watch-review-requests` の `SINCE` は省く。
   状態ファイルが無ければ今から、あれば書き残した時刻から見る
 - 指示ファイルがチームへの依頼もレビューするとしているときは、そのチームを `--team` で 1 つずつ渡す。
@@ -81,7 +85,7 @@ gh-watch-pr-activity --follow --state <状態ファイル> <owner>/<repo> <PR>
 
 - PR がマージ・クローズされたら（`state` の行が出たら）、`gh-watch-pr-activity` は自分で終わる。
   その PR の見張りは仕掛け直さず、状態ファイルも消す
-- 待つ必要がなくなった PR の見張りは、Monitor を止めて状態ファイルを消す
+- 待つ必要がなくなった PR の見張りは、TaskStop で止めて状態ファイルを消す
 - こちらが承認した PR は見張らない。
   枠を取った PR も同じで、CI の結果・マージ・マージ後の確認（デプロイ・ECS・Datadog）も見ない。
   リポジトリの指示ファイルにマージ後の確認の手順があっても、ユーザーに言われたときだけ行う
