@@ -55,7 +55,8 @@
   },
   "enabledPlugins": {
     "ruby-lsp@claude-plugins-official": true,
-    "claude-security@claude-plugins-official": true
+    "claude-security@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
@@ -108,7 +109,7 @@
       }
     }
   },
+  "tui": "fullscreen",
   "autoMemoryEnabled": false,
-  "skipWorkflowUsageWarning": true,
-  "tui": "fullscreen"
+  "skipWorkflowUsageWarning": true
 }
