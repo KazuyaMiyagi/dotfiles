@@ -242,6 +242,27 @@ function __vim_lsp_server_is_current() {
     fi
 }
 
+function __agent_skills_install() {
+    # <source>:<skill> の形で書く。
+    local skills=(
+        cloudflare/security-audit-skill:security-audit
+        github/gh-stack:gh-stack
+    )
+    local installed entry
+
+    echo "==> Installing agent skills..."
+    # skills add は入れ直すたびにリポジトリを取り直すので、入っていないものだけ入れて、更新は skills update に任せる。
+    installed="$(npx -y skills ls -g --json | jq -r '.[] | select(.status == "tracked") | .name')"
+    for entry in "${skills[@]}"; do
+        if grep -qxF "${entry#*:}" <<< "${installed}"; then
+            continue
+        fi
+        npx -y skills add "${entry%%:*}" --global --agent claude-code --skill "${entry#*:}" --yes
+    done
+    npx -y skills update --global --yes < /dev/null
+    echo "==> Finished installing agent skills."
+}
+
 function __vim_lsp_settings_update() {
     local servers_root="${XDG_DATA_HOME}/vim-lsp-settings/servers"
     local installer_dir="${XDG_DATA_HOME}/vim/plugged/vim-lsp-settings/installer"
@@ -330,6 +351,7 @@ function bootstrap() {
     __asdf_plugins_update
     __asdf_plugins_python_apply_path
     __asdf_managed_tools_update
+    __agent_skills_install
     __vim_lsp_settings_update
     __tflint_init
     __gcloud_update
